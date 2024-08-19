@@ -33,8 +33,8 @@ let intervalId = null;
 onValue(ref(database, 'gameInfo'), (snapshot) => {
     const gameInfo = snapshot.val();
     if (gameInfo) {
-        nextGameTime.textContent = `Next Game Time: ${gameInfo.gameTime || 'N/A'}`;
-        nextGameDate.textContent = `Next Game Date: ${gameInfo.gameDate || 'N/A'}`;
+        nextGameTime.textContent = Next Game Time: ${gameInfo.gameTime || 'N/A'};
+        nextGameDate.textContent = Next Game Date: ${gameInfo.gameDate || 'N/A'};
         
         // Calculate time left
         if (gameInfo.gameTime) {
@@ -43,7 +43,7 @@ onValue(ref(database, 'gameInfo'), (snapshot) => {
             const timeDiff = gameTime - now;
             const hours = Math.floor(timeDiff / (1000 * 60 * 60));
             const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-            timeLeft.textContent = `Time Left: ${hours}h ${minutes}m`;
+            timeLeft.textContent = Time Left: ${hours}h ${minutes}m;
         }
     } else {
         nextGameTime.textContent = 'Next Game Time: N/A';
@@ -77,55 +77,25 @@ onValue(ref(database, 'calledNumbers'), (snapshot) => {
     });
 });
 
-// Listen for changes in the ticket limit and update UI
-onValue(ref(database, 'tickets/limit'), (snapshot) => {
-    const limit = snapshot.val();
-    if (limit) {
-        ticketsContainer.innerHTML = ''; // Clear the container
-        for (let i = 1; i <= limit; i++) {
-            const ticketDiv = document.createElement('div');
-            ticketDiv.id = `ticket-${i}`;
-            ticketDiv.innerHTML = `
-                <div>Ticket ${i}</div>
-                <div>
-                    <a href="https://wa.me/99999" target="_blank">Book Now</a>
-                </div>
-                <div class="ticket-grid"></div>
-            `;
-            ticketsContainer.appendChild(ticketDiv);
-        }
-    }
-});
-
-
-// Handle updates to individual tickets
 onValue(ref(database, 'tickets'), (snapshot) => {
     const tickets = snapshot.val();
+    ticketsContainer.innerHTML = '';
     for (const [ticketNumber, ticket] of Object.entries(tickets)) {
         if (ticketNumber !== 'limit') {
-            const ticketDiv = document.getElementById(`ticket-${ticketNumber}`);
-            if (ticketDiv) {
-                ticketDiv.querySelector('.ticket-grid').innerHTML = generateTicketGrid(ticket.numbers);
-                if (ticket.bookedBy) {
-                    ticketDiv.querySelector('a').textContent = `Booked by: ${ticket.bookedBy}`;
-                }
-            }
+            const ticketDiv = document.createElement('div');
+            ticketDiv.innerHTML = 
+                <div>Ticket ${ticketNumber}</div>
+                <div>
+                    ${ticket.bookedBy ? Booked by: ${ticket.bookedBy} : <a href="https://wa.me/99999" target="_blank">Book Now</a>}
+                </div>
+                <div id="ticket-${ticketNumber}" class="ticket-grid"></div>
+            ;
+            ticketsContainer.appendChild(ticketDiv);
+            generateTicketGrid(ticketNumber, ticket);
         }
     }
 });
-function generateTicketGrid(numbers) {
-    let gridHtml = '<table>';
-    for (let row = 0; row < 3; row++) {
-        gridHtml += '<tr>';
-        for (let col = 0; col < 9; col++) {
-            const number = numbers.find(n => Math.floor((n - 1) / 10) === col);
-            gridHtml += `<td class="${number ? 'highlight' : 'blocked'}">${number || ''}</td>`;
-        }
-        gridHtml += '</tr>';
-    }
-    gridHtml += '</table>';
-    return gridHtml;
-}
+
 function generateBoard(board) {
     const table = document.createElement('table');
     for (let i = 0; i < 9; i++) {
@@ -134,7 +104,7 @@ function generateBoard(board) {
             const td = document.createElement('td');
             const num = board[i * 10 + j];
             td.textContent = num;
-            td.id = `cell-${num}`;
+            td.id = cell-${num};
             tr.appendChild(td);
         }
         table.appendChild(tr);
@@ -164,65 +134,27 @@ function updateCalledNumbers(number) {
     container.classList.add('highlight');
     calledNumbersContainer.appendChild(container);
     
-    const cell = document.getElementById(`cell-${number}`);
+    const cell = document.getElementById(cell-${number});
     if (cell) {
         cell.classList.add('highlight');
     }
 }
 
 function generateTicketGrid(ticketNumber, ticket) {
-    const container = document.getElementById(`ticket-${ticketNumber}`);
+    const container = document.getElementById(ticket-${ticketNumber});
     if (!ticket || !ticket.numbers) return;
-
+    
     const ticketNumbers = ticket.numbers;
     let gridHtml = '<table>';
-
+    
     for (let row = 0; row < 3; row++) {
         gridHtml += '<tr>';
-        const rowNumbers = ticketNumbers.filter((_, index) => Math.floor(index / 5) === row);
-        let numberIndex = 0;
         for (let col = 0; col < 9; col++) {
-            const number = rowNumbers.find(n => Math.floor((n - 1) / 10) === col + 1);
-            if (number && numberIndex < 5) {
-                gridHtml += `<td class="number-cell" data-number="${number}">${number}</td>`;
-                numberIndex++;
-            } else {
-                gridHtml += '<td class="blocked"></td>';
-            }
+            const number = ticketNumbers.find(n => Math.floor((n - 1) / 9) === col);
+            gridHtml += <td class="${number ? 'highlight' : 'blocked'}">${number || ''}</td>;
         }
         gridHtml += '</tr>';
     }
     gridHtml += '</table>';
     container.innerHTML = gridHtml;
-
-    // Apply highlighting for called numbers if they exist
-    calledNumbers.forEach((number) => {
-        const cells = container.querySelectorAll(`[data-number="${number}"]`);
-        cells.forEach(cell => cell.classList.add('highlight'));
-    });
-}
-function setTicketLimit(limit) {
-    const tickets = {};
-    for (let i = 1; i <= limit; i++) {
-        tickets[i] = {
-            bookedBy: null,
-            numbers: generateHousieNumbers()
-        };
-    }
-    set(ref(database, 'tickets'), tickets);
-}
-
-function generateHousieNumbers() {
-    const numbers = [];
-    for (let i = 0; i < 3; i++) {
-        let row = [];
-        while (row.length < 5) {
-            const num = Math.floor(Math.random() * 90) + 1;
-            if (!numbers.includes(num)) {
-                row.push(num);
-                numbers.push(num);
-            }
-        }
-    }
-    return numbers.sort((a, b) => a - b);
 }
