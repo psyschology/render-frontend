@@ -77,6 +77,7 @@ onValue(ref(database, 'calledNumbers'), (snapshot) => {
 onValue(ref(database, 'tickets'), (snapshot) => {
     const tickets = snapshot.val();
     ticketsContainer.innerHTML = '';
+
     for (const [ticketNumber, ticket] of Object.entries(tickets)) {
         if (ticketNumber !== 'limit') {
             const ticketDiv = document.createElement('div');
@@ -88,10 +89,30 @@ onValue(ref(database, 'tickets'), (snapshot) => {
                 <div id="ticket-${ticketNumber}" class="ticket-grid"></div>
             `;
             ticketsContainer.appendChild(ticketDiv);
-            generateTicketGrid(ticketNumber, ticket);
+
+            // Integrate the grid generation here
+            const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
+            const table = document.createElement('table');
+            for (let i = 0; i < 3; i++) {
+                const tr = document.createElement('tr');
+                for (let j = 0; j < 9; j++) {
+                    const td = document.createElement('td');
+                    const index = i * 9 + j;
+                    if (ticket.blockedIndices.includes(index)) {
+                        td.textContent = ticket.numbers[index] || '';
+                    } else {
+                        td.textContent = '';
+                    }
+                    tr.appendChild(td);
+                }
+                table.appendChild(tr);
+            }
+            ticketGrid.innerHTML = '';
+            ticketGrid.appendChild(table);
         }
     }
 });
+
 
 function generateBoard(board) {
     const table = document.createElement('table');
@@ -138,23 +159,4 @@ function announceNumber(number) {
     speechSynthesis.speak(utterance);
 }
 
-function generateTicketGrid(ticketNumber, ticket) {
-    const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
-    const table = document.createElement('table');
-    for (let i = 0; i < 3; i++) {
-        const tr = document.createElement('tr');
-        for (let j = 0; j < 9; j++) {
-            const td = document.createElement('td');
-            const index = i * 9 + j;
-            if (ticket.blockedIndices.includes(index)) {
-                td.textContent = ticket.numbers[index] || '';
-            } else {
-                td.textContent = '';
-            }
-            tr.appendChild(td);
-        }
-        table.appendChild(tr);
-    }
-    ticketGrid.innerHTML = '';
-    ticketGrid.appendChild(table);
-}
+
