@@ -10,17 +10,40 @@ const firebaseConfig = {
   appId: "1:401163347854:web:d95d1a655d256c731766df",
   measurementId: "G-M87PVBCQJN"
 };
-const app = firebase.initializeApp(firebaseConfig);
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
 document.getElementById('startGame').addEventListener('click', () => {
-    // Logic to start the game
     database.ref('game').set({ status: 'started' });
+    console.log('Game started');
 });
 
 document.getElementById('endGame').addEventListener('click', () => {
-    // Logic to end the game
     database.ref('game').set({ status: 'ended' });
+    console.log('Game ended');
 });
 
-// Add more logic for other buttons
+document.getElementById('setGameTime').addEventListener('click', () => {
+    const gameTime = prompt('Enter game time (YYYY-MM-DD HH:MM:SS)');
+    const gameDate = prompt('Enter game date (YYYY-MM-DD)');
+    database.ref('gameInfo').set({
+        gameTime: gameTime,
+        gameDate: gameDate
+    });
+    console.log('Game time and date set');
+});
+
+document.getElementById('setTicketLimit').addEventListener('click', () => {
+    const ticketLimit = prompt('Enter the number of tickets');
+    database.ref('tickets').set({ limit: ticketLimit });
+    console.log('Ticket limit set');
+});
+
+document.getElementById('bookTicket').addEventListener('click', () => {
+    const ticketNumber = prompt('Enter ticket number to book');
+    const ownerName = prompt('Enter owner name');
+    database.ref('tickets/' + ticketNumber).set({ bookedBy: ownerName });
+    console.log('Ticket booked');
+});
