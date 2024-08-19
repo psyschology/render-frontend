@@ -143,18 +143,56 @@ function updateCalledNumbers(number) {
 function generateTicketGrid(ticketNumber, ticket) {
     const container = document.getElementById(`ticket-${ticketNumber}`);
     if (!ticket || !ticket.numbers) return;
-    
+
     const ticketNumbers = ticket.numbers;
     let gridHtml = '<table>';
-    
+
     for (let row = 0; row < 3; row++) {
         gridHtml += '<tr>';
+        const rowNumbers = ticketNumbers.filter((_, index) => Math.floor(index / 5) === row);
+        let numberIndex = 0;
         for (let col = 0; col < 9; col++) {
-            const number = ticketNumbers.find(n => Math.floor((n - 1) / 9) === col);
-            gridHtml += `<td class="${number ? 'highlight' : 'blocked'}">${number || ''}</td>`;
+            const number = rowNumbers.find(n => Math.floor((n - 1) / 10) === col + 1);
+            if (number && numberIndex < 5) {
+                gridHtml += `<td class="number-cell" data-number="${number}">${number}</td>`;
+                numberIndex++;
+            } else {
+                gridHtml += '<td class="blocked"></td>';
+            }
         }
         gridHtml += '</tr>';
     }
     gridHtml += '</table>';
     container.innerHTML = gridHtml;
+
+    // Apply highlighting for called numbers if they exist
+    calledNumbers.forEach((number) => {
+        const cells = container.querySelectorAll(`[data-number="${number}"]`);
+        cells.forEach(cell => cell.classList.add('highlight'));
+    });
+}
+function setTicketLimit(limit) {
+    const tickets = {};
+    for (let i = 1; i <= limit; i++) {
+        tickets[i] = {
+            bookedBy: null,
+            numbers: generateHousieNumbers()
+        };
+    }
+    set(ref(database, 'tickets'), tickets);
+}
+
+function generateHousieNumbers() {
+    const numbers = [];
+    for (let i = 0; i < 3; i++) {
+        let row = [];
+        while (row.length < 5) {
+            const num = Math.floor(Math.random() * 90) + 1;
+            if (!numbers.includes(num)) {
+                row.push(num);
+                numbers.push(num);
+            }
+        }
+    }
+    return numbers.sort((a, b) => a - b);
 }
