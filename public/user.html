@@ -51,19 +51,19 @@
 
     <!-- Game Info Section -->
 <div id="gameInfo" class="flex flex-wrap justify-center mt-6 space-x-4">
-    <div id="nextGameTime" class="info-box">Next Game Time: 08:00 PM</div>
-    <div id="nextGameDate" class="info-box">Next Game Date: 25th August 2024</div>
-    <div id="timeLeft" class="info-box">Time Left: 2h 15m</div>
+    <div id="nextGameTime" class="info-box bg-blue-800 border-2 border-white">Next Game Time: 08:00 PM</div>
+    <div id="nextGameDate" class="info-box bg-blue-800 border-2 border-white">Next Game Date: 25th August 2024</div>
+    <div id="timeLeft" class="info-box bg-blue-800 border-2 border-white">Time Left: 2h 15m</div>
 </div>
 
 <!-- Styles -->
 <style>
     .info-box {
-        background-color: #1e3a8a; /* Navy blue background */
+        background-color: #001149; /* Dark blue background */
         color: white; /* White text */
         padding: 15px 20px; /* Padding for spacing */
         border-radius: 10px; /* Rounded corners */
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        border: 3px solid white; /* White border */
         font-size: 1rem; /* Font size */
         font-weight: bold; /* Bold text */
         text-align: center; /* Center the text */
@@ -71,6 +71,7 @@
         max-width: 300px; /* Maximum width for larger screens */
         margin: 0.5rem; /* Margin for spacing */
         box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
     }
 
     #gameInfo {
@@ -81,12 +82,7 @@
         margin-top: 1rem; /* Top margin to separate from previous line */
     }
 
-    /* Divider Styles */
-    hr {
-        border-color: #cbd5e0; /* Light gray border */
-        margin: 1.5rem 0; /* Margin for spacing */
-    }
-
+    /* Mobile Styles */
     @media (max-width: 600px) {
         .info-box {
             font-size: 0.875rem; /* Smaller font size for mobile */
@@ -99,6 +95,7 @@
         }
     }
 </style>
+
 
 
     <div id="gameBoard">
