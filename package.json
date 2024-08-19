@@ -9,9 +9,4 @@
   "author": "",
   "license": "ISC"
 }
-{
-  "rules": {
-    ".read": "auth != null",
-    ".write": "auth != null"
-  }
-}
+
