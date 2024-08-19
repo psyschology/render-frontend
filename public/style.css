@@ -66,3 +66,25 @@ button {
     font-weight: bold;
     margin-bottom: 10px;
 }
+.called-number {
+    display: inline-block;
+    margin: 0 5px;
+    font-size: 18px;
+    color: #333;
+}
+.ticket-grid table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.ticket-grid td {
+    width: 11%;
+    height: 50px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 18px;
+    border: 1px solid #ccc;
+}
+.ticket-grid .called {
+    background-color: yellow;
+}
+
