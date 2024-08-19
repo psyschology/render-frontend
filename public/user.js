@@ -1,11 +1,8 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
+import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
 
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyB9hgV5BCLAXQC4-MhcEfadzJCRVcwp8CQ",
   authDomain: "render-27de6.firebaseapp.com",
@@ -19,7 +16,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+const database = getDatabase(app);
 
 // Function to update game board
 function updateGameBoard(data) {
@@ -33,11 +30,11 @@ function updateGameBoard(data) {
 }
 
 // Listen for game updates
-database.ref('game').on('value', snapshot => {
+onValue(ref(database, 'game'), (snapshot) => {
     updateGameBoard(snapshot.val());
 });
 
-database.ref('gameInfo').on('value', snapshot => {
+onValue(ref(database, 'gameInfo'), (snapshot) => {
     const gameInfo = snapshot.val();
     document.getElementById('nextGameTime').textContent = `Next Game Time: ${gameInfo.gameTime || 'N/A'}`;
     document.getElementById('nextGameDate').textContent = `Next Game Date: ${gameInfo.gameDate || 'N/A'}`;
@@ -45,7 +42,7 @@ database.ref('gameInfo').on('value', snapshot => {
 });
 
 // Listen for ticket updates
-database.ref('tickets').on('value', snapshot => {
+onValue(ref(database, 'tickets'), (snapshot) => {
     const tickets = snapshot.val();
     // Update ticket containers
 });
