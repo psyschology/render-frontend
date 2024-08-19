@@ -85,10 +85,18 @@ function updateCalledNumbers(number) {
 // Update game info
 onValue(ref(database, 'gameInfo'), (snapshot) => {
     const gameInfo = snapshot.val();
-    nextGameTime.textContent = `Next Game Time: ${gameInfo.gameTime || 'N/A'}`;
-    nextGameDate.textContent = `Next Game Date: ${gameInfo.gameDate || 'N/A'}`;
-    // Calculate and update time left
+    if (gameInfo) {
+        nextGameTime.textContent = `Next Game Time: ${gameInfo.gameTime || 'N/A'}`;
+        nextGameDate.textContent = `Next Game Date: ${gameInfo.gameDate || 'N/A'}`;
+        // Calculate and update time left
+        // Your time left calculation logic here
+    } else {
+        nextGameTime.textContent = 'Next Game Time: N/A';
+        nextGameDate.textContent = 'Next Game Date: N/A';
+        timeLeft.textContent = 'Time Left: N/A';
+    }
 });
+
 
 // Update tickets
 onValue(ref(database, 'tickets'), (snapshot) => {
