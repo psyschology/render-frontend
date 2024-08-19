@@ -4,21 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Page</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Basic styling for the user page */
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        #gameBoard { display: none; margin-top: 20px; }
+        #gameBoard table { width: 100%; border-collapse: collapse; }
+        #gameBoard td { padding: 10px; text-align: center; border: 1px solid #ddd; }
+        .highlight { background-color: yellow; }
+    </style>
 </head>
 <body>
-    <h1>Next Game Information</h1>
-    <div class="game-info">
-        <div id="next-game-time"></div>
-        <div id="next-game-date"></div>
-        <div id="time-left"></div>
+    <div id="gameInfo">
+        <div id="nextGameTime">Next Game Time: </div>
+        <div id="nextGameDate">Next Game Date: </div>
+        <div id="timeLeft">Time Left: </div>
     </div>
-    
-    <div id="game-board"></div>
-    <div id="called-numbers"></div>
-    <div id="tickets-container"></div>
-    
-    <script src="script.js"></script>
+
+    <div id="gameBoard">
+        <table id="board"></table>
+    </div>
+    <div id="calledNumbers"></div>
+    <div id="tickets"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+    <script src="user.js"></script>
 </body>
 </html>
-
