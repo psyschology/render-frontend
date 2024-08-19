@@ -30,18 +30,72 @@ let calledNumbers = [];
 let intervalId = null;
 
 // Update UI based on game state
-function updateGameBoard(data) {
-    if (data.status === 'started') {
-        gameBoard.style.display = 'block';
-        generateBoard(data.board);
-        startNumberCalling();
-    } else if (data.status === 'ended') {
+onValue(ref(database, 'gameInfo'), (snapshot) => {
+    const gameInfo = snapshot.val();
+    if (gameInfo) {
+        nextGameTime.textContent = `Next Game Time: ${gameInfo.gameTime || 'N/A'}`;
+        nextGameDate.textContent = `Next Game Date: ${gameInfo.gameDate || 'N/A'}`;
+        
+        // Calculate time left
+        if (gameInfo.gameTime) {
+            const now = new Date();
+            const gameTime = new Date(gameInfo.gameTime);
+            const timeDiff = gameTime - now;
+            const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            timeLeft.textContent = `Time Left: ${hours}h ${minutes}m`;
+        }
+    } else {
+        nextGameTime.textContent = 'Next Game Time: N/A';
+        nextGameDate.textContent = 'Next Game Date: N/A';
+        timeLeft.textContent = 'Time Left: N/A';
+    }
+});
+
+onValue(ref(database, 'gameInfo/status'), (snapshot) => {
+    const status = snapshot.val();
+    if (status === 'started') {
+        onValue(ref(database, 'gameInfo/board'), (snapshot) => {
+            const board = snapshot.val();
+            if (board) {
+                gameBoard.style.display = 'block';
+                generateBoard(board);
+                startNumberCalling();
+            }
+        });
+    } else if (status === 'ended') {
         gameBoard.style.display = 'none';
         stopNumberCalling();
     }
-}
+});
 
-// Function to generate the game board
+onValue(ref(database, 'calledNumbers'), (snapshot) => {
+    const numbers = snapshot.val() || [];
+    calledNumbersContainer.innerHTML = '';
+    numbers.forEach(number => {
+        updateCalledNumbers(number);
+    });
+});
+
+onValue(ref(database, 'tickets'), (snapshot) => {
+    const tickets = snapshot.val();
+    ticketsContainer.innerHTML = '';
+    for (const [ticketNumber, ticket] of Object.entries(tickets)) {
+        if (ticketNumber !== 'limit') {
+            const ticketDiv = document.createElement('div');
+            ticketDiv.innerHTML = `
+                <div>Ticket ${ticketNumber}</div>
+                <div>
+                    ${ticket.bookedBy ? `Booked by: ${ticket.bookedBy}` : `<a href="https://wa.me/99999" target="_blank">Book Now</a>`}
+                </div>
+                <div id="ticket-${ticketNumber}" class="ticket-grid"></div>
+            `;
+            ticketsContainer.appendChild(ticketDiv);
+            generateTicketGrid(ticketNumber, ticket);
+        }
+    }
+});
+
 function generateBoard(board) {
     const table = document.createElement('table');
     for (let i = 0; i < 9; i++) {
@@ -59,7 +113,6 @@ function generateBoard(board) {
     gameBoard.appendChild(table);
 }
 
-// Function to start calling numbers
 function startNumberCalling() {
     intervalId = setInterval(() => {
         const number = Math.floor(Math.random() * 90) + 1;
@@ -67,7 +120,6 @@ function startNumberCalling() {
     }, 2000); // Adjust interval as needed
 }
 
-// Function to stop calling numbers
 function stopNumberCalling() {
     if (intervalId) {
         clearInterval(intervalId);
@@ -87,49 +139,6 @@ function updateCalledNumbers(number) {
         cell.classList.add('highlight');
     }
 }
-
-// Update game info
-onValue(ref(database, 'gameInfo'), (snapshot) => {
-    const gameInfo = snapshot.val();
-    if (gameInfo) {
-        const now = new Date();
-        const gameTime = new Date(gameInfo.gameTime);
-        const gameDate = new Date(gameInfo.gameDate);
-        
-        nextGameTime.textContent = `Next Game Time: ${gameInfo.gameTime || 'N/A'}`;
-        nextGameDate.textContent = `Next Game Date: ${gameInfo.gameDate || 'N/A'}`;
-        
-        // Calculate time left
-        const timeDiff = gameTime - now;
-        const hours = Math.floor(timeDiff / (1000 * 60 * 60));
-        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-        timeLeft.textContent = `Time Left: ${hours}h ${minutes}m`;
-    } else {
-        nextGameTime.textContent = 'Next Game Time: N/A';
-        nextGameDate.textContent = 'Next Game Date: N/A';
-        timeLeft.textContent = 'Time Left: N/A';
-    }
-});
-
-// Update tickets
-onValue(ref(database, 'tickets'), (snapshot) => {
-    const tickets = snapshot.val();
-    ticketsContainer.innerHTML = '';
-    for (const [ticketNumber, ticket] of Object.entries(tickets)) {
-        if (ticketNumber !== 'limit') {
-            const ticketDiv = document.createElement('div');
-            ticketDiv.innerHTML = `
-                <div>Ticket ${ticketNumber}</div>
-                <div>
-                    ${ticket.bookedBy ? `Booked by: ${ticket.bookedBy}` : `<a href="https://wa.me/99999" target="_blank">Book Now</a>`}
-                </div>
-                <div id="ticket-${ticketNumber}" class="ticket-grid"></div>
-            `;
-            ticketsContainer.appendChild(ticketDiv);
-            generateTicketGrid(ticketNumber, ticket);
-        }
-    }
-});
 
 function generateTicketGrid(ticketNumber, ticket) {
     const container = document.getElementById(`ticket-${ticketNumber}`);
