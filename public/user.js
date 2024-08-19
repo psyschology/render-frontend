@@ -10,16 +10,36 @@ const firebaseConfig = {
   appId: "1:401163347854:web:d95d1a655d256c731766df",
   measurementId: "G-M87PVBCQJN"
 };
-const app = firebase.initializeApp(firebaseConfig);
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
-database.ref('game/status').on('value', (snapshot) => {
-    const status = snapshot.val();
-    if (status === 'started') {
+// Function to update game board
+function updateGameBoard(data) {
+    if (data.status === 'started') {
         document.getElementById('gameBoard').style.display = 'block';
-        // Logic to display and start the game
-    } else if (status === 'ended') {
+        // Add game board logic here
+    } else if (data.status === 'ended') {
         document.getElementById('gameBoard').style.display = 'none';
-        // Logic to hide and reset the game
+        // Add logic to hide game board
     }
+}
+
+// Listen for game updates
+database.ref('game').on('value', snapshot => {
+    updateGameBoard(snapshot.val());
+});
+
+database.ref('gameInfo').on('value', snapshot => {
+    const gameInfo = snapshot.val();
+    document.getElementById('nextGameTime').textContent = `Next Game Time: ${gameInfo.gameTime || 'N/A'}`;
+    document.getElementById('nextGameDate').textContent = `Next Game Date: ${gameInfo.gameDate || 'N/A'}`;
+    // Calculate and update time left
+});
+
+// Listen for ticket updates
+database.ref('tickets').on('value', snapshot => {
+    const tickets = snapshot.val();
+    // Update ticket containers
 });
