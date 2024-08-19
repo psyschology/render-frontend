@@ -25,6 +25,15 @@ const setGameTimeButton = document.getElementById('setGameTime');
 const setTicketLimitButton = document.getElementById('setTicketLimit');
 const bookTicketButton = document.getElementById('bookTicket');
 
+// Prompt for password on page load
+document.addEventListener('DOMContentLoaded', () => {
+    const password = prompt('Enter password:');
+    if (password !== 'jaybasotia') {
+        alert('Incorrect password');
+        window.location.href = 'about:blank'; // Redirect to a blank page if the password is incorrect
+    }
+});
+
 startGameButton.addEventListener('click', () => {
     set(ref(database, 'gameInfo/status'), 'started');
     set(ref(database, 'gameInfo/board'), generateBoardNumbers());
