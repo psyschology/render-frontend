@@ -18,43 +18,53 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-document.getElementById('startGame').addEventListener('click', () => {
-    set(ref(database, 'game'), { status: 'started', board: generateBoard() });
-    console.log('Game started');
+// Elements
+const startGameButton = document.getElementById('startGame');
+const endGameButton = document.getElementById('endGame');
+const setGameTimeButton = document.getElementById('setGameTime');
+const setTicketLimitButton = document.getElementById('setTicketLimit');
+const bookTicketButton = document.getElementById('bookTicket');
+
+startGameButton.addEventListener('click', () => {
+    set(ref(database, 'gameInfo/status'), 'started');
+    set(ref(database, 'gameInfo/board'), generateBoardNumbers());
 });
 
-document.getElementById('endGame').addEventListener('click', () => {
-    set(ref(database, 'game'), { status: 'ended' });
-    console.log('Game ended');
+endGameButton.addEventListener('click', () => {
+    set(ref(database, 'gameInfo/status'), 'ended');
+    set(ref(database, 'gameInfo/board'), null); // Clear the board
+    set(ref(database, 'calledNumbers'), []);
 });
 
-document.getElementById('setGameTime').addEventListener('click', () => {
-    const gameTime = prompt('Enter game time (YYYY-MM-DD HH:MM:SS)');
-    const gameDate = prompt('Enter game date (YYYY-MM-DD)');
-    set(ref(database, 'gameInfo'), {
-        gameTime: gameTime,
-        gameDate: gameDate
-    });
-    console.log('Game time and date set');
-});
-
-document.getElementById('setTicketLimit').addEventListener('click', () => {
-    const ticketLimit = prompt('Enter the number of tickets');
-    set(ref(database, 'tickets'), { limit: ticketLimit });
-    console.log('Ticket limit set');
-});
-
-document.getElementById('bookTicket').addEventListener('click', () => {
-    const ticketNumber = prompt('Enter ticket number to book');
-    const ownerName = prompt('Enter owner name');
-    set(ref(database, 'tickets/' + ticketNumber), { bookedBy: ownerName });
-    console.log('Ticket booked');
-});
-
-function generateBoard() {
-    let board = [];
-    for (let i = 1; i <= 90; i++) {
-        board.push(i);
+setGameTimeButton.addEventListener('click', () => {
+    const gameTime = prompt("Enter the game start time (YYYY-MM-DDTHH:MM:SSZ):");
+    const gameDate = prompt("Enter the game start date (YYYY-MM-DD):");
+    if (gameTime && gameDate) {
+        update(ref(database, 'gameInfo'), {
+            gameTime: gameTime,
+            gameDate: gameDate
+        });
     }
+});
+
+setTicketLimitButton.addEventListener('click', () => {
+    const limit = prompt("Enter the number of tickets:");
+    if (limit) {
+        set(ref(database, 'tickets/limit'), parseInt(limit));
+    }
+});
+
+bookTicketButton.addEventListener('click', () => {
+    const ticketNumber = prompt("Enter the ticket number to book:");
+    const ownerName = prompt("Enter the owner's name:");
+    if (ticketNumber && ownerName) {
+        update(ref(database, `tickets/${ticketNumber}`), {
+            bookedBy: ownerName
+        });
+    }
+});
+
+function generateBoardNumbers() {
+    const board = Array.from({ length: 90 }, (_, i) => i + 1);
     return board;
 }
