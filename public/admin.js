@@ -51,12 +51,45 @@ setTicketLimitButton.addEventListener('click', () => {
     const limit = prompt("Enter the number of tickets:");
     if (limit) {
         const tickets = {};
+
+        function generateTicket() {
+            const ticketNumbers = Array(27).fill(null);
+            const blockedIndices = [];
+
+            for (let row = 0; row < 3; row++) {
+                const rowNumbers = [];
+                while (rowNumbers.length < 5) {
+                    const col = Math.floor(Math.random() * 9);
+                    if (!rowNumbers.includes(col)) {
+                        rowNumbers.push(col);
+                    }
+                }
+                rowNumbers.sort();
+                for (let col of rowNumbers) {
+                    const index = row * 9 + col;
+                    let num;
+                    do {
+                        num = Math.floor(Math.random() * 10) + col * 10;
+                    } while (ticketNumbers.includes(num));
+                    ticketNumbers[index] = num;
+                }
+                const blockedCols = Array.from({ length: 9 }, (_, i) => i).filter(i => !rowNumbers.includes(i));
+                blockedIndices.push(...blockedCols.map(col => row * 9 + col));
+            }
+
+            return {
+                numbers: ticketNumbers,
+                blockedIndices: blockedIndices
+            };
+        }
+
         for (let i = 1; i <= limit; i++) {
             tickets[i] = generateTicket();
         }
         set(ref(database, 'tickets'), tickets);
     }
 });
+
 
 bookTicketButton.addEventListener('click', () => {
     const ticketNumber = prompt("Enter the ticket number to book:");
@@ -73,33 +106,4 @@ function generateBoardNumbers() {
     return board;
 }
 
-function generateTicket() {
-    const ticketNumbers = Array(27).fill(null);
-    const blockedIndices = [];
-    
-    for (let row = 0; row < 3; row++) {
-        const rowNumbers = [];
-        while (rowNumbers.length < 5) {
-            const col = Math.floor(Math.random() * 9);
-            if (!rowNumbers.includes(col)) {
-                rowNumbers.push(col);
-            }
-        }
-        rowNumbers.sort();
-        for (let col of rowNumbers) {
-            const index = row * 9 + col;
-            let num;
-            do {
-                num = Math.floor(Math.random() * 10) + col * 10;
-            } while (ticketNumbers.includes(num));
-            ticketNumbers[index] = num;
-        }
-        const blockedCols = Array.from({ length: 9 }, (_, i) => i).filter(i => !rowNumbers.includes(i));
-        blockedIndices.push(...blockedCols.map(col => row * 9 + col));
-    }
 
-    return {
-        numbers: ticketNumbers,
-        blockedIndices: blockedIndices
-    };
-}
