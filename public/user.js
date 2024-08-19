@@ -77,25 +77,55 @@ onValue(ref(database, 'calledNumbers'), (snapshot) => {
     });
 });
 
-onValue(ref(database, 'tickets'), (snapshot) => {
-    const tickets = snapshot.val();
-    ticketsContainer.innerHTML = '';
-    for (const [ticketNumber, ticket] of Object.entries(tickets)) {
-        if (ticketNumber !== 'limit') {
+// Listen for changes in the ticket limit and update UI
+onValue(ref(database, 'tickets/limit'), (snapshot) => {
+    const limit = snapshot.val();
+    if (limit) {
+        ticketsContainer.innerHTML = ''; // Clear the container
+        for (let i = 1; i <= limit; i++) {
             const ticketDiv = document.createElement('div');
+            ticketDiv.id = `ticket-${i}`;
             ticketDiv.innerHTML = `
-                <div>Ticket ${ticketNumber}</div>
+                <div>Ticket ${i}</div>
                 <div>
-                    ${ticket.bookedBy ? `Booked by: ${ticket.bookedBy}` : `<a href="https://wa.me/99999" target="_blank">Book Now</a>`}
+                    <a href="https://wa.me/99999" target="_blank">Book Now</a>
                 </div>
-                <div id="ticket-${ticketNumber}" class="ticket-grid"></div>
+                <div class="ticket-grid"></div>
             `;
             ticketsContainer.appendChild(ticketDiv);
-            generateTicketGrid(ticketNumber, ticket);
         }
     }
 });
 
+
+// Handle updates to individual tickets
+onValue(ref(database, 'tickets'), (snapshot) => {
+    const tickets = snapshot.val();
+    for (const [ticketNumber, ticket] of Object.entries(tickets)) {
+        if (ticketNumber !== 'limit') {
+            const ticketDiv = document.getElementById(`ticket-${ticketNumber}`);
+            if (ticketDiv) {
+                ticketDiv.querySelector('.ticket-grid').innerHTML = generateTicketGrid(ticket.numbers);
+                if (ticket.bookedBy) {
+                    ticketDiv.querySelector('a').textContent = `Booked by: ${ticket.bookedBy}`;
+                }
+            }
+        }
+    }
+});
+function generateTicketGrid(numbers) {
+    let gridHtml = '<table>';
+    for (let row = 0; row < 3; row++) {
+        gridHtml += '<tr>';
+        for (let col = 0; col < 9; col++) {
+            const number = numbers.find(n => Math.floor((n - 1) / 10) === col);
+            gridHtml += `<td class="${number ? 'highlight' : 'blocked'}">${number || ''}</td>`;
+        }
+        gridHtml += '</tr>';
+    }
+    gridHtml += '</table>';
+    return gridHtml;
+}
 function generateBoard(board) {
     const table = document.createElement('table');
     for (let i = 0; i < 9; i++) {
