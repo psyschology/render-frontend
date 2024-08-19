@@ -1,4 +1,4 @@
-const ws = new WebSocket('wss://render-backend-yrah.onrender.com'); // Replace with your Render WebSocket server URL
+const ws = new WebSocket('wss://render-backend-yrah.onrender.com');
 
 // Elements
 const gameBoard = document.getElementById('game-board');
@@ -8,7 +8,20 @@ const nextGameDate = document.getElementById('next-game-date');
 const timeLeft = document.getElementById('time-left');
 const ticketsContainer = document.getElementById('tickets-container');
 
+ console.log('Connected to the WebSocket server');
+};
+
+ws.onerror = (error) => {
+    console.error('WebSocket Error:', error);
+};
+
+ws.onclose = () => {
+    console.log('WebSocket connection closed');
+};
+
+
 ws.onmessage = (event) => {
+    
     const data = JSON.parse(event.data);
 
     if (data.type === 'START_GAME') {
