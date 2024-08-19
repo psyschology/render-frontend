@@ -50,39 +50,56 @@
     <hr class="border-t-2 border-gray-300 my-4">
 
     <!-- Game Info Section -->
-    <div id="gameInfo" class="flex justify-center mt-6 space-x-4">
-        <div id="nextGameTime" class="info-box">Next Game Time: 08:00 PM</div>
-        <div id="nextGameDate" class="info-box">Next Game Date: 25th August 2024</div>
-        <div id="timeLeft" class="info-box">Time Left: 2h 15m</div>
-    </div>
+<div id="gameInfo" class="flex flex-wrap justify-center mt-6 space-x-4">
+    <div id="nextGameTime" class="info-box">Next Game Time: 08:00 PM</div>
+    <div id="nextGameDate" class="info-box">Next Game Date: 25th August 2024</div>
+    <div id="timeLeft" class="info-box">Time Left: 2h 15m</div>
+</div>
 
-    <!-- Styles -->
-    <style>
+<!-- Styles -->
+<style>
+    .info-box {
+        background-color: #1e3a8a; /* Navy blue background */
+        color: white; /* White text */
+        padding: 15px 20px; /* Padding for spacing */
+        border-radius: 10px; /* Rounded corners */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        font-size: 1rem; /* Font size */
+        font-weight: bold; /* Bold text */
+        text-align: center; /* Center the text */
+        min-width: 180px; /* Minimum width to make the boxes look even */
+        max-width: 300px; /* Maximum width for larger screens */
+        margin: 0.5rem; /* Margin for spacing */
+        box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    }
+
+    #gameInfo {
+        display: flex;
+        flex-wrap: wrap; /* Allow boxes to wrap onto new lines */
+        justify-content: center;
+        gap: 20px; /* Space between the boxes */
+        margin-top: 1rem; /* Top margin to separate from previous line */
+    }
+
+    /* Divider Styles */
+    hr {
+        border-color: #cbd5e0; /* Light gray border */
+        margin: 1.5rem 0; /* Margin for spacing */
+    }
+
+    @media (max-width: 600px) {
         .info-box {
-            background-color: #1e3a8a; /* Navy blue background */
-            color: white; /* White text */
-            padding: 15px 20px; /* Padding for spacing */
-            border-radius: 10px; /* Rounded corners */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-            font-size: 1rem; /* Font size */
-            font-weight: bold; /* Bold text */
-            text-align: center; /* Center the text */
-            min-width: 200px; /* Minimum width to make the boxes look even */
+            font-size: 0.875rem; /* Smaller font size for mobile */
+            padding: 10px 15px; /* Adjust padding for smaller screens */
+            min-width: 150px; /* Reduce minimum width for smaller screens */
         }
 
         #gameInfo {
-            display: flex;
-            justify-content: center;
-            gap: 20px; /* Space between the boxes */
-            margin-top: 1rem; /* Top margin to separate from previous line */
+            gap: 10px; /* Smaller gap for mobile screens */
         }
+    }
+</style>
 
-        /* Divider Styles */
-        hr {
-            border-color: #cbd5e0; /* Light gray border */
-            margin: 1.5rem 0; /* Margin for spacing */
-        }
-    </style>
 
     <div id="gameBoard">
         <table id="board"></table>
