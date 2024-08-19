@@ -18,7 +18,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-// Elements
+   // Elements
 const gameBoard = document.getElementById('gameBoard');
 const nextGameTime = document.getElementById('nextGameTime');
 const nextGameDate = document.getElementById('nextGameDate');
@@ -33,8 +33,8 @@ let intervalId = null;
 onValue(ref(database, 'gameInfo'), (snapshot) => {
     const gameInfo = snapshot.val();
     if (gameInfo) {
-        nextGameTime.textContent = Next Game Time: ${gameInfo.gameTime || 'N/A'};
-        nextGameDate.textContent = Next Game Date: ${gameInfo.gameDate || 'N/A'};
+        nextGameTime.textContent = `Next Game Time: ${gameInfo.gameTime || 'N/A'}`;
+        nextGameDate.textContent = `Next Game Date: ${gameInfo.gameDate || 'N/A'}`;
         
         // Calculate time left
         if (gameInfo.gameTime) {
@@ -43,7 +43,7 @@ onValue(ref(database, 'gameInfo'), (snapshot) => {
             const timeDiff = gameTime - now;
             const hours = Math.floor(timeDiff / (1000 * 60 * 60));
             const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-            timeLeft.textContent = Time Left: ${hours}h ${minutes}m;
+            timeLeft.textContent = `Time Left: ${hours}h ${minutes}m`;
         }
     } else {
         nextGameTime.textContent = 'Next Game Time: N/A';
@@ -83,13 +83,13 @@ onValue(ref(database, 'tickets'), (snapshot) => {
     for (const [ticketNumber, ticket] of Object.entries(tickets)) {
         if (ticketNumber !== 'limit') {
             const ticketDiv = document.createElement('div');
-            ticketDiv.innerHTML = 
+            ticketDiv.innerHTML = `
                 <div>Ticket ${ticketNumber}</div>
                 <div>
-                    ${ticket.bookedBy ? Booked by: ${ticket.bookedBy} : <a href="https://wa.me/99999" target="_blank">Book Now</a>}
+                    ${ticket.bookedBy ? `Booked by: ${ticket.bookedBy}` : `<a href="https://wa.me/99999" target="_blank">Book Now</a>`}
                 </div>
                 <div id="ticket-${ticketNumber}" class="ticket-grid"></div>
-            ;
+            `;
             ticketsContainer.appendChild(ticketDiv);
             generateTicketGrid(ticketNumber, ticket);
         }
@@ -104,7 +104,7 @@ function generateBoard(board) {
             const td = document.createElement('td');
             const num = board[i * 10 + j];
             td.textContent = num;
-            td.id = cell-${num};
+            td.id = `cell-${num}`;
             tr.appendChild(td);
         }
         table.appendChild(tr);
@@ -134,14 +134,14 @@ function updateCalledNumbers(number) {
     container.classList.add('highlight');
     calledNumbersContainer.appendChild(container);
     
-    const cell = document.getElementById(cell-${number});
+    const cell = document.getElementById(`cell-${number}`);
     if (cell) {
         cell.classList.add('highlight');
     }
 }
 
 function generateTicketGrid(ticketNumber, ticket) {
-    const container = document.getElementById(ticket-${ticketNumber});
+    const container = document.getElementById(`ticket-${ticketNumber}`);
     if (!ticket || !ticket.numbers) return;
     
     const ticketNumbers = ticket.numbers;
@@ -151,7 +151,7 @@ function generateTicketGrid(ticketNumber, ticket) {
         gridHtml += '<tr>';
         for (let col = 0; col < 9; col++) {
             const number = ticketNumbers.find(n => Math.floor((n - 1) / 9) === col);
-            gridHtml += <td class="${number ? 'highlight' : 'blocked'}">${number || ''}</td>;
+            gridHtml += `<td class="${number ? 'highlight' : 'blocked'}">${number || ''}</td>`;
         }
         gridHtml += '</tr>';
     }
