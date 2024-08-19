@@ -71,10 +71,7 @@ onValue(ref(database, 'gameInfo/status'), (snapshot) => {
 
 onValue(ref(database, 'calledNumbers'), (snapshot) => {
     const numbers = snapshot.val() || [];
-    calledNumbersContainer.innerHTML = '';
-    numbers.forEach(number => {
-        updateCalledNumbers(number);
-    });
+    calledNumbersContainer.innerHTML = numbers.map(number => `<span class="called-number">${number}</span>`).join(' ');
 });
 
 onValue(ref(database, 'tickets'), (snapshot) => {
@@ -117,6 +114,7 @@ function startNumberCalling() {
     intervalId = setInterval(() => {
         const number = Math.floor(Math.random() * 90) + 1;
         updateCalledNumbers(number);
+        announceNumber(number);
     }, 2000); // Adjust interval as needed
 }
 
@@ -129,32 +127,34 @@ function stopNumberCalling() {
 
 function updateCalledNumbers(number) {
     calledNumbers.push(number);
-    const container = document.createElement('div');
-    container.textContent = number;
-    container.classList.add('highlight');
-    calledNumbersContainer.appendChild(container);
-    
-    const cell = document.getElementById(`cell-${number}`);
-    if (cell) {
-        cell.classList.add('highlight');
+    const container = document.getElementById(`cell-${number}`);
+    if (container) {
+        container.classList.add('called');
     }
 }
 
+function announceNumber(number) {
+    const utterance = new SpeechSynthesisUtterance(`Number ${number}`);
+    speechSynthesis.speak(utterance);
+}
+
 function generateTicketGrid(ticketNumber, ticket) {
-    const container = document.getElementById(`ticket-${ticketNumber}`);
-    if (!ticket || !ticket.numbers) return;
-    
-    const ticketNumbers = ticket.numbers;
-    let gridHtml = '<table>';
-    
-    for (let row = 0; row < 3; row++) {
-        gridHtml += '<tr>';
-        for (let col = 0; col < 9; col++) {
-            const number = ticketNumbers.find(n => Math.floor((n - 1) / 9) === col);
-            gridHtml += `<td class="${number ? 'highlight' : 'blocked'}">${number || ''}</td>`;
+    const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
+    const table = document.createElement('table');
+    for (let i = 0; i < 3; i++) {
+        const tr = document.createElement('tr');
+        for (let j = 0; j < 9; j++) {
+            const td = document.createElement('td');
+            const index = i * 9 + j;
+            if (ticket.blockedIndices.includes(index)) {
+                td.textContent = ticket.numbers[index] || '';
+            } else {
+                td.textContent = '';
+            }
+            tr.appendChild(td);
         }
-        gridHtml += '</tr>';
+        table.appendChild(tr);
     }
-    gridHtml += '</table>';
-    container.innerHTML = gridHtml;
+    ticketGrid.innerHTML = '';
+    ticketGrid.appendChild(table);
 }
