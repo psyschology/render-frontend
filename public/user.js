@@ -18,7 +18,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-   // Elements
+// Elements
 const gameBoard = document.getElementById('gameBoard');
 const nextGameTime = document.getElementById('nextGameTime');
 const nextGameDate = document.getElementById('nextGameDate');
@@ -71,7 +71,17 @@ onValue(ref(database, 'gameInfo/status'), (snapshot) => {
 
 onValue(ref(database, 'calledNumbers'), (snapshot) => {
     const numbers = snapshot.val() || [];
+    calledNumbers = numbers;
     calledNumbersContainer.innerHTML = numbers.map(number => `<span class="called-number">${number}</span>`).join(' ');
+
+    // Update board with called numbers
+    numbers.forEach(number => {
+        const cell = document.getElementById(`cell-${number}`);
+        if (cell) {
+            cell.classList.add('called');
+            cell.style.backgroundColor = 'yellow'; // Mark the cell in yellow
+        }
+    });
 });
 
 onValue(ref(database, 'tickets'), (snapshot) => {
@@ -93,6 +103,7 @@ onValue(ref(database, 'tickets'), (snapshot) => {
             // Integrate the grid generation here
             const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
             const table = document.createElement('table');
+            table.className = 'ticket-table'; // Add a class for styling
             for (let i = 0; i < 3; i++) {
                 const tr = document.createElement('tr');
                 for (let j = 0; j < 9; j++) {
@@ -100,6 +111,9 @@ onValue(ref(database, 'tickets'), (snapshot) => {
                     const index = i * 9 + j;
                     if (ticket.blockedIndices.includes(index)) {
                         td.textContent = ticket.numbers[index] || '';
+                        if (calledNumbers.includes(ticket.numbers[index])) {
+                            td.style.backgroundColor = 'yellow'; // Mark called numbers in yellow
+                        }
                     } else {
                         td.textContent = '';
                     }
@@ -112,7 +126,6 @@ onValue(ref(database, 'tickets'), (snapshot) => {
         }
     }
 });
-
 
 function generateBoard(board) {
     const table = document.createElement('table');
@@ -151,6 +164,7 @@ function updateCalledNumbers(number) {
     const container = document.getElementById(`cell-${number}`);
     if (container) {
         container.classList.add('called');
+        container.style.backgroundColor = 'yellow'; // Mark the cell in yellow
     }
 }
 
@@ -158,5 +172,3 @@ function announceNumber(number) {
     const utterance = new SpeechSynthesisUtterance(`Number ${number}`);
     speechSynthesis.speak(utterance);
 }
-
-
