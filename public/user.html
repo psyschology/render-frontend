@@ -39,11 +39,32 @@
             </a>
         </div>
     </header>
-    <div id="gameInfo">
-        <div id="nextGameTime">Next Game Time: </div>
-        <div id="nextGameDate">Next Game Date: </div>
-        <div id="timeLeft">Time Left: </div>
-    </div>
+    <div id="gameInfo" class="flex justify-center mt-6 space-x-4">
+    <div id="nextGameTime" class="info-box">Next Game Time: 08:00 PM</div>
+    <div id="nextGameDate" class="info-box">Next Game Date: 25th August 2024</div>
+    <div id="timeLeft" class="info-box">Time Left: 2h 15m</div>
+</div>
+<style>
+    .info-box {
+    background-color: #1e3a8a; /* Navy blue background */
+    color: white; /* White text */
+    padding: 15px 20px; /* Padding for spacing */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    font-size: 1rem; /* Font size */
+    font-weight: bold; /* Bold text */
+    text-align: center; /* Center the text */
+    min-width: 200px; /* Minimum width to make the boxes look even */
+}
+
+#gameInfo {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Space between the boxes */
+    margin-top: 1rem; /* Top margin to separate from previous line */
+}
+
+</style>
 
     <div id="gameBoard">
         <table id="board"></table>
