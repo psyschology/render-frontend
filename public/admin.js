@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
-import { getDatabase, ref, set } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
+import { getDatabase, ref, set, update } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -19,7 +19,7 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
 document.getElementById('startGame').addEventListener('click', () => {
-    set(ref(database, 'game'), { status: 'started' });
+    set(ref(database, 'game'), { status: 'started', board: generateBoard() });
     console.log('Game started');
 });
 
@@ -50,3 +50,11 @@ document.getElementById('bookTicket').addEventListener('click', () => {
     set(ref(database, 'tickets/' + ticketNumber), { bookedBy: ownerName });
     console.log('Ticket booked');
 });
+
+function generateBoard() {
+    let board = [];
+    for (let i = 1; i <= 90; i++) {
+        board.push(i);
+    }
+    return board;
+}
