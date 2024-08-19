@@ -1,22 +1,25 @@
- 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Page</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Basic styling for the admin page */
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        button { margin: 10px; padding: 10px; font-size: 16px; }
+    </style>
 </head>
 <body>
-    <h1>Admin Control Panel</h1>
-    <div class="button-container">
-        <button id="start-game">Start Game</button>
-        <button id="end-game">End Game</button>
-        <button id="set-game-time">Set Game Time and Date</button>
-        <button id="set-ticket-limit">Set Ticket Limit</button>
-        <button id="book-tickets">Book Tickets</button>
-    </div>
-    
-    <script src="script.js"></script>
+    <h1>Admin Controls</h1>
+    <button id="startGame">Start Game</button>
+    <button id="endGame">End Game</button>
+    <button id="setGameTime">Set Game Time and Date</button>
+    <button id="setTicketLimit">Set Ticket Limit</button>
+    <button id="bookTicket">Book Ticket</button>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+    <script src="admin.js"></script>
 </body>
 </html>
