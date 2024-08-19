@@ -27,6 +27,7 @@ const ticketsContainer = document.getElementById('tickets');
 const calledNumbersContainer = document.getElementById('calledNumbers');
 
 let calledNumbers = [];
+let intervalId = null;
 
 // Update UI based on game state
 function updateGameBoard(data) {
@@ -60,13 +61,18 @@ function generateBoard(board) {
 
 // Function to start calling numbers
 function startNumberCalling() {
-    // Implement number calling logic here
-    // Update the `calledNumbers` array and call `updateCalledNumbers()` on each new number
+    intervalId = setInterval(() => {
+        const number = Math.floor(Math.random() * 90) + 1;
+        updateCalledNumbers(number);
+    }, 2000); // Adjust interval as needed
 }
 
 // Function to stop calling numbers
 function stopNumberCalling() {
-    // Implement logic to stop calling numbers
+    if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+    }
 }
 
 function updateCalledNumbers(number) {
@@ -86,17 +92,24 @@ function updateCalledNumbers(number) {
 onValue(ref(database, 'gameInfo'), (snapshot) => {
     const gameInfo = snapshot.val();
     if (gameInfo) {
+        const now = new Date();
+        const gameTime = new Date(gameInfo.gameTime);
+        const gameDate = new Date(gameInfo.gameDate);
+        
         nextGameTime.textContent = `Next Game Time: ${gameInfo.gameTime || 'N/A'}`;
         nextGameDate.textContent = `Next Game Date: ${gameInfo.gameDate || 'N/A'}`;
-        // Calculate and update time left
-        // Your time left calculation logic here
+        
+        // Calculate time left
+        const timeDiff = gameTime - now;
+        const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+        timeLeft.textContent = `Time Left: ${hours}h ${minutes}m`;
     } else {
         nextGameTime.textContent = 'Next Game Time: N/A';
         nextGameDate.textContent = 'Next Game Date: N/A';
         timeLeft.textContent = 'Time Left: N/A';
     }
 });
-
 
 // Update tickets
 onValue(ref(database, 'tickets'), (snapshot) => {
@@ -113,17 +126,18 @@ onValue(ref(database, 'tickets'), (snapshot) => {
                 <div id="ticket-${ticketNumber}" class="ticket-grid"></div>
             `;
             ticketsContainer.appendChild(ticketDiv);
-            generateTicketGrid(ticketNumber);
+            generateTicketGrid(ticketNumber, ticket);
         }
     }
 });
 
-function generateTicketGrid(ticketNumber) {
+function generateTicketGrid(ticketNumber, ticket) {
     const container = document.getElementById(`ticket-${ticketNumber}`);
-    const numbers = Array.from({ length: 27 }, (_, i) => i + 1);
-    const ticketNumbers = [...new Set([...numbers].sort(() => Math.random() - 0.5)).slice(0, 15)];
-
+    if (!ticket || !ticket.numbers) return;
+    
+    const ticketNumbers = ticket.numbers;
     let gridHtml = '<table>';
+    
     for (let row = 0; row < 3; row++) {
         gridHtml += '<tr>';
         for (let col = 0; col < 9; col++) {
