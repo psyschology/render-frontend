@@ -62,28 +62,33 @@ setTicketLimitButton.addEventListener('click', () => {
         const tickets = {};
 
         function generateTicket() {
-            const ticketNumbers = Array(27).fill(null);
+            const ticketNumbers = Array(27).fill(null); // 27 cells for the ticket
             const blockedIndices = [];
 
             for (let row = 0; row < 3; row++) {
-                const rowNumbers = [];
-                while (rowNumbers.length < 5) {
-                    const col = Math.floor(Math.random() * 9);
-                    if (!rowNumbers.includes(col)) {
-                        rowNumbers.push(col);
+                const rowNumbers = new Set();
+                
+                // Generate 5 unique numbers for the row
+                while (rowNumbers.size < 5) {
+                    const col = Math.floor(Math.random() * 9); // Choose a column randomly (0-8)
+                    let num = Math.floor(Math.random() * 10) + 1 + (col * 10); // Generate number based on column range
+                    
+                    // Ensure the number is not already in the ticket and fits within the column range
+                    if (!ticketNumbers.includes(num)) {
+                        rowNumbers.add({ num, col });
                     }
                 }
-                rowNumbers.sort();
-                for (let col of rowNumbers) {
-                    const index = row * 9 + col;
-                    let num;
-                    do {
-                        num = Math.floor(Math.random() * 10) + col * 10;
-                    } while (ticketNumbers.includes(num));
-                    ticketNumbers[index] = num;
+
+                // Sort row numbers by column to ensure proper placement
+                const sortedRowNumbers = Array.from(rowNumbers).sort((a, b) => a.col - b.col);
+                for (let { num, col } of sortedRowNumbers) {
+                    const index = row * 9 + col; // Calculate the index in the ticket array
+                    ticketNumbers[index] = num; // Place the number in the correct cell
                 }
-                const blockedCols = Array.from({ length: 9 }, (_, i) => i).filter(i => !rowNumbers.includes(i));
-                blockedIndices.push(...blockedCols.map(col => row * 9 + col));
+
+                // Determine which columns will be blocked
+                const blockedCols = Array.from({ length: 9 }, (_, i) => i).filter(i => !sortedRowNumbers.some(({ col }) => col === i));
+                blockedIndices.push(...blockedCols.map(col => row * 9 + col)); // Calculate blocked indices
             }
 
             return {
@@ -92,12 +97,16 @@ setTicketLimitButton.addEventListener('click', () => {
             };
         }
 
+        // Generate tickets based on the specified limit
         for (let i = 1; i <= limit; i++) {
             tickets[i] = generateTicket();
         }
+
+        // Store the tickets in Firebase
         set(ref(database, 'tickets'), tickets);
     }
 });
+
 
 
 bookTicketButton.addEventListener('click', () => {
