@@ -41,7 +41,7 @@
         <a href="tel:99999" class="flex items-center text-lg text-red-500 hover:text-red-700">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10l1.34 1.34c.2.2.45.36.71.46a3.91 3.91 0 003.95-.74l.35-.35c.2-.2.52-.2.72 0l1.48 1.48a.8.8 0 01.02 1.17l-2.23 2.25a1.5 1.5 0 01-1.45.35c-1.88-.67-3.8-1.47-5.53-3.21C2.06 10.46 1.26 8.54 0.59 6.66a1.5 1.5 0 01.34-1.44L3.18 3a.8.8 0 011.17-.02l1.48 1.48c.2.2.2.52 0 .72l-.35.35a3.91 3.91 0 00-.74 3.95c.1.26.26.51.46.71L10 10m5.2-5.2l3.6 3.6" />
-                </svg>
+            </svg>
             Call Now
         </a>
     </div>
@@ -50,107 +50,159 @@
     <hr class="border-t-2 border-gray-300 my-4">
 
     <!-- Game Info Section -->
-<div id="gameInfo" class="flex flex-wrap justify-center mt-6 space-x-4">
-    <div id="nextGameTime" class="info-box">Next Game Time: 08:00 PM</div>
-    <div id="nextGameDate" class="info-box">Next Game Date: 25th August 2024</div>
-    <div id="timeLeft" class="info-box">Time Left: 2h 15m</div>
-</div>
+    <div id="gameInfo" class="flex flex-wrap justify-center mt-6 space-x-4">
+        <div id="nextGameTime" class="info-box">Next Game Time: 08:00 PM</div>
+        <div id="nextGameDate" class="info-box">Next Game Date: 25th August 2024</div>
+        <div id="timeLeft" class="info-box">Time Left: 2h 15m</div>
+    </div>
 
-<!-- Styles -->
-<style>
-    .info-box {
-        background-color: #001149; /* Dark blue background */
-        color: white; /* White text */
-        padding: 15px 20px; /* Padding for spacing */
-        border-radius: 10px; /* Rounded corners */
-        border: 3px solid white; /* White border */
-        font-size: 1rem; /* Font size */
-        font-weight: bold; /* Bold text */
-        text-align: center; /* Center the text */
-        min-width: 180px; /* Minimum width to make the boxes look even */
-        max-width: 300px; /* Maximum width for larger screens */
-        margin: 0; /* Remove margin to make them close to each other */
-        box-sizing: border-box; /* Include padding and border in the element's total width and height */
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-    }
-
-    #gameInfo {
-        display: flex;
-        justify-content: center; /* Center items horizontally */
-        gap: 0; /* Remove gap between items */
-        margin-top: 1rem; /* Top margin to separate from previous line */
-    }
-
-    /* Mobile Styles */
-    @media (max-width: 600px) {
+    <!-- Styles -->
+    <style>
         .info-box {
-            font-size: 0.875rem; /* Smaller font size for mobile */
-            padding: 10px 15px; /* Adjust padding for smaller screens */
-            min-width: 150px; /* Reduce minimum width for smaller screens */
+            background-color: #001149; /* Dark blue background */
+            color: white; /* White text */
+            padding: 20px 30px; /* Adjusted padding for better spacing */
+            border-radius: 20px; /* Increased border-radius for rounded corners */
+            border: 5px solid white; /* Thicker white border */
+            font-size: 1.2rem; /* Slightly larger font size */
+            font-weight: bold; /* Bold text */
+            text-align: center; /* Center the text */
+            min-width: 180px; /* Minimum width to make the boxes look even */
+            max-width: 300px; /* Maximum width for larger screens */
+            margin: 0; /* Remove margin to make them close to each other */
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Slightly stronger shadow */
         }
 
         #gameInfo {
-            flex-direction: column; /* Stack boxes vertically on small screens */
-            gap: 10px; /* Add gap between stacked items */
+            display: flex;
+            justify-content: center; /* Center items horizontally */
+            gap: 20px; /* Small gap between boxes */
+            margin-top: 1rem; /* Top margin to separate from previous line */
         }
-    }
-</style>
 
+        /* Mobile Styles */
+        @media (max-width: 600px) {
+            .info-box {
+                font-size: 1rem; /* Adjusted font size for mobile */
+                padding: 15px 25px; /* Adjust padding for smaller screens */
+                min-width: 150px; /* Reduce minimum width for smaller screens */
+            }
 
-
+            #gameInfo {
+                flex-direction: column; /* Stack boxes vertically on small screens */
+                gap: 10px; /* Small gap between stacked items */
+            }
+        }
+    </style>
 
     <div id="gameBoard">
         <table id="board"></table>
     </div>
     <div id="calledNumbers"></div>
     <div id="tickets"></div>
+
+    <!-- Ticket Container and Table -->
     <style>
         .ticket {
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin-bottom: 20px;
-    background-color: #f9f9f9;
-    border-radius: 5px;
-}
+            border: 2px solid #000; /* Strong black border */
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #fff; /* White background */
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Added box shadow for 3D effect */
+        }
 
-.ticket-header {
-    font-weight: bold;
-    margin-bottom: 5px;
-}
+        .ticket-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.2rem; /* Slightly larger font size */
+            color: #000; /* Black text */
+        }
 
-.ticket-owner {
-    margin-bottom: 10px;
-}
+        .ticket-owner {
+            margin-bottom: 10px;
+            color: #555; /* Gray text for owner */
+            font-size: 1rem; /* Normal font size */
+        }
 
-.ticket-grid {
-    display: grid;
-    grid-template-columns: repeat(9, 1fr); /* 9 columns */
-    grid-template-rows: repeat(3, 1fr); /* 3 rows */
-    gap: 2px;
-}
+        .ticket-grid {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr); /* 9 columns */
+            grid-template-rows: repeat(3, 1fr); /* 3 rows */
+            gap: 2px;
+        }
 
-.ticket-table {
-    width: 100%;
-    border-collapse: collapse;
-}
+        .ticket-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-.ticket-table td {
-    border: 1px solid #ccc;
-    text-align: center;
-    padding: 5px;
-    font-size: 14px;
-    width: 40px; /* Adjust the width and height as necessary */
-    height: 40px;
-    background-color: #fff;
-}
+        .ticket-table td {
+            border: 2px solid #000; /* Strong black border */
+            text-align: center;
+            padding: 10px;
+            font-size: 18px; /* Larger font size */
+            width: 50px; /* Increased width and height */
+            height: 50px;
+            background-color: #f8f8f8; /* Light gray background for cells */
+            color: #333; /* Darker text color */
+        }
 
-.ticket-table td.called {
-    background-color: yellow; /* Highlight called numbers */
-}
+        .ticket-table td:not(.empty) {
+            font-weight: bold; /* Bold numbers */
+        }
 
+        .empty {
+            background-color: #eee; /* Lighter gray for empty cells */
+        }
     </style>
 
-    <!-- Firebase SDKs -->
+    <div class="container mx-auto mt-8">
+        <div class="flex flex-wrap justify-center">
+            <div class="ticket">
+                <div class="ticket-header">Ticket #1</div>
+                <div class="ticket-owner">Owner: John Doe</div>
+                <table class="ticket-table">
+                    <tr>
+                        <td class="empty"></td>
+                        <td>14</td>
+                        <td class="empty"></td>
+                        <td>33</td>
+                        <td class="empty"></td>
+                        <td>56</td>
+                        <td class="empty"></td>
+                        <td>70</td>
+                        <td class="empty"></td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td class="empty"></td>
+                        <td>23</td>
+                        <td class="empty"></td>
+                        <td>45</td>
+                        <td class="empty"></td>
+                        <td>68</td>
+                        <td class="empty"></td>
+                        <td>89</td>
+                    </tr>
+                    <tr>
+                        <td class="empty"></td>
+                        <td>18</td>
+                        <td class="empty"></td>
+                        <td>39</td>
+                        <td class="empty"></td>
+                        <td>59</td>
+                        <td class="empty"></td>
+                        <td>75</td>
+                        <td class="empty"></td>
+                    </tr>
+                </table>
+            </div>
+            <!-- Add more tickets as needed -->
+        </div>
+    </div>
+ <!-- Firebase SDKs -->
       <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
     <script type="module" src="user.js"></script>
