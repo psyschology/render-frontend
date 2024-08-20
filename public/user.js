@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
-import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
+import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -25,9 +25,16 @@ const nextGameDate = document.getElementById('nextGameDate');
 const timeLeft = document.getElementById('timeLeft');
 const ticketsContainer = document.getElementById('tickets');
 const calledNumbersContainer = document.getElementById('calledNumbers');
+const calledNumbersTableContainer = document.getElementById('calledNumbersTable'); // New element for the called numbers table
 
 let calledNumbers = [];
 let intervalId = null;
+let numberPool = []; // To hold shuffled numbers 1-90
+
+// Initialize the number pool
+function initializeNumberPool() {
+    numberPool = Array.from({ length: 90 }, (_, i) => i + 1).sort(() => Math.random() - 0.5);
+}
 
 // Update UI based on game state
 onValue(ref(database, 'gameInfo'), (snapshot) => {
@@ -35,7 +42,7 @@ onValue(ref(database, 'gameInfo'), (snapshot) => {
     if (gameInfo) {
         nextGameTime.textContent = `Next Game Time: ${gameInfo.gameTime || 'N/A'}`;
         nextGameDate.textContent = `Next Game Date: ${gameInfo.gameDate || 'N/A'}`;
-        
+
         // Calculate time left
         if (gameInfo.gameTime) {
             const now = new Date();
@@ -55,6 +62,7 @@ onValue(ref(database, 'gameInfo'), (snapshot) => {
 onValue(ref(database, 'gameInfo/status'), (snapshot) => {
     const status = snapshot.val();
     if (status === 'started') {
+        initializeNumberPool();
         onValue(ref(database, 'gameInfo/board'), (snapshot) => {
             const board = snapshot.val();
             if (board) {
@@ -72,6 +80,7 @@ onValue(ref(database, 'gameInfo/status'), (snapshot) => {
 onValue(ref(database, 'calledNumbers'), (snapshot) => {
     const numbers = snapshot.val() || [];
     calledNumbers = numbers;
+    updateCalledNumbersTable();
     calledNumbersContainer.innerHTML = numbers.map(number => `<span class="called-number">${number}</span>`).join(' ');
 
     // Update board with called numbers
@@ -145,9 +154,13 @@ function generateBoard(board) {
 
 function startNumberCalling() {
     intervalId = setInterval(() => {
-        const number = Math.floor(Math.random() * 90) + 1;
-        updateCalledNumbers(number);
-        announceNumber(number);
+        if (numberPool.length > 0) {
+            const number = numberPool.shift(); // Take the first number from the shuffled pool
+            updateCalledNumbers(number);
+            announceNumber(number);
+        } else {
+            stopNumberCalling();
+        }
     }, 2000); // Adjust interval as needed
 }
 
@@ -160,12 +173,31 @@ function stopNumberCalling() {
 
 function updateCalledNumbers(number) {
     calledNumbers.push(number);
+    set(ref(database, 'calledNumbers'), calledNumbers);
     const container = document.getElementById(`cell-${number}`);
     if (container) {
         container.classList.add('called');
         container.style.backgroundColor = 'yellow'; // Mark the cell in yellow
     }
     updateTicketsWithCalledNumbers(); // Update ticket grids when a number is called
+    updateCalledNumbersTable(); // Update the called numbers table
+}
+
+function updateCalledNumbersTable() {
+    const table = document.createElement('table');
+    table.className = 'called-numbers-table'; // Add class for styling
+    let row;
+    calledNumbers.forEach((number, index) => {
+        if (index % 10 === 0) {
+            row = document.createElement('tr');
+            table.appendChild(row);
+        }
+        const cell = document.createElement('td');
+        cell.textContent = number;
+        row.appendChild(cell);
+    });
+    calledNumbersTableContainer.innerHTML = '';
+    calledNumbersTableContainer.appendChild(table);
 }
 
 function updateTicketsWithCalledNumbers() {
@@ -184,3 +216,40 @@ function announceNumber(number) {
     const utterance = new SpeechSynthesisUtterance(`Number ${number}`);
     speechSynthesis.speak(utterance);
 }
+
+// Function to generate tickets based on the rules
+function generateTickets() {
+    const tickets = [];
+    for (let i = 0; i < 6; i++) {
+        const ticket = Array.from({ length: 3 }, () => Array(9).fill(''));
+        const columns = Array.from({ length: 9 }, (_, index) => index);
+
+        columns.forEach(column => {
+            const availableRows = [0, 1, 2];
+            const numbersInColumn = [];
+
+            for (let j = 0; j < 3; j++) {
+                const randomIndex = Math.floor(Math.random() * availableRows.length);
+                const row = availableRows.splice(randomIndex, 1)[0];
+                const start = column * 10 + 1;
+                const end = column === 8 ? 90 : start + 9;
+                let number;
+
+                do {
+                    number = Math.floor(Math.random() * (end - start + 1)) + start;
+                } while (numbersInColumn.includes(number));
+
+                numbersInColumn.push(number);
+                ticket[row][column] = number;
+            }
+        });
+
+        tickets.push(ticket);
+    }
+    return tickets;
+}
+
+// Call this function to generate the tickets
+const generatedTickets = generateTickets();
+console.log(generatedTickets);
+
