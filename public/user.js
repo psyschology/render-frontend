@@ -87,23 +87,25 @@ onValue(ref(database, 'calledNumbers'), (snapshot) => {
     updateTicketsWithCalledNumbers();
 });
 
+// Fetch the tickets and render them
 onValue(ref(database, 'tickets'), (snapshot) => {
     const tickets = snapshot.val();
-    ticketsContainer.innerHTML = '';
+    const ticketsContainer = document.getElementById('tickets');
+    ticketsContainer.innerHTML = ''; // Clear previous content
 
     for (const [ticketNumber, ticket] of Object.entries(tickets)) {
         if (ticketNumber !== 'limit') {
             const ticketDiv = document.createElement('div');
+            ticketDiv.className = 'ticket'; // Add class for styling
             ticketDiv.innerHTML = `
-                <div>Ticket ${ticketNumber}</div>
-                <div>
+                <div class="ticket-header">Ticket ${ticketNumber}</div>
+                <div class="ticket-owner">
                     ${ticket.bookedBy ? `Booked by: ${ticket.bookedBy}` : `<a href="https://wa.me/99999" target="_blank">Book Now</a>`}
                 </div>
                 <div id="ticket-${ticketNumber}" class="ticket-grid"></div>
             `;
             ticketsContainer.appendChild(ticketDiv);
 
-            // Integrate the grid generation here
             const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
             const table = document.createElement('table');
             table.className = 'ticket-table'; // Add a class for styling
@@ -115,20 +117,18 @@ onValue(ref(database, 'tickets'), (snapshot) => {
                     if (ticket.blockedIndices.includes(index)) {
                         td.textContent = ticket.numbers[index] || '';
                         if (calledNumbers.includes(ticket.numbers[index])) {
-                            td.style.backgroundColor = 'yellow'; // Mark called numbers in yellow
+                            td.classList.add('called'); // Add class to highlight called numbers
                         }
-                    } else {
-                        td.textContent = '';
                     }
                     tr.appendChild(td);
                 }
                 table.appendChild(tr);
             }
-            ticketGrid.innerHTML = '';
             ticketGrid.appendChild(table);
         }
     }
 });
+
 
 function generateBoard(board) {
     const table = document.createElement('table');
