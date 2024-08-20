@@ -4,14 +4,14 @@ import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/9.
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyB9hgV5BCLAXQC4-MhcEfadzJCRVcwp8CQ",
-  authDomain: "render-27de6.firebaseapp.com",
-  databaseURL: "https://render-27de6-default-rtdb.firebaseio.com",
-  projectId: "render-27de6",
-  storageBucket: "render-27de6.appspot.com",
-  messagingSenderId: "401163347854",
-  appId: "1:401163347854:web:d95d1a655d256c731766df",
-  measurementId: "G-M87PVBCQJN"
+    apiKey: "AIzaSyB9hgV5BCLAXQC4-MhcEfadzJCRVcwp8CQ",
+    authDomain: "render-27de6.firebaseapp.com",
+    databaseURL: "https://render-27de6-default-rtdb.firebaseio.com",
+    projectId: "render-27de6",
+    storageBucket: "render-27de6.appspot.com",
+    messagingSenderId: "401163347854",
+    appId: "1:401163347854:web:d95d1a655d256c731766df",
+    measurementId: "G-M87PVBCQJN"
 };
 
 // Initialize Firebase
@@ -90,7 +90,6 @@ onValue(ref(database, 'calledNumbers'), (snapshot) => {
 // Fetch the tickets and render them
 onValue(ref(database, 'tickets'), (snapshot) => {
     const tickets = snapshot.val();
-    const ticketsContainer = document.getElementById('tickets');
     ticketsContainer.innerHTML = ''; // Clear previous content
 
     for (const [ticketNumber, ticket] of Object.entries(tickets)) {
@@ -113,12 +112,10 @@ onValue(ref(database, 'tickets'), (snapshot) => {
                 const tr = document.createElement('tr');
                 for (let j = 0; j < 9; j++) {
                     const td = document.createElement('td');
-                    const index = i * 9 + j;
-                    if (ticket.blockedIndices.includes(index)) {
-                        td.textContent = ticket.numbers[index] || '';
-                        if (calledNumbers.includes(ticket.numbers[index])) {
-                            td.classList.add('called'); // Add class to highlight called numbers
-                        }
+                    td.className = ticket.blockedIndices.includes(i * 9 + j) ? '' : 'empty';
+                    td.textContent = ticket.numbers[i * 9 + j] || '';
+                    if (calledNumbers.includes(ticket.numbers[i * 9 + j])) {
+                        td.classList.add('called'); // Add class to highlight called numbers
                     }
                     tr.appendChild(td);
                 }
@@ -128,7 +125,6 @@ onValue(ref(database, 'tickets'), (snapshot) => {
         }
     }
 });
-
 
 function generateBoard(board) {
     const table = document.createElement('table');
