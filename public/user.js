@@ -186,9 +186,12 @@ function updateCalledNumbers(number) {
 function updateCalledNumbersTable() {
     const table = document.createElement('table');
     table.className = 'called-numbers-table'; // Add class for styling
-    let row;
+
+    let row = document.createElement('tr');
+    table.appendChild(row);
+
     calledNumbers.forEach((number, index) => {
-        if (index % 10 === 0) {
+        if (index % 10 === 0 && index !== 0) {
             row = document.createElement('tr');
             table.appendChild(row);
         }
@@ -196,9 +199,12 @@ function updateCalledNumbersTable() {
         cell.textContent = number;
         row.appendChild(cell);
     });
+
+    // Clear previous content and add new table
     calledNumbersTableContainer.innerHTML = '';
     calledNumbersTableContainer.appendChild(table);
 }
+
 
 function updateTicketsWithCalledNumbers() {
     const ticketTables = document.querySelectorAll('.ticket-grid table');
@@ -213,8 +219,12 @@ function updateTicketsWithCalledNumbers() {
 }
 
 function announceNumber(number) {
-    const utterance = new SpeechSynthesisUtterance(`Number ${number}`);
-    speechSynthesis.speak(utterance);
+    if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(`Number ${number}`);
+        speechSynthesis.speak(utterance);
+    } else {
+        console.warn('SpeechSynthesis is not supported in this browser.');
+    }
 }
 
 // Function to generate tickets based on the rules
