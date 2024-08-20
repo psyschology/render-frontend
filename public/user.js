@@ -190,20 +190,35 @@ function updateCalledNumbersTable() {
     let row = document.createElement('tr');
     table.appendChild(row);
 
+    // Fill the table with called numbers, dividing into rows of up to 26 columns
     calledNumbers.forEach((number, index) => {
-        if (index % 10 === 0 && index !== 0) {
+        if (index % 26 === 0 && index !== 0) {
             row = document.createElement('tr');
             table.appendChild(row);
         }
         const cell = document.createElement('td');
         cell.textContent = number;
+        cell.className = 'called'; // Add class to highlight called numbers
         row.appendChild(cell);
     });
+
+    // Add empty cells to fill out the last row if necessary
+    const totalCells = Math.ceil(calledNumbers.length / 26) * 26;
+    for (let i = calledNumbers.length; i < totalCells; i++) {
+        if (i % 26 === 0 && i !== 0) {
+            row = document.createElement('tr');
+            table.appendChild(row);
+        }
+        const cell = document.createElement('td');
+        cell.textContent = '';
+        row.appendChild(cell);
+    }
 
     // Clear previous content and add new table
     calledNumbersTableContainer.innerHTML = '';
     calledNumbersTableContainer.appendChild(table);
 }
+
 
 
 function updateTicketsWithCalledNumbers() {
