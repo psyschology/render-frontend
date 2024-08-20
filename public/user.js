@@ -82,6 +82,9 @@ onValue(ref(database, 'calledNumbers'), (snapshot) => {
             cell.style.backgroundColor = 'yellow'; // Mark the cell in yellow
         }
     });
+
+    // Update tickets with called numbers
+    updateTicketsWithCalledNumbers();
 });
 
 onValue(ref(database, 'tickets'), (snapshot) => {
@@ -99,10 +102,6 @@ onValue(ref(database, 'tickets'), (snapshot) => {
                 <div id="ticket-${ticketNumber}" class="ticket-grid"></div>
             `;
             ticketsContainer.appendChild(ticketDiv);
-
-          // Debugging
-            console.log(`Ticket ${ticketNumber} - Numbers: `, ticket.numbers);
-            console.log(`Ticket ${ticketNumber} - Blocked Indices: `, ticket.blockedIndices);
 
             // Integrate the grid generation here
             const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
@@ -170,6 +169,19 @@ function updateCalledNumbers(number) {
         container.classList.add('called');
         container.style.backgroundColor = 'yellow'; // Mark the cell in yellow
     }
+    updateTicketsWithCalledNumbers(); // Update ticket grids when a number is called
+}
+
+function updateTicketsWithCalledNumbers() {
+    const ticketTables = document.querySelectorAll('.ticket-grid table');
+    ticketTables.forEach(table => {
+        table.querySelectorAll('td').forEach(td => {
+            const number = parseInt(td.textContent);
+            if (calledNumbers.includes(number)) {
+                td.style.backgroundColor = 'yellow'; // Mark called numbers in yellow
+            }
+        });
+    });
 }
 
 function announceNumber(number) {
