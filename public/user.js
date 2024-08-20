@@ -40,8 +40,8 @@ function initializeNumberPool() {
 onValue(ref(database, 'gameInfo'), (snapshot) => {
     const gameInfo = snapshot.val();
     if (gameInfo) {
-        nextGameTime.textContent = Next Game Time: ${gameInfo.gameTime || 'N/A'};
-        nextGameDate.textContent = Next Game Date: ${gameInfo.gameDate || 'N/A'};
+        nextGameTime.textContent = `Next Game Time: ${gameInfo.gameTime || 'N/A'}`;
+        nextGameDate.textContent = `Next Game Date: ${gameInfo.gameDate || 'N/A'}`;
 
         // Calculate time left
         if (gameInfo.gameTime) {
@@ -50,7 +50,7 @@ onValue(ref(database, 'gameInfo'), (snapshot) => {
             const timeDiff = gameTime - now;
             const hours = Math.floor(timeDiff / (1000 * 60 * 60));
             const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-            timeLeft.textContent = Time Left: ${hours}h ${minutes}m;
+            timeLeft.textContent = `Time Left: ${hours}h ${minutes}m`;
         }
     } else {
         nextGameTime.textContent = 'Next Game Time: N/A';
@@ -81,11 +81,11 @@ onValue(ref(database, 'calledNumbers'), (snapshot) => {
     const numbers = snapshot.val() || [];
     calledNumbers = numbers;
     updateCalledNumbersTable();
-    calledNumbersContainer.innerHTML = numbers.map(number => <span class="called-number">${number}</span>).join(' ');
+    calledNumbersContainer.innerHTML = numbers.map(number => `<span class="called-number">${number}</span>`).join(' ');
 
     // Update board with called numbers
     numbers.forEach(number => {
-        const cell = document.getElementById(cell-${number});
+        const cell = document.getElementById(`cell-${number}`);
         if (cell) {
             cell.classList.add('called');
             cell.style.backgroundColor = 'yellow'; // Mark the cell in yellow
@@ -105,16 +105,16 @@ onValue(ref(database, 'tickets'), (snapshot) => {
         if (ticketNumber !== 'limit') {
             const ticketDiv = document.createElement('div');
             ticketDiv.className = 'ticket'; // Add class for styling
-            ticketDiv.innerHTML = 
+            ticketDiv.innerHTML = `
                 <div class="ticket-header">Ticket ${ticketNumber}</div>
                 <div class="ticket-owner">
-                    ${ticket.bookedBy ? Booked by: ${ticket.bookedBy} : <a href="https://wa.me/99999" target="_blank">Book Now</a>}
+                    ${ticket.bookedBy ? `Booked by: ${ticket.bookedBy}` : `<a href="https://wa.me/99999" target="_blank">Book Now</a>`}
                 </div>
                 <div id="ticket-${ticketNumber}" class="ticket-grid"></div>
-            ;
+            `;
             ticketsContainer.appendChild(ticketDiv);
 
-            const ticketGrid = document.getElementById(ticket-${ticketNumber});
+            const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
             const table = document.createElement('table');
             table.className = 'ticket-table'; // Add a class for styling
             for (let i = 0; i < 3; i++) {
@@ -143,7 +143,7 @@ function generateBoard(board) {
             const td = document.createElement('td');
             const num = board[i * 10 + j];
             td.textContent = num;
-            td.id = cell-${num};
+            td.id = `cell-${num}`;
             tr.appendChild(td);
         }
         table.appendChild(tr);
@@ -174,7 +174,7 @@ function stopNumberCalling() {
 function updateCalledNumbers(number) {
     calledNumbers.push(number);
     set(ref(database, 'calledNumbers'), calledNumbers);
-    const container = document.getElementById(cell-${number});
+    const container = document.getElementById(`cell-${number}`);
     if (container) {
         container.classList.add('called');
         container.style.backgroundColor = 'yellow'; // Mark the cell in yellow
@@ -190,35 +190,20 @@ function updateCalledNumbersTable() {
     let row = document.createElement('tr');
     table.appendChild(row);
 
-    // Fill the table with called numbers, dividing into rows of up to 26 columns
     calledNumbers.forEach((number, index) => {
-        if (index % 26 === 0 && index !== 0) {
+        if (index % 10 === 0 && index !== 0) {
             row = document.createElement('tr');
             table.appendChild(row);
         }
         const cell = document.createElement('td');
         cell.textContent = number;
-        cell.className = 'called'; // Add class to highlight called numbers
         row.appendChild(cell);
     });
-
-    // Add empty cells to fill out the last row if necessary
-    const totalCells = Math.ceil(calledNumbers.length / 26) * 26;
-    for (let i = calledNumbers.length; i < totalCells; i++) {
-        if (i % 26 === 0 && i !== 0) {
-            row = document.createElement('tr');
-            table.appendChild(row);
-        }
-        const cell = document.createElement('td');
-        cell.textContent = '';
-        row.appendChild(cell);
-    }
 
     // Clear previous content and add new table
     calledNumbersTableContainer.innerHTML = '';
     calledNumbersTableContainer.appendChild(table);
 }
-
 
 
 function updateTicketsWithCalledNumbers() {
@@ -235,7 +220,7 @@ function updateTicketsWithCalledNumbers() {
 
 function announceNumber(number) {
     if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(Number ${number});
+        const utterance = new SpeechSynthesisUtterance(`Number ${number}`);
         speechSynthesis.speak(utterance);
     } else {
         console.warn('SpeechSynthesis is not supported in this browser.');
