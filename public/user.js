@@ -1,4 +1,4 @@
-// Import the functions you need from the SDKs you need
+// Import the functions you need from the Firebase SDKs
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
 import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
 
@@ -59,26 +59,10 @@ onValue(ref(database, 'gameInfo'), (snapshot) => {
     }
 });
 
+// Update UI based on game status
 onValue(ref(database, 'gameInfo/status'), (snapshot) => {
     const status = snapshot.val();
-    const ticketMessage = document.getElementById('ticketMessage');
-    const ticketSearchContainer = document.getElementById('ticketSearchContainer');
-    const ticketsContainer = document.getElementById('tickets');
-
     if (status === 'started') {
-        // Hide tickets and show search bar
-        ticketsContainer.style.display = 'none';
-        ticketMessage.style.display = 'none';
-        ticketSearchContainer.style.display = 'block';
-
-        // Initialize search bar functionality
-        const searchBar = document.getElementById('ticketSearchBar');
-        searchBar.addEventListener('input', (event) => {
-            const query = event.target.value;
-            filterTickets(query);
-        });
-
-        // Start game-related functionality
         initializeNumberPool();
         onValue(ref(database, 'gameInfo/board'), (snapshot) => {
             const board = snapshot.val();
@@ -88,32 +72,13 @@ onValue(ref(database, 'gameInfo/status'), (snapshot) => {
                 startNumberCalling();
             }
         });
-    } else {
-        // Show tickets and message
-        ticketsContainer.style.display = 'block';
-        ticketMessage.style.display = 'block';
-        ticketSearchContainer.style.display = 'none';
-
-        ticketMessage.textContent = 'Book available tickets above the tickets list';
-
-        // Stop game-related functionality
+    } else if (status === 'ended') {
         gameBoard.style.display = 'none';
         stopNumberCalling();
     }
 });
 
-function filterTickets(query) {
-    const ticketDivs = document.querySelectorAll('.ticket');
-    ticketDivs.forEach(ticketDiv => {
-        const ticketNumber = ticketDiv.querySelector('.ticket-header').textContent.split(' ')[1];
-        if (ticketNumber.includes(query)) {
-            ticketDiv.style.display = 'block';
-        } else {
-            ticketDiv.style.display = 'none';
-        }
-    });
-}
-
+// Update UI based on called numbers
 onValue(ref(database, 'calledNumbers'), (snapshot) => {
     const numbers = snapshot.val() || [];
     calledNumbers = numbers;
@@ -133,7 +98,7 @@ onValue(ref(database, 'calledNumbers'), (snapshot) => {
     updateTicketsWithCalledNumbers();
 });
 
-// Fetch the tickets and render them
+// Fetch and render tickets
 onValue(ref(database, 'tickets'), (snapshot) => {
     const tickets = snapshot.val();
     ticketsContainer.innerHTML = ''; // Clear previous content
@@ -145,7 +110,7 @@ onValue(ref(database, 'tickets'), (snapshot) => {
             ticketDiv.innerHTML = `
                 <div class="ticket-header">Ticket ${ticketNumber}</div>
                 <div class="ticket-owner">
-                    ${ticket.bookedBy ? `Booked by: ${ticket.bookedBy}` : `<a href="https://wa.me/99999" target="_blank">Book Now</a>`}
+                    ${ticket.bookedBy ? `Booked by: ${ticket.bookedBy}` : '<a href="https://wa.me/99999" target="_blank">Book Now</a>'}
                 </div>
                 <div id="ticket-${ticketNumber}" class="ticket-grid"></div>
             `;
@@ -172,6 +137,7 @@ onValue(ref(database, 'tickets'), (snapshot) => {
     }
 });
 
+// Generate the game board based on the data
 function generateBoard(board) {
     const table = document.createElement('table');
     for (let i = 0; i < 9; i++) {
@@ -189,6 +155,7 @@ function generateBoard(board) {
     gameBoard.appendChild(table);
 }
 
+// Start calling numbers at regular intervals
 function startNumberCalling() {
     intervalId = setInterval(() => {
         if (numberPool.length > 0) {
@@ -201,6 +168,7 @@ function startNumberCalling() {
     }, 2000); // Adjust interval as needed
 }
 
+// Stop calling numbers
 function stopNumberCalling() {
     if (intervalId) {
         clearInterval(intervalId);
@@ -208,6 +176,7 @@ function stopNumberCalling() {
     }
 }
 
+// Update the list of called numbers in Firebase and UI
 function updateCalledNumbers(number) {
     calledNumbers.push(number);
     set(ref(database, 'calledNumbers'), calledNumbers);
@@ -220,6 +189,7 @@ function updateCalledNumbers(number) {
     updateCalledNumbersTable(); // Update the called numbers table
 }
 
+// Update the table with called numbers
 function updateCalledNumbersTable() {
     const table = document.createElement('table');
     table.className = 'called-numbers-table'; // Add class for styling
@@ -256,62 +226,38 @@ function updateCalledNumbersTable() {
     calledNumbersTableContainer.appendChild(table);
 }
 
-
-
+// Update tickets with called numbers
 function updateTicketsWithCalledNumbers() {
-    const ticketTables = document.querySelectorAll('.ticket-grid table');
-    ticketTables.forEach(table => {
-        table.querySelectorAll('td').forEach(td => {
-            const number = parseInt(td.textContent);
-            if (calledNumbers.includes(number)) {
-                td.style.backgroundColor = 'yellow'; // Mark called numbers in yellow
+    document.querySelectorAll('.ticket-table').forEach(table => {
+        table.querySelectorAll('td').forEach(cell => {
+            if (calledNumbers.includes(parseInt(cell.textContent))) {
+                cell.classList.add('called');
+                cell.style.backgroundColor = 'yellow'; // Mark the cell in yellow
             }
         });
     });
 }
 
+// Announce the called number
 function announceNumber(number) {
-    if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(`Number ${number}`);
-        speechSynthesis.speak(utterance);
-    } else {
-        console.warn('SpeechSynthesis is not supported in this browser.');
-    }
+    const msg = new SpeechSynthesisUtterance(`The next number is ${number}`);
+    window.speechSynthesis.speak(msg);
 }
 
-// Function to generate tickets based on the rules
-function generateTickets() {
-    const tickets = [];
-    for (let i = 0; i < 6; i++) {
-        const ticket = Array.from({ length: 3 }, () => Array(9).fill(''));
-        const columns = Array.from({ length: 9 }, (_, index) => index);
-
-        columns.forEach(column => {
-            const availableRows = [0, 1, 2];
-            const numbersInColumn = [];
-
-            for (let j = 0; j < 3; j++) {
-                const randomIndex = Math.floor(Math.random() * availableRows.length);
-                const row = availableRows.splice(randomIndex, 1)[0];
-                const start = column * 10 + 1;
-                const end = column === 8 ? 90 : start + 9;
-                let number;
-
-                do {
-                    number = Math.floor(Math.random() * (end - start + 1)) + start;
-                } while (numbersInColumn.includes(number));
-
-                numbersInColumn.push(number);
-                ticket[row][column] = number;
-            }
-        });
-
-        tickets.push(ticket);
-    }
-    return tickets;
+// Helper function to format time
+function formatTime(ms) {
+    const date = new Date(ms);
+    return `${date.getUTCHours()}h ${date.getUTCMinutes()}m ${date.getUTCSeconds()}s`;
 }
 
-// Call this function to generate the tickets
-const generatedTickets = generateTickets();
-console.log(generatedTickets);
+// Helper function to format time in hh:mm:ss format
+function formatTimeHHMMSS(ms) {
+    const date = new Date(ms);
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+}
 
+// Initialization
+initializeNumberPool();
