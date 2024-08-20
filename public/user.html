@@ -218,7 +218,7 @@ body {
 
     <!-- Ticket Container and Table -->
     <style>
-      .ticket {
+.ticket {
     border: 2px solid #000; /* Strong black border */
     padding: 5px; /* Reduced padding */
     margin-bottom: 15px;
@@ -226,46 +226,40 @@ body {
     border-radius: 10px; /* Rounded corners */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Box shadow for 3D effect */
     max-width: 300px; /* Set a maximum width for the ticket container */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.ticket-header {
-    font-weight: bold;
+.ticket-header,
+.ticket-owner {
     margin-bottom: 5px; /* Reduced margin to remove extra space */
-    font-size: 1rem; /* Slightly reduced font size */
+    font-size: 1rem; /* Adjusted font size */
     color: #000; /* Black text */
     text-align: center; /* Center the text */
 }
 
-.ticket-owner {
-    margin-bottom: 5px; /* Reduced margin to remove extra space */
-    color: #555; /* Gray text for owner */
-    font-size: 0.9rem; /* Reduced font size */
-    text-align: center; /* Center the text */
-}
-
 .ticket-grid {
-    display: grid;
-    grid-template-columns: repeat(9, 1fr); /* 9 columns */
-    grid-template-rows: repeat(3, 1fr); /* 3 rows */
-    gap: 1px; /* Reduced gap between cells */
-    justify-content: center; /* Center the grid within the container */
+    display: flex;
+    justify-content: center;
+    width: 100%;
 }
 
 .ticket-table {
     width: 100%;
     border-collapse: collapse;
-    margin: 0 auto; /* Center the table */
 }
 
 .ticket-table td {
     border: 1px solid #000; /* Reduced border thickness */
     text-align: center;
-    padding: 5px; /* Reduced padding */
+    padding: 0; /* Remove padding to ensure consistent size */
     font-size: 16px; /* Slightly smaller font size */
     width: 30px; /* Equal width for each cell */
     height: 30px; /* Equal height for each cell */
     background-color: #f8f8f8; /* Light gray background for cells */
     color: #333; /* Darker text color */
+    box-sizing: border-box; /* Ensure padding and borders are included in the width and height */
 }
 
 .ticket-table td:not(.empty) {
@@ -275,8 +269,6 @@ body {
 .empty {
     background-color: #eee; /* Lighter gray for empty cells */
 }
-
-
     </style>
 
     <div class="container mx-auto mt-8">
