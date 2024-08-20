@@ -6,11 +6,43 @@
     <title>User Page</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        #gameBoard { display: none; margin-top: 20px; }
-        #gameBoard table { width: 100%; border-collapse: collapse; }
-        #gameBoard td { padding: 10px; text-align: center; border: 1px solid #ddd; }
-        .highlight { background-color: yellow; }
+/* General body styling */
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background-color: #f0f0f0; /* Light gray background for a soft look */
+    color: #333; /* Darker text color for better readability */
+}
+
+/* Game board styling */
+#gameBoard {
+    display: none;
+    margin-top: 20px;
+    border: 2px solid #007bff; /* Blue border for the game board */
+    border-radius: 10px; /* Rounded corners */
+    padding: 20px;
+    background-color: #fff; /* White background for contrast */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+#gameBoard table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#gameBoard td {
+    padding: 15px; /* Increased padding for better spacing */
+    text-align: center;
+    border: 1px solid #ddd; /* Light border for cells */
+    font-size: 18px; /* Larger font size for better readability */
+    border-radius: 5px; /* Rounded corners for cells */
+}
+
+/* Style for highlighted cells */
+.highlight {
+    background-color: yellow;
+}
+
     </style>
 </head>
 <body>
