@@ -102,11 +102,11 @@
     <div id="calledNumbers"></div>
 
     <div class="flex flex-wrap justify-center">
-    <div id="tickets" class="ticket"></div>
+    <div id="tickets"></div>
 
     <!-- Ticket Container and Table -->
     <style>
-       .ticket {
+      .ticket {
     border: 2px solid #000; /* Strong black border */
     padding: 5px; /* Reduced padding */
     margin-bottom: 15px;
@@ -118,15 +118,17 @@
 
 .ticket-header {
     font-weight: bold;
-    margin-bottom: 8px;
+    margin-bottom: 5px; /* Reduced margin to remove extra space */
     font-size: 1rem; /* Slightly reduced font size */
     color: #000; /* Black text */
+    text-align: center; /* Center the text */
 }
 
 .ticket-owner {
-    margin-bottom: 8px;
+    margin-bottom: 5px; /* Reduced margin to remove extra space */
     color: #555; /* Gray text for owner */
     font-size: 0.9rem; /* Reduced font size */
+    text-align: center; /* Center the text */
 }
 
 .ticket-grid {
@@ -134,11 +136,13 @@
     grid-template-columns: repeat(9, 1fr); /* 9 columns */
     grid-template-rows: repeat(3, 1fr); /* 3 rows */
     gap: 1px; /* Reduced gap between cells */
+    justify-content: center; /* Center the grid within the container */
 }
 
 .ticket-table {
     width: 100%;
     border-collapse: collapse;
+    margin: 0 auto; /* Center the table */
 }
 
 .ticket-table td {
@@ -146,8 +150,8 @@
     text-align: center;
     padding: 5px; /* Reduced padding */
     font-size: 16px; /* Slightly smaller font size */
-    width: 30px; /* Reduced width */
-    height: 30px; /* Reduced height */
+    width: 30px; /* Equal width for each cell */
+    height: 30px; /* Equal height for each cell */
     background-color: #f8f8f8; /* Light gray background for cells */
     color: #333; /* Darker text color */
 }
@@ -159,6 +163,7 @@
 .empty {
     background-color: #eee; /* Lighter gray for empty cells */
 }
+
 
     </style>
 
