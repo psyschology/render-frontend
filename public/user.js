@@ -40,8 +40,8 @@ function initializeNumberPool() {
 onValue(ref(database, 'gameInfo'), (snapshot) => {
     const gameInfo = snapshot.val();
     if (gameInfo) {
-        nextGameTime.textContent = `Next Game Time: ${gameInfo.gameTime || 'N/A'}`;
-        nextGameDate.textContent = `Next Game Date: ${gameInfo.gameDate || 'N/A'}`;
+        nextGameTime.textContent = Next Game Time: ${gameInfo.gameTime || 'N/A'};
+        nextGameDate.textContent = Next Game Date: ${gameInfo.gameDate || 'N/A'};
 
         // Calculate time left
         if (gameInfo.gameTime) {
@@ -50,7 +50,7 @@ onValue(ref(database, 'gameInfo'), (snapshot) => {
             const timeDiff = gameTime - now;
             const hours = Math.floor(timeDiff / (1000 * 60 * 60));
             const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-            timeLeft.textContent = `Time Left: ${hours}h ${minutes}m`;
+            timeLeft.textContent = Time Left: ${hours}h ${minutes}m;
         }
     } else {
         nextGameTime.textContent = 'Next Game Time: N/A';
@@ -81,11 +81,11 @@ onValue(ref(database, 'calledNumbers'), (snapshot) => {
     const numbers = snapshot.val() || [];
     calledNumbers = numbers;
     updateCalledNumbersTable();
-    calledNumbersContainer.innerHTML = numbers.map(number => `<span class="called-number">${number}</span>`).join(' ');
+    calledNumbersContainer.innerHTML = numbers.map(number => <span class="called-number">${number}</span>).join(' ');
 
     // Update board with called numbers
     numbers.forEach(number => {
-        const cell = document.getElementById(`cell-${number}`);
+        const cell = document.getElementById(cell-${number});
         if (cell) {
             cell.classList.add('called');
             cell.style.backgroundColor = 'yellow'; // Mark the cell in yellow
@@ -97,7 +97,6 @@ onValue(ref(database, 'calledNumbers'), (snapshot) => {
 });
 
 // Fetch the tickets and render them
-// Fetch the tickets and render them
 onValue(ref(database, 'tickets'), (snapshot) => {
     const tickets = snapshot.val();
     ticketsContainer.innerHTML = ''; // Clear previous content
@@ -106,35 +105,27 @@ onValue(ref(database, 'tickets'), (snapshot) => {
         if (ticketNumber !== 'limit') {
             const ticketDiv = document.createElement('div');
             ticketDiv.className = 'ticket'; // Add class for styling
-            ticketDiv.innerHTML = `
+            ticketDiv.innerHTML = 
                 <div class="ticket-header">Ticket ${ticketNumber}</div>
                 <div class="ticket-owner">
-                    ${ticket.bookedBy ? `Booked by: ${ticket.bookedBy}` : `<a href="https://wa.me/99999" target="_blank">Book Now</a>`}
+                    ${ticket.bookedBy ? Booked by: ${ticket.bookedBy} : <a href="https://wa.me/99999" target="_blank">Book Now</a>}
                 </div>
                 <div id="ticket-${ticketNumber}" class="ticket-grid"></div>
-            `;
+            ;
             ticketsContainer.appendChild(ticketDiv);
 
-            const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
+            const ticketGrid = document.getElementById(ticket-${ticketNumber});
             const table = document.createElement('table');
             table.className = 'ticket-table'; // Add a class for styling
-
             for (let i = 0; i < 3; i++) {
                 const tr = document.createElement('tr');
                 for (let j = 0; j < 9; j++) {
                     const td = document.createElement('td');
-                    const number = ticket[i][j];
-                    td.textContent = number || '';
-                    
-                    // Determine if the cell should be empty or blocked
-                    if (number) {
-                        if (calledNumbers.includes(number)) {
-                            td.classList.add('called'); // Add class to highlight called numbers
-                        }
-                    } else {
-                        td.classList.add('empty'); // Add class for empty cells
+                    td.className = ticket.blockedIndices.includes(i * 9 + j) ? '' : 'empty';
+                    td.textContent = ticket.numbers[i * 9 + j] || '';
+                    if (calledNumbers.includes(ticket.numbers[i * 9 + j])) {
+                        td.classList.add('called'); // Add class to highlight called numbers
                     }
-                    
                     tr.appendChild(td);
                 }
                 table.appendChild(tr);
@@ -144,7 +135,6 @@ onValue(ref(database, 'tickets'), (snapshot) => {
     }
 });
 
-
 function generateBoard(board) {
     const table = document.createElement('table');
     for (let i = 0; i < 9; i++) {
@@ -153,7 +143,7 @@ function generateBoard(board) {
             const td = document.createElement('td');
             const num = board[i * 10 + j];
             td.textContent = num;
-            td.id = `cell-${num}`;
+            td.id = cell-${num};
             tr.appendChild(td);
         }
         table.appendChild(tr);
@@ -184,7 +174,7 @@ function stopNumberCalling() {
 function updateCalledNumbers(number) {
     calledNumbers.push(number);
     set(ref(database, 'calledNumbers'), calledNumbers);
-    const container = document.getElementById(`cell-${number}`);
+    const container = document.getElementById(cell-${number});
     if (container) {
         container.classList.add('called');
         container.style.backgroundColor = 'yellow'; // Mark the cell in yellow
@@ -230,7 +220,7 @@ function updateTicketsWithCalledNumbers() {
 
 function announceNumber(number) {
     if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(`Number ${number}`);
+        const utterance = new SpeechSynthesisUtterance(Number ${number});
         speechSynthesis.speak(utterance);
     } else {
         console.warn('SpeechSynthesis is not supported in this browser.');
@@ -240,52 +230,28 @@ function announceNumber(number) {
 // Function to generate tickets based on the rules
 function generateTickets() {
     const tickets = [];
-    const columnsRanges = [
-        [1, 9],
-        [10, 19],
-        [20, 29],
-        [30, 39],
-        [40, 49],
-        [50, 59],
-        [60, 69],
-        [70, 79],
-        [80, 90]
-    ];
-
-    for (let i = 0; i < 6; i++) { // Generate 6 tickets
+    for (let i = 0; i < 6; i++) {
         const ticket = Array.from({ length: 3 }, () => Array(9).fill(''));
         const columns = Array.from({ length: 9 }, (_, index) => index);
 
-        // Function to get a random number within a given range
-        const getRandomNumber = (start, end) => Math.floor(Math.random() * (end - start + 1)) + start;
-
-        columns.forEach((column, columnIndex) => {
-            const [start, end] = columnsRanges[columnIndex];
+        columns.forEach(column => {
             const availableRows = [0, 1, 2];
             const numbersInColumn = [];
 
-            for (let row = 0; row < 3; row++) {
+            for (let j = 0; j < 3; j++) {
+                const randomIndex = Math.floor(Math.random() * availableRows.length);
+                const row = availableRows.splice(randomIndex, 1)[0];
+                const start = column * 10 + 1;
+                const end = column === 8 ? 90 : start + 9;
                 let number;
+
                 do {
-                    number = getRandomNumber(start, end);
+                    number = Math.floor(Math.random() * (end - start + 1)) + start;
                 } while (numbersInColumn.includes(number));
 
                 numbersInColumn.push(number);
-                ticket[row][columnIndex] = number;
+                ticket[row][column] = number;
             }
-        });
-
-        // Randomly block out 4 boxes in each row
-        ticket.forEach(row => {
-            const numbersInRow = row.filter(num => num !== '');
-            const blockedIndices = [];
-            while (blockedIndices.length < 4) {
-                const index = Math.floor(Math.random() * 9);
-                if (!row[index] && !blockedIndices.includes(index)) {
-                    blockedIndices.push(index);
-                }
-            }
-            blockedIndices.forEach(index => row[index] = ''); // Block out the index
         });
 
         tickets.push(ticket);
