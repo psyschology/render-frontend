@@ -135,26 +135,6 @@ onValue(ref(database, 'tickets'), (snapshot) => {
     }
 });
 
-// Elements
-const ticketSearch = document.getElementById('ticketSearch');
-
-// Event listener for search input
-ticketSearch.addEventListener('input', function() {
-    const query = this.value.toLowerCase();
-    const ticketDivs = document.querySelectorAll('.ticket');
-
-    ticketDivs.forEach(ticketDiv => {
-        const ticketOwner = ticketDiv.querySelector('.ticket-owner').textContent.toLowerCase();
-        const ticketNumber = ticketDiv.querySelector('.ticket-header').textContent.toLowerCase();
-        if (ticketOwner.includes(query) || ticketNumber.includes(query)) {
-            ticketDiv.style.display = 'block'; // Show the ticket if it matches
-        } else {
-            ticketDiv.style.display = 'none'; // Hide the ticket if it doesn't match
-        }
-    });
-});
-
-
 function generateBoard(board) {
     const table = document.createElement('table');
     for (let i = 0; i < 9; i++) {
