@@ -1,4 +1,4 @@
-// Import the functions you need from the Firebase SDKs
+// Import the functions you need from the SDKs you need
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
 import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
 
@@ -40,8 +40,8 @@ function initializeNumberPool() {
 onValue(ref(database, 'gameInfo'), (snapshot) => {
     const gameInfo = snapshot.val();
     if (gameInfo) {
-        nextGameTime.textContent = `Next Game Time: ${gameInfo.gameTime || 'N/A'}`;
-        nextGameDate.textContent = `Next Game Date: ${gameInfo.gameDate || 'N/A'}`;
+        nextGameTime.textContent = Next Game Time: ${gameInfo.gameTime || 'N/A'};
+        nextGameDate.textContent = Next Game Date: ${gameInfo.gameDate || 'N/A'};
 
         // Calculate time left
         if (gameInfo.gameTime) {
@@ -50,7 +50,7 @@ onValue(ref(database, 'gameInfo'), (snapshot) => {
             const timeDiff = gameTime - now;
             const hours = Math.floor(timeDiff / (1000 * 60 * 60));
             const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-            timeLeft.textContent = `Time Left: ${hours}h ${minutes}m`;
+            timeLeft.textContent = Time Left: ${hours}h ${minutes}m;
         }
     } else {
         nextGameTime.textContent = 'Next Game Time: N/A';
@@ -59,7 +59,6 @@ onValue(ref(database, 'gameInfo'), (snapshot) => {
     }
 });
 
-// Update UI based on game status
 onValue(ref(database, 'gameInfo/status'), (snapshot) => {
     const status = snapshot.val();
     if (status === 'started') {
@@ -78,16 +77,15 @@ onValue(ref(database, 'gameInfo/status'), (snapshot) => {
     }
 });
 
-// Update UI based on called numbers
 onValue(ref(database, 'calledNumbers'), (snapshot) => {
     const numbers = snapshot.val() || [];
     calledNumbers = numbers;
     updateCalledNumbersTable();
-    calledNumbersContainer.innerHTML = numbers.map(number => `<span class="called-number">${number}</span>`).join(' ');
+    calledNumbersContainer.innerHTML = numbers.map(number => <span class="called-number">${number}</span>).join(' ');
 
     // Update board with called numbers
     numbers.forEach(number => {
-        const cell = document.getElementById(`cell-${number}`);
+        const cell = document.getElementById(cell-${number});
         if (cell) {
             cell.classList.add('called');
             cell.style.backgroundColor = 'yellow'; // Mark the cell in yellow
@@ -98,7 +96,7 @@ onValue(ref(database, 'calledNumbers'), (snapshot) => {
     updateTicketsWithCalledNumbers();
 });
 
-// Fetch and render tickets
+// Fetch the tickets and render them
 onValue(ref(database, 'tickets'), (snapshot) => {
     const tickets = snapshot.val();
     ticketsContainer.innerHTML = ''; // Clear previous content
@@ -107,16 +105,16 @@ onValue(ref(database, 'tickets'), (snapshot) => {
         if (ticketNumber !== 'limit') {
             const ticketDiv = document.createElement('div');
             ticketDiv.className = 'ticket'; // Add class for styling
-            ticketDiv.innerHTML = `
+            ticketDiv.innerHTML = 
                 <div class="ticket-header">Ticket ${ticketNumber}</div>
                 <div class="ticket-owner">
-                    ${ticket.bookedBy ? `Booked by: ${ticket.bookedBy}` : '<a href="https://wa.me/99999" target="_blank">Book Now</a>'}
+                    ${ticket.bookedBy ? Booked by: ${ticket.bookedBy} : <a href="https://wa.me/99999" target="_blank">Book Now</a>}
                 </div>
                 <div id="ticket-${ticketNumber}" class="ticket-grid"></div>
-            `;
+            ;
             ticketsContainer.appendChild(ticketDiv);
 
-            const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
+            const ticketGrid = document.getElementById(ticket-${ticketNumber});
             const table = document.createElement('table');
             table.className = 'ticket-table'; // Add a class for styling
             for (let i = 0; i < 3; i++) {
@@ -137,7 +135,26 @@ onValue(ref(database, 'tickets'), (snapshot) => {
     }
 });
 
-// Generate the game board based on the data
+// Elements
+const ticketSearch = document.getElementById('ticketSearch');
+
+// Event listener for search input
+ticketSearch.addEventListener('input', function() {
+    const query = this.value.toLowerCase();
+    const ticketDivs = document.querySelectorAll('.ticket');
+
+    ticketDivs.forEach(ticketDiv => {
+        const ticketOwner = ticketDiv.querySelector('.ticket-owner').textContent.toLowerCase();
+        const ticketNumber = ticketDiv.querySelector('.ticket-header').textContent.toLowerCase();
+        if (ticketOwner.includes(query) || ticketNumber.includes(query)) {
+            ticketDiv.style.display = 'block'; // Show the ticket if it matches
+        } else {
+            ticketDiv.style.display = 'none'; // Hide the ticket if it doesn't match
+        }
+    });
+});
+
+
 function generateBoard(board) {
     const table = document.createElement('table');
     for (let i = 0; i < 9; i++) {
@@ -146,7 +163,7 @@ function generateBoard(board) {
             const td = document.createElement('td');
             const num = board[i * 10 + j];
             td.textContent = num;
-            td.id = `cell-${num}`;
+            td.id = cell-${num};
             tr.appendChild(td);
         }
         table.appendChild(tr);
@@ -155,7 +172,6 @@ function generateBoard(board) {
     gameBoard.appendChild(table);
 }
 
-// Start calling numbers at regular intervals
 function startNumberCalling() {
     intervalId = setInterval(() => {
         if (numberPool.length > 0) {
@@ -168,7 +184,6 @@ function startNumberCalling() {
     }, 2000); // Adjust interval as needed
 }
 
-// Stop calling numbers
 function stopNumberCalling() {
     if (intervalId) {
         clearInterval(intervalId);
@@ -176,11 +191,10 @@ function stopNumberCalling() {
     }
 }
 
-// Update the list of called numbers in Firebase and UI
 function updateCalledNumbers(number) {
     calledNumbers.push(number);
     set(ref(database, 'calledNumbers'), calledNumbers);
-    const container = document.getElementById(`cell-${number}`);
+    const container = document.getElementById(cell-${number});
     if (container) {
         container.classList.add('called');
         container.style.backgroundColor = 'yellow'; // Mark the cell in yellow
@@ -189,7 +203,6 @@ function updateCalledNumbers(number) {
     updateCalledNumbersTable(); // Update the called numbers table
 }
 
-// Update the table with called numbers
 function updateCalledNumbersTable() {
     const table = document.createElement('table');
     table.className = 'called-numbers-table'; // Add class for styling
@@ -226,38 +239,61 @@ function updateCalledNumbersTable() {
     calledNumbersTableContainer.appendChild(table);
 }
 
-// Update tickets with called numbers
+
+
 function updateTicketsWithCalledNumbers() {
-    document.querySelectorAll('.ticket-table').forEach(table => {
-        table.querySelectorAll('td').forEach(cell => {
-            if (calledNumbers.includes(parseInt(cell.textContent))) {
-                cell.classList.add('called');
-                cell.style.backgroundColor = 'yellow'; // Mark the cell in yellow
+    const ticketTables = document.querySelectorAll('.ticket-grid table');
+    ticketTables.forEach(table => {
+        table.querySelectorAll('td').forEach(td => {
+            const number = parseInt(td.textContent);
+            if (calledNumbers.includes(number)) {
+                td.style.backgroundColor = 'yellow'; // Mark called numbers in yellow
             }
         });
     });
 }
 
-// Announce the called number
 function announceNumber(number) {
-    const msg = new SpeechSynthesisUtterance(`The next number is ${number}`);
-    window.speechSynthesis.speak(msg);
+    if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(Number ${number});
+        speechSynthesis.speak(utterance);
+    } else {
+        console.warn('SpeechSynthesis is not supported in this browser.');
+    }
 }
 
-// Helper function to format time
-function formatTime(ms) {
-    const date = new Date(ms);
-    return `${date.getUTCHours()}h ${date.getUTCMinutes()}m ${date.getUTCSeconds()}s`;
+// Function to generate tickets based on the rules
+function generateTickets() {
+    const tickets = [];
+    for (let i = 0; i < 6; i++) {
+        const ticket = Array.from({ length: 3 }, () => Array(9).fill(''));
+        const columns = Array.from({ length: 9 }, (_, index) => index);
+
+        columns.forEach(column => {
+            const availableRows = [0, 1, 2];
+            const numbersInColumn = [];
+
+            for (let j = 0; j < 3; j++) {
+                const randomIndex = Math.floor(Math.random() * availableRows.length);
+                const row = availableRows.splice(randomIndex, 1)[0];
+                const start = column * 10 + 1;
+                const end = column === 8 ? 90 : start + 9;
+                let number;
+
+                do {
+                    number = Math.floor(Math.random() * (end - start + 1)) + start;
+                } while (numbersInColumn.includes(number));
+
+                numbersInColumn.push(number);
+                ticket[row][column] = number;
+            }
+        });
+
+        tickets.push(ticket);
+    }
+    return tickets;
 }
 
-// Helper function to format time in hh:mm:ss format
-function formatTimeHHMMSS(ms) {
-    const date = new Date(ms);
-    const hours = String(date.getUTCHours()).padStart(2, '0');
-    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-    const seconds = String(date.getUTCSeconds()).padStart(2, '0');
-    return `${hours}:${minutes}:${seconds}`;
-}
-
-// Initialization
-initializeNumberPool();
+// Call this function to generate the tickets
+const generatedTickets = generateTickets();
+console.log(generatedTickets);
