@@ -61,7 +61,24 @@ onValue(ref(database, 'gameInfo'), (snapshot) => {
 
 onValue(ref(database, 'gameInfo/status'), (snapshot) => {
     const status = snapshot.val();
+    const ticketMessage = document.getElementById('ticketMessage');
+    const ticketSearchContainer = document.getElementById('ticketSearchContainer');
+    const ticketsContainer = document.getElementById('tickets');
+
     if (status === 'started') {
+        // Hide tickets and show search bar
+        ticketsContainer.style.display = 'none';
+        ticketMessage.style.display = 'none';
+        ticketSearchContainer.style.display = 'block';
+
+        // Initialize search bar functionality
+        const searchBar = document.getElementById('ticketSearchBar');
+        searchBar.addEventListener('input', (event) => {
+            const query = event.target.value;
+            filterTickets(query);
+        });
+
+        // Start game-related functionality
         initializeNumberPool();
         onValue(ref(database, 'gameInfo/board'), (snapshot) => {
             const board = snapshot.val();
@@ -71,11 +88,31 @@ onValue(ref(database, 'gameInfo/status'), (snapshot) => {
                 startNumberCalling();
             }
         });
-    } else if (status === 'ended') {
+    } else {
+        // Show tickets and message
+        ticketsContainer.style.display = 'block';
+        ticketMessage.style.display = 'block';
+        ticketSearchContainer.style.display = 'none';
+
+        ticketMessage.textContent = 'Book available tickets above the tickets list';
+
+        // Stop game-related functionality
         gameBoard.style.display = 'none';
         stopNumberCalling();
     }
 });
+
+function filterTickets(query) {
+    const ticketDivs = document.querySelectorAll('.ticket');
+    ticketDivs.forEach(ticketDiv => {
+        const ticketNumber = ticketDiv.querySelector('.ticket-header').textContent.split(' ')[1];
+        if (ticketNumber.includes(query)) {
+            ticketDiv.style.display = 'block';
+        } else {
+            ticketDiv.style.display = 'none';
+        }
+    });
+}
 
 onValue(ref(database, 'calledNumbers'), (snapshot) => {
     const numbers = snapshot.val() || [];
