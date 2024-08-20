@@ -102,6 +102,40 @@
     <div id="calledNumbers"></div>
     <div id="calledNumbersTable"></div>
 
+<style>
+    /* Styles for the called numbers table */
+.called-numbers-table {
+    border-collapse: collapse;
+    width: 100%;
+    border: 2px solid #333; /* Border for the entire table */
+    margin-top: 20px;
+}
+
+.called-numbers-table tr {
+    border-bottom: 1px solid #ddd;
+}
+
+.called-numbers-table td {
+    width: 2rem; /* Adjust width as needed */
+    height: 2rem; /* Adjust height as needed */
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid #ccc; /* Border for each cell */
+    background-color: #f0f0f0; /* Light background color */
+    color: #333; /* Text color */
+    font-weight: bold;
+    font-size: 1rem; /* Adjust font size as needed */
+    margin: 0.2rem; /* Space around cells */
+    padding: 0.2rem; /* Padding inside cells */
+    border-radius: 5px; /* Rounded corners for cells */
+}
+
+.called-numbers-table td.called {
+    background-color: #ffeb3b; /* Highlight color for called numbers */
+    color: #000; /* Text color for highlighted numbers */
+}
+</style>
+    
     <div class="flex flex-wrap justify-center">
     <div id="tickets"></div>
 
