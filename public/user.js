@@ -97,6 +97,7 @@ onValue(ref(database, 'calledNumbers'), (snapshot) => {
 });
 
 // Fetch the tickets and render them
+// Fetch the tickets and render them
 onValue(ref(database, 'tickets'), (snapshot) => {
     const tickets = snapshot.val();
     ticketsContainer.innerHTML = ''; // Clear previous content
@@ -117,15 +118,23 @@ onValue(ref(database, 'tickets'), (snapshot) => {
             const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
             const table = document.createElement('table');
             table.className = 'ticket-table'; // Add a class for styling
+
             for (let i = 0; i < 3; i++) {
                 const tr = document.createElement('tr');
                 for (let j = 0; j < 9; j++) {
                     const td = document.createElement('td');
-                    td.className = ticket.blockedIndices.includes(i * 9 + j) ? '' : 'empty';
-                    td.textContent = ticket.numbers[i * 9 + j] || '';
-                    if (calledNumbers.includes(ticket.numbers[i * 9 + j])) {
-                        td.classList.add('called'); // Add class to highlight called numbers
+                    const number = ticket[i][j];
+                    td.textContent = number || '';
+                    
+                    // Determine if the cell should be empty or blocked
+                    if (number) {
+                        if (calledNumbers.includes(number)) {
+                            td.classList.add('called'); // Add class to highlight called numbers
+                        }
+                    } else {
+                        td.classList.add('empty'); // Add class for empty cells
                     }
+                    
                     tr.appendChild(td);
                 }
                 table.appendChild(tr);
@@ -134,6 +143,7 @@ onValue(ref(database, 'tickets'), (snapshot) => {
         }
     }
 });
+
 
 function generateBoard(board) {
     const table = document.createElement('table');
@@ -230,28 +240,52 @@ function announceNumber(number) {
 // Function to generate tickets based on the rules
 function generateTickets() {
     const tickets = [];
-    for (let i = 0; i < 6; i++) {
+    const columnsRanges = [
+        [1, 9],
+        [10, 19],
+        [20, 29],
+        [30, 39],
+        [40, 49],
+        [50, 59],
+        [60, 69],
+        [70, 79],
+        [80, 90]
+    ];
+
+    for (let i = 0; i < 6; i++) { // Generate 6 tickets
         const ticket = Array.from({ length: 3 }, () => Array(9).fill(''));
         const columns = Array.from({ length: 9 }, (_, index) => index);
 
-        columns.forEach(column => {
+        // Function to get a random number within a given range
+        const getRandomNumber = (start, end) => Math.floor(Math.random() * (end - start + 1)) + start;
+
+        columns.forEach((column, columnIndex) => {
+            const [start, end] = columnsRanges[columnIndex];
             const availableRows = [0, 1, 2];
             const numbersInColumn = [];
 
-            for (let j = 0; j < 3; j++) {
-                const randomIndex = Math.floor(Math.random() * availableRows.length);
-                const row = availableRows.splice(randomIndex, 1)[0];
-                const start = column * 10 + 1;
-                const end = column === 8 ? 90 : start + 9;
+            for (let row = 0; row < 3; row++) {
                 let number;
-
                 do {
-                    number = Math.floor(Math.random() * (end - start + 1)) + start;
+                    number = getRandomNumber(start, end);
                 } while (numbersInColumn.includes(number));
 
                 numbersInColumn.push(number);
-                ticket[row][column] = number;
+                ticket[row][columnIndex] = number;
             }
+        });
+
+        // Randomly block out 4 boxes in each row
+        ticket.forEach(row => {
+            const numbersInRow = row.filter(num => num !== '');
+            const blockedIndices = [];
+            while (blockedIndices.length < 4) {
+                const index = Math.floor(Math.random() * 9);
+                if (!row[index] && !blockedIndices.includes(index)) {
+                    blockedIndices.push(index);
+                }
+            }
+            blockedIndices.forEach(index => row[index] = ''); // Block out the index
         });
 
         tickets.push(ticket);
