@@ -6,7 +6,6 @@
     <title>User Page</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-/* General body styling */
 body {
     font-family: Arial, sans-serif;
     padding: 20px;
@@ -23,8 +22,10 @@ body {
     padding: 20px;
     background-color: #fff; /* White background for contrast */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    overflow-x: auto; /* Allows horizontal scrolling if needed */
 }
 
+/* Ensure table elements are responsive */
 #gameBoard table {
     width: 100%;
     border-collapse: collapse;
@@ -42,6 +43,35 @@ body {
 .highlight {
     background-color: yellow;
 }
+
+/* Mobile view adjustments */
+@media (max-width: 768px) {
+    body {
+        padding: 10px; /* Reduce padding for smaller screens */
+    }
+
+    #gameBoard {
+        padding: 10px; /* Adjust padding for smaller screens */
+    }
+
+    #gameBoard td {
+        padding: 10px; /* Adjust cell padding for smaller screens */
+        font-size: 16px; /* Slightly smaller font size for better fit */
+    }
+
+    /* Ensure the table can scroll horizontally on small screens */
+    #gameBoard {
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    #gameBoard td {
+        padding: 8px; /* Further reduce padding for very small screens */
+        font-size: 14px; /* Further reduce font size for very small screens */
+    }
+}
+
 
     </style>
 </head>
@@ -166,6 +196,8 @@ body {
     color: #000; /* Text color for highlighted numbers */
 }
 </style>
+
+
     
     <div class="flex flex-wrap justify-center">
     <div id="tickets"></div>
