@@ -100,6 +100,10 @@ onValue(ref(database, 'tickets'), (snapshot) => {
             `;
             ticketsContainer.appendChild(ticketDiv);
 
+          // Debugging
+            console.log(`Ticket ${ticketNumber} - Numbers: `, ticket.numbers);
+            console.log(`Ticket ${ticketNumber} - Blocked Indices: `, ticket.blockedIndices);
+
             // Integrate the grid generation here
             const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
             const table = document.createElement('table');
