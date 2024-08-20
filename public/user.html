@@ -104,6 +104,51 @@
     </div>
     <div id="calledNumbers"></div>
     <div id="tickets"></div>
+    <style>
+        .ticket {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+.ticket-header {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.ticket-owner {
+    margin-bottom: 10px;
+}
+
+.ticket-grid {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr); /* 9 columns */
+    grid-template-rows: repeat(3, 1fr); /* 3 rows */
+    gap: 2px;
+}
+
+.ticket-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ticket-table td {
+    border: 1px solid #ccc;
+    text-align: center;
+    padding: 5px;
+    font-size: 14px;
+    width: 40px; /* Adjust the width and height as necessary */
+    height: 40px;
+    background-color: #fff;
+}
+
+.ticket-table td.called {
+    background-color: yellow; /* Highlight called numbers */
+}
+
+    </style>
 
     <!-- Firebase SDKs -->
       <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
