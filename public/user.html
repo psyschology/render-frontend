@@ -112,26 +112,38 @@ body {
     <hr class="border-t-2 border-gray-300 my-4">
 
     <!-- Game Info Section -->
-    <div id="gameInfo" class="flex flex-wrap justify-center mt-6 space-x-4">
+   <div id="gameInfoWrapper" class="main-box">
+    <div id="gameInfo" class="flex flex-wrap justify-center">
         <div id="nextGameTime" class="info-box">Next Game Time: 08:00 PM</div>
         <div id="nextGameDate" class="info-box">Next Game Date: 25th August 2024</div>
         <div id="timeLeft" class="info-box">Time Left: 2h 15m</div>
     </div>
+</div>
+
 
     <!-- Styles -->
     <style>
-        .info-box {
+       .main-box {
+    background-color: #8A2BE2; /* Purple background to match the main container in the image */
+    padding: 20px; /* Padding inside the main container */
+    border-radius: 20px; /* Rounded corners for the main container */
+    border: 3px solid #FFFFFF; /* White border around the main container */
+    max-width: 900px; /* Maximum width for the main container */
+    margin: 0 auto; /* Center the main container on the page */
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3); /* Shadow for the main container */
+}
+
+.info-box {
     background-color: #FFCC00; /* Yellow background to match the boxes */
     color: #000000; /* Black text */
     padding: 10px 20px; /* Adjust padding to fit the box */
     border-radius: 10px; /* Rounded corners to match the box */
-    border: 5px solid #FFCC00; /* Border the same color as the background */
+    border: 5px solid #FFFFFF; /* White border to distinguish each box */
     font-size: 1.5rem; /* Increase font size to match the image */
     font-weight: bold; /* Bold text */
     text-align: center; /* Center the text */
     min-width: 180px; /* Minimum width for uniformity */
     max-width: 250px; /* Maximum width for uniformity */
-    margin: 0; /* No margin to align closely with other boxes */
     box-sizing: border-box; /* Include padding and border in the element's total width and height */
     box-shadow: 0 0 20px rgba(255, 204, 0, 0.7); /* Strong yellow glow effect */
 }
@@ -140,7 +152,6 @@ body {
     display: flex;
     justify-content: space-between; /* Align boxes with space between them */
     gap: 20px; /* Gap between the boxes */
-    margin-top: 1rem; /* Space above the boxes */
 }
 
 /* Mobile Styles */
@@ -154,6 +165,11 @@ body {
     #gameInfo {
         flex-direction: column; /* Stack boxes on smaller screens */
         gap: 10px; /* Smaller gap for mobile */
+    }
+
+    .main-box {
+        padding: 15px; /* Adjust padding for the main box on mobile */
+        max-width: 100%; /* Full width on mobile */
     }
 }
 
