@@ -24,7 +24,6 @@ const endGameButton = document.getElementById('endGame');
 const setGameTimeButton = document.getElementById('setGameTime');
 const setTicketLimitButton = document.getElementById('setTicketLimit');
 const bookTicketButton = document.getElementById('bookTicket');
-const setAwardsButton = document.getElementById('setAwards');
 
 
 // Prompt for password on page load
@@ -125,67 +124,3 @@ function generateBoardNumbers() {
     const board = Array.from({ length: 90 }, (_, i) => i + 1);
     return board;
 }
-setAwardsButton.addEventListener('click', () => {
-    const awards = {};
-    const awardTypes = ['Full House', 'Second Full House', 'First Row']; // You can add more types as needed
-
-    awardTypes.forEach((award) => {
-        const amount = prompt(`Enter the winning amount for ${award}:`);
-        awards[award] = {
-            amount: amount,
-            winner: null // Initially, no winner
-        };
-    });
-
-    set(ref(database, 'gameInfo/awards'), awards);
-});
-function checkAwards(ticketNumber, ticketData) {
-    const awardsRef = ref(database, 'gameInfo/awards');
-
-    // Get the current awards from the database
-    get(awardsRef).then((snapshot) => {
-        if (snapshot.exists()) {
-            const awards = snapshot.val();
-
-            Object.keys(awards).forEach((award) => {
-                if (awards[award].winner === null) { // Only check if no winner has been declared
-                    if (award === 'Full House' && isFullHouse(ticketData)) {
-                        update(ref(database, `gameInfo/awards/${award}`), {
-                            winner: {
-                                ticketNumber: ticketNumber,
-                                owner: ticketData.bookedBy
-                            }
-                        });
-                    } else if (award === 'First Row' && isFirstRow(ticketData)) {
-                        update(ref(database, `gameInfo/awards/${award}`), {
-                            winner: {
-                                ticketNumber: ticketNumber,
-                                owner: ticketData.bookedBy
-                            }
-                        });
-                    }
-                    // Add logic for other awards like Second Full House, etc.
-                }
-            });
-        }
-    });
-}
-
-function isFullHouse(ticketData) {
-    return ticketData.numbers.every((num, index) => ticketData.blockedIndices.includes(index) || num.marked);
-}
-
-function isFirstRow(ticketData) {
-    return ticketData.numbers.slice(0, 9).every((num, index) => ticketData.blockedIndices.includes(index) || num.marked);
-}
-
-// Call this function whenever a number is marked on a ticket
-markNumberOnTicket(ticketNumber, number).then(() => {
-    const ticketRef = ref(database, `tickets/${ticketNumber}`);
-    get(ticketRef).then((snapshot) => {
-        if (snapshot.exists()) {
-            const ticketData = snapshot.val();
-            checkAwards(ticketNumber, ticketData);
-        }
-    });
-});
