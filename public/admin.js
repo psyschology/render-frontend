@@ -214,3 +214,34 @@ updateTicketStatusMessage();
 // Add event listeners to update the ticket status message when the game status changes
 startGameButton.addEventListener('click', updateTicketStatusMessage);
 endGameButton.addEventListener('click', updateTicketStatusMessage);
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const setGameTimeButton = document.getElementById('setGameTime');
+    const gameDateTimeInput = document.getElementById('gameDateTime');
+    const messageDiv = document.getElementById('message');
+
+    setGameTimeButton.addEventListener('click', () => {
+        const gameDateTime = gameDateTimeInput.value;
+
+        if (gameDateTime) {
+            const [date, time] = gameDateTime.split('T');
+            const formattedDate = new Date(gameDateTime).toLocaleString();
+
+            // Update the database with the selected date and time
+            update(ref(database, 'gameInfo'), {
+                gameTime: time,
+                gameDate: date
+            });
+
+            showMessage(`Game time set to ${formattedDate}.`);
+        } else {
+            showMessage('Please select a date and time.');
+        }
+    });
+
+    function showMessage(message) {
+        messageDiv.textContent = message;
+        messageDiv.classList.add('bg-green-500', 'p-4', 'rounded');
+    }
+});
