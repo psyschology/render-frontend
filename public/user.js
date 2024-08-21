@@ -114,70 +114,25 @@ onValue(ref(database, 'tickets'), (snapshot) => {
             `;
             ticketsContainer.appendChild(ticketDiv);
 
-            const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
+            const ticketGrid = document.getElementById(ticket-${ticketNumber});
             const table = document.createElement('table');
             table.className = 'ticket-table'; // Add a class for styling
-
-            // Initialize an array for columns to hold numbers
-            const columns = Array.from({ length: 9 }, () => []);
             
-            // Populate columns with numbers ensuring at least one number per column
-            for (let col = 0; col < 9; col++) {
-                const startRange = col * 10 + 1;
-                const endRange = startRange + 9;
-                
-                // Generate exactly 3 numbers per column
-                while (columns[col].length < 3) {
-                    const number = getRandomNumber(startRange, endRange);
-                    if (!columns[col].includes(number)) {
-                        columns[col].push(number);
-                    }
-                }
-            }
-
-            // Sort each column in ascending order
-            columns.forEach(col => col.sort((a, b) => a - b));
-
-            // Function to create and fill rows
-            const createRow = (columns, rowIndex, calledNumbers) => {
+            for (let i = 0; i < 3; i++) {
                 const tr = document.createElement('tr');
-                const cells = Array(9).fill(null); // Create an array with 9 empty cells
-
-                // Place numbers in the row
-                columns.forEach((col, colIndex) => {
-                    if (col[rowIndex] !== undefined) {
-                        cells[colIndex] = col[rowIndex];
-                    }
-                });
-
-                // Ensure each row has exactly 5 numbers
-                while (cells.filter(value => value !== null).length < 5) {
-                    const emptyIndex = cells.indexOf(null);
-                    if (emptyIndex !== -1) {
-                        cells[emptyIndex] = ' ';
-                    }
-                }
-
-                // Fill cells
-                cells.forEach((value, colIndex) => {
+                for (let j = 0; j < 9; j++) {
                     const td = document.createElement('td');
-                    td.className = value === ' ' ? 'empty' : ''; // Empty cell styling
-                    td.textContent = value === ' ' ? '' : value; // Display number or empty
-                    if (ticket.calledNumbers && ticket.calledNumbers.includes(value)) {
-                        td.classList.add('called'); // Highlight called numbers
+                    const number = ticket.numbers[i * 9 + j]; // Extract number based on matrix position
+                    
+                    td.className = (number !== null && number !== undefined) ? '' : 'empty'; // Empty cell styling
+                    td.textContent = number || ''; // Display number or empty
+                    if (calledNumbers.includes(ticket.numbers[i * 9 + j])) {
+                        td.classList.add('called'); // Add class to highlight called numbers
                     }
                     tr.appendChild(td);
-                });
-
-                return tr;
-            };
-
-            // Create 3 rows for the ticket
-            for (let rowIndex = 0; rowIndex < 3; rowIndex++) {
-                const row = createRow(columns, rowIndex, ticket.calledNumbers || []);
-                table.appendChild(row);
+                }
+                table.appendChild(tr);
             }
-
             ticketGrid.appendChild(table);
         }
     }
