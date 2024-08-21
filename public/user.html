@@ -125,7 +125,7 @@ body {
     <style>
        .main-box {
     background-color: #8A2BE2; /* Purple background to match the main container in the image */
-    padding: 10px; /* Padding inside the main container */
+    padding: 5px; /* Reduced padding inside the main container */
     border-radius: 20px; /* Rounded corners for the main container */
     border: 3px solid #FFFFFF; /* White border around the main container */
     max-width: 900px; /* Maximum width for the main container */
@@ -136,7 +136,7 @@ body {
 .info-box {
     background-color: #FFCC00; /* Yellow background to match the boxes */
     color: #000000; /* Black text */
-    padding: 8px 10px; /* Adjust padding to fit the box */
+    padding: 4px 5px; /* Reduced padding inside the boxes */
     border-radius: 10px; /* Rounded corners to match the box */
     border: 5px solid #FFFFFF; /* White border to distinguish each box */
     font-size: 1.5rem; /* Increase font size to match the image */
@@ -146,29 +146,30 @@ body {
     max-width: 250px; /* Maximum width for uniformity */
     box-sizing: border-box; /* Include padding and border in the element's total width and height */
     box-shadow: 0 0 20px rgba(255, 204, 0, 0.7); /* Strong yellow glow effect */
+    margin-right: -5px; /* Overlap the boxes slightly */
 }
 
 #gameInfo {
     display: flex;
     justify-content: space-between; /* Align boxes with space between them */
-    gap: 20px; /* Gap between the boxes */
+    gap: 0; /* Remove gap between the boxes */
 }
 
 /* Mobile Styles */
 @media (max-width: 600px) {
     .info-box {
         font-size: 1.2rem; /* Adjust font size for mobile */
-        padding: 10px 15px; /* Adjust padding for smaller screens */
+        padding: 5px 7px; /* Reduced padding for smaller screens */
         min-width: 150px; /* Smaller width for mobile */
     }
 
     #gameInfo {
         flex-direction: column; /* Stack boxes on smaller screens */
-        gap: 10px; /* Smaller gap for mobile */
+        gap: 5px; /* Smaller gap for mobile */
     }
 
     .main-box {
-        padding: 15px; /* Adjust padding for the main box on mobile */
+        padding: 7px; /* Reduced padding for the main box on mobile */
         max-width: 100%; /* Full width on mobile */
     }
 }
