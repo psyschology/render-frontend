@@ -278,14 +278,14 @@ function generateTickets() {
 const generatedTickets = generateTickets();
 console.log(generatedTickets);
 
-// Display Awards
+
 function updateAwardsDisplay() {
     const awardsRef = ref(database, 'gameInfo/awards');
 
     onValue(awardsRef, (snapshot) => {
         const awards = snapshot.val();
         const awardsDiv = document.getElementById('awards');
-        awardsDiv.innerHTML = '';
+        awardsDiv.innerHTML = ''; // Clear existing content
 
         Object.keys(awards).forEach((award) => {
             const awardBox = document.createElement('div');
@@ -308,5 +308,6 @@ function updateAwardsDisplay() {
     });
 }
 
-displayGameBoard();
+// Call this function whenever the awards data changes
 updateAwardsDisplay();
+
