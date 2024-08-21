@@ -242,8 +242,8 @@ body {
 
     <!-- Ticket Container and Table -->
     <style>
-/* Container for the ticket */
-.ticket {
+/* Styles specific to dynamically generated tickets */
+.dynamic-ticket {
     border: 2px solid #000; /* Strong black border */
     padding: 10px; /* Added padding for spacing */
     margin-bottom: 15px;
@@ -258,30 +258,7 @@ body {
     box-sizing: border-box; /* Ensure padding and borders are included in the width */
 }
 
-/* Header and owner sections */
-.ticket-header,
-.ticket-owner {
-    margin-bottom: 5px; /* Reduced margin to remove extra space */
-    font-size: 1rem; /* Adjusted font size */
-    color: #000; /* Black text */
-    text-align: center; /* Center the text */
-}
-
-/* Grid container for the ticket table */
-.ticket-grid {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-}
-
-/* Table styling */
-.ticket-table {
-    width: 100%; /* Make the table fill the width of the ticket container */
-    border-collapse: collapse;
-}
-
-/* Table cells styling */
-.ticket-table td {
+.dynamic-ticket .ticket-table td {
     border: 1px solid #000; /* Reduced border thickness */
     text-align: center;
     padding: 0; /* Remove padding to ensure consistent size */
@@ -293,13 +270,11 @@ body {
     box-sizing: border-box; /* Ensure padding and borders are included in the width and height */
 }
 
-/* Bold numbers */
-.ticket-table td:not(.empty) {
+.dynamic-ticket .ticket-table td:not(.empty) {
     font-weight: bold;
 }
 
-/* Empty cell styling */
-.empty {
+.dynamic-ticket .empty {
     background-color: #eee; /* Lighter gray for empty cells */
 }
 
