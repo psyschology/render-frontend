@@ -281,14 +281,36 @@ const generatedTickets = generateTickets();
 console.log(generatedTickets);
 // Check ticket for awards
 function checkForAwards(ticket, ticketNumber, owner) {
-    const isFullHouse = ticket.every(row => row.every(number => calledNumbers.includes(number)));
+    let isFullHouse = true;
+    let isFirstRow = true;
+    let isSecondRow = true;
+    let isThirdRow = true;
+
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 9; j++) {
+            const number = ticket[i][j];
+            if (number) { // Check only if the cell is not empty
+                if (!calledNumbers.includes(number)) {
+                    if (i === 0) isFirstRow = false; // First row
+                    if (i === 1) isSecondRow = false; // Second row
+                    if (i === 2) isThirdRow = false; // Third row
+                    isFullHouse = false; // Any missing number disqualifies Full House
+                }
+            }
+        }
+    }
+
     if (isFullHouse) {
         updateAward('fullHouse', ticketNumber, owner);
     }
-
-    const isFirstRow = ticket[0].every(number => calledNumbers.includes(number));
     if (isFirstRow) {
         updateAward('firstRow', ticketNumber, owner);
+    }
+    if (isSecondRow) {
+        updateAward('secondRow', ticketNumber, owner);
+    }
+    if (isThirdRow) {
+        updateAward('thirdRow', ticketNumber, owner);
     }
 }
 
@@ -300,6 +322,7 @@ function updateAward(awardType, ticketNumber, owner) {
         achieved: true
     });
 }
+
 
 // Display awards when the game starts
 onValue(ref(database, 'gameInfo/status'), (snapshot) => {
