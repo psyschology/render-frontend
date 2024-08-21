@@ -301,7 +301,7 @@ function generateTickets() {
     return tickets;
 }
 
-function ensureRowsHaveFiveNumbers(ticket) {
+function ensureRowsHaveFiveNumbers(ticket, allNumbersUsed) {
     const rows = [0, 1, 2];
     rows.forEach(rowIndex => {
         const row = ticket[rowIndex];
@@ -314,21 +314,27 @@ function ensureRowsHaveFiveNumbers(ticket) {
             
             // Fill empty spots with random numbers from the column constraints
             for (let i = 0; i < fillCount; i++) {
-                const randomIndex = Math.floor(Math.random() * emptyIndices.length);
-                const emptyIdx = emptyIndices[randomIndex];
-                row[emptyIdx] = getRandomAvailableNumber(); // Function to get a valid number from the pool
-                emptyIndices.splice(randomIndex, 1); // Remove filled spot
+                let newNumber;
+                do {
+                    newNumber = getRandomAvailableNumber(allNumbersUsed);
+                } while (row.includes(newNumber)); // Ensure the number is not already in the row
+                
+                row[emptyIndices[i]] = newNumber;
+                allNumbersUsed.add(newNumber); // Mark this number as used
             }
         }
     });
 }
 
-function getRandomAvailableNumber() {
-    // Implement logic to return a random available number from the 1-90 pool
-    // Ensure it hasn't been used already in the tickets
-    // Placeholder for demonstration purposes
-    return Math.floor(Math.random() * 90) + 1;
+function getRandomAvailableNumber(allNumbersUsed) {
+    let number;
+    do {
+        number = Math.floor(Math.random() * 90) + 1;
+    } while (allNumbersUsed.has(number)); // Ensure the number is not already used
+    
+    return number;
 }
+
 
 // Call this function to generate the tickets
 const generatedTickets = generateTickets();
