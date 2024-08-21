@@ -247,17 +247,23 @@ body {
     border: 2px solid #000; /* Strong black border */
     padding: 10px; /* Added padding for spacing */
     margin-bottom: 15px;
-    background-color: #fff; /* White background */
+    background-color: #FFD700; /* Soothing grey background */
     border-radius: 10px; /* Rounded corners */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Box shadow for 3D effect */
-    width: 400%; /* Make the ticket box fill its container */
-    max-width: 900px; /* Set a maximum width for the ticket container */
+    width: 600px; /* Set fixed width for the ticket container */
     display: flex;
     flex-direction: column;
     align-items: center;
     box-sizing: border-box; /* Ensure padding and borders are included in the width */
 }
 
+/* Adjust the width of the ticket table to fit within the dynamic-ticket container */
+.dynamic-ticket .ticket-table {
+    width: 100%; /* Make the table fill the width of the ticket container */
+    border-collapse: collapse; /* Ensure table borders collapse */
+}
+
+/* Table cells styling */
 .dynamic-ticket .ticket-table td {
     border: 1px solid #000; /* Reduced border thickness */
     text-align: center;
@@ -268,12 +274,10 @@ body {
     background-color: #f8f8f8; /* Light gray background for cells */
     color: #333; /* Darker text color */
     box-sizing: border-box; /* Ensure padding and borders are included in the width and height */
+    font-weight: bold; /* Make numbers inside the cells bold */
 }
 
-.dynamic-ticket .ticket-table td:not(.empty) {
-    font-weight: bold;
-}
-
+/* Empty cell styling */
 .dynamic-ticket .empty {
     background-color: #eee; /* Lighter gray for empty cells */
 }
