@@ -247,15 +247,31 @@ body {
     border: 2px solid #000; /* Strong black border */
     padding: 10px; /* Added padding for spacing */
     margin-bottom: 15px;
-    background-color: #FFD700; /* Soothing grey background */
+    background-color: #FFD700; /* Soothing background color */
     border-radius: 10px; /* Rounded corners */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Box shadow for 3D effect */
     width: 600px; /* Set fixed width for the ticket container */
     display: flex;
-    text: bold;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start; /* Align items to the start of the container */
     box-sizing: border-box; /* Ensure padding and borders are included in the width */
+}
+
+/* Flex container for header and owner sections */
+.dynamic-ticket-header {
+    display: flex;
+    justify-content: space-between; /* Space between header and owner */
+    width: 100%; /* Make the header section full width */
+    margin-bottom: 10px; /* Space between header and ticket table */
+}
+
+/* Header and owner sections */
+.dynamic-ticket-header .ticket-header {
+    font-weight: bold; /* Make header text bold */
+}
+
+.dynamic-ticket-header .ticket-owner {
+    text-align: right; /* Align owner text to the right */
 }
 
 /* Adjust the width of the ticket table to fit within the dynamic-ticket container */
@@ -283,52 +299,34 @@ body {
     background-color: #eee; /* Lighter gray for empty cells */
 }
 
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+    .dynamic-ticket {
+        width: 100%; /* Make the ticket container full width on mobile */
+        padding: 5px; /* Reduced padding for smaller screens */
+    }
+
+    .dynamic-ticket-header {
+        flex-direction: column; /* Stack header and owner vertically */
+        align-items: flex-start; /* Align items to the start of the container */
+    }
+
+    .dynamic-ticket-header .ticket-owner {
+        text-align: left; /* Align owner text to the left */
+        margin-top: 5px; /* Space above the owner section */
+    }
+
+    .dynamic-ticket .ticket-table td {
+        font-size: 14px; /* Smaller font size for better readability on small screens */
+        width: 25px; /* Reduced width for smaller screens */
+        height: 25px; /* Reduced height for smaller screens */
+    }
+}
+
+
     </style>
 
-    <div class="container mx-auto mt-8">
-        <div class="flex flex-wrap justify-center">
-            <div class="ticket">
-                <div class="ticket-header">Ticket #1</div>
-                <div class="ticket-owner">Owner: John Doe</div>
-                <table class="ticket-table">
-                    <tr>
-                        <td class="empty"></td>
-                        <td>14</td>
-                        <td class="empty"></td>
-                        <td>33</td>
-                        <td class="empty"></td>
-                        <td>56</td>
-                        <td class="empty"></td>
-                        <td>70</td>
-                        <td class="empty"></td>
-                    </tr>
-                    <tr>
-                        <td>8</td>
-                        <td class="empty"></td>
-                        <td>23</td>
-                        <td class="empty"></td>
-                        <td>45</td>
-                        <td class="empty"></td>
-                        <td>68</td>
-                        <td class="empty"></td>
-                        <td>89</td>
-                    </tr>
-                    <tr>
-                        <td class="empty"></td>
-                        <td>18</td>
-                        <td class="empty"></td>
-                        <td>39</td>
-                        <td class="empty"></td>
-                        <td>59</td>
-                        <td class="empty"></td>
-                        <td>75</td>
-                        <td class="empty"></td>
-                    </tr>
-                </table>
-            </div>
-            <!-- Add more tickets as needed -->
-        </div>
-    </div>
+
  <!-- Firebase SDKs -->
       <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
