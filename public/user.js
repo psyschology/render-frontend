@@ -277,3 +277,36 @@ function generateTickets() {
 // Call this function to generate the tickets
 const generatedTickets = generateTickets();
 console.log(generatedTickets);
+
+// Display Awards
+function updateAwardsDisplay() {
+    const awardsRef = ref(database, 'gameInfo/awards');
+
+    onValue(awardsRef, (snapshot) => {
+        const awards = snapshot.val();
+        const awardsDiv = document.getElementById('awards');
+        awardsDiv.innerHTML = '';
+
+        Object.keys(awards).forEach((award) => {
+            const awardBox = document.createElement('div');
+            awardBox.className = 'award-box';
+
+            const awardName = document.createElement('h3');
+            awardName.textContent = award;
+
+            const awardDetails = document.createElement('p');
+            if (awards[award].winner) {
+                awardDetails.textContent = `Winner: Ticket ${awards[award].winner.ticketNumber} - ${awards[award].winner.owner}`;
+            } else {
+                awardDetails.textContent = `Winning Amount: ${awards[award].amount}`;
+            }
+
+            awardBox.appendChild(awardName);
+            awardBox.appendChild(awardDetails);
+            awardsDiv.appendChild(awardBox);
+        });
+    });
+}
+
+displayGameBoard();
+updateAwardsDisplay();
