@@ -113,6 +113,7 @@ onValue(ref(database, 'tickets'), (snapshot) => {
                     ${ticket.bookedBy ? `Booked by: ${ticket.bookedBy}` : `<a href="https://wa.me/99999" target="_blank">Book Now</a>`}
                 </div>
                 <div id="ticket-${ticketNumber}" class="ticket-grid"></div>
+                <div class="ticket-awards" id="awards-${ticketNumber}"></div> <!-- Award section -->
             `;
             ticketsContainer.appendChild(ticketDiv);
 
@@ -133,9 +134,37 @@ onValue(ref(database, 'tickets'), (snapshot) => {
                 table.appendChild(tr);
             }
             ticketGrid.appendChild(table);
+
+            // Check for awards
+            const awardsDiv = document.getElementById(`awards-${ticketNumber}`);
+            const awards = checkForAwards(ticket.numbers, calledNumbers);
+            if (awards.length > 0) {
+                awardsDiv.innerHTML = `Awards: ${awards.join(', ')}`;
+                awardsDiv.classList.add('awarded'); // Add a class for styling
+            } else {
+                awardsDiv.innerHTML = 'No awards yet';
+                awardsDiv.classList.add('no-awards'); // Add a class for styling
+            }
         }
     }
 });
+
+// Example checkForAwards function (You would replace this with your actual logic)
+function checkForAwards(ticketNumbers, calledNumbers) {
+    // Logic to check for awards goes here
+    // This example assumes you return an array of awards
+    let awards = [];
+
+    // Example condition: Full house
+    if (ticketNumbers.every(num => calledNumbers.includes(num))) {
+        awards.push('Full House');
+    }
+
+    // Add more award conditions as needed
+
+    return awards;
+}
+
 
 function generateBoard(board) {
     const table = document.createElement('table');
@@ -293,7 +322,7 @@ function checkForAwards(ticket, ticketNumber, owner) {
         for (let j = 0; j < 9; j++) {
             const number = ticket[i][j];
             if (number) { // Check only if the cell is not empty
-                console.log(`Checking number ${number} at row ${i+1}, column ${j+1}`);
+                console.log(`Checking number ${number} at row ${i + 1}, column ${j + 1}`);
                 if (!calledNumbers.includes(number)) {
                     console.log(`Number ${number} not found in called numbers`);
                     if (i === 0) isFirstRow = false; // First row
@@ -334,15 +363,16 @@ function checkForAwards(ticket, ticketNumber, owner) {
     }
 }
 
-// Update award information in Firebase
+// Function to update the award in the database
 function updateAward(awardType, ticketNumber, owner) {
-    console.log(`Award ${awardType} is being updated for ticket ${ticketNumber} owned by ${owner}`);
-    set(ref(database, `awards/${awardType}`), {
-        ticketNumber,
-        owner,
-        achieved: true
+    const awardRef = ref(database, `awards/${awardType}`);
+    set(awardRef, {
+        ticketNumber: ticketNumber,
+        owner: owner
     });
+    console.log(`Award ${awardType} updated for Ticket ${ticketNumber} owned by ${owner}`);
 }
+
 // Function to update the award status on the page
 function updateAwardDisplay(awardType, ticketNumber, owner) {
     const statusElement = document.getElementById(`${awardType}-status`);
