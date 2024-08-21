@@ -301,6 +301,27 @@ function updateAward(awardType, ticketNumber, owner) {
     });
 }
 
+// Display awards when the game starts
+onValue(ref(database, 'gameInfo/status'), (snapshot) => {
+    const status = snapshot.val();
+    if (status === 'started') {
+        initializeNumberPool();
+        onValue(ref(database, 'gameInfo/board'), (snapshot) => {
+            const board = snapshot.val();
+            if (board) {
+                gameBoard.style.display = 'block';
+                generateBoard(board);
+                startNumberCalling();
+                document.getElementById('awards').style.display = 'block'; // Show awards
+            }
+        });
+    } else if (status === 'ended') {
+        gameBoard.style.display = 'none';
+        stopNumberCalling();
+        document.getElementById('awards').style.display = 'none'; // Hide awards
+    }
+});
+
 // Update the UI with award information
 onValue(ref(database, 'awards'), (snapshot) => {
     const awards = snapshot.val();
@@ -308,9 +329,15 @@ onValue(ref(database, 'awards'), (snapshot) => {
         for (const [awardType, awardInfo] of Object.entries(awards)) {
             const awardDiv = document.getElementById(awardType);
             if (awardInfo.achieved) {
-                awardDiv.innerHTML = `<h3>${awardType.replace(/([A-Z])/g, ' $1')}</h3><p>Winner: Ticket ${awardInfo.ticketNumber}, Owner: ${awardInfo.owner}. <a href="https://wa.me/99999">Contact Admin</a></p>`;
+                awardDiv.innerHTML = `
+                    <h3>${awardType.replace(/([A-Z])/g, ' $1')}</h3>
+                    <p>Winner: Ticket ${awardInfo.ticketNumber}, Owner: ${awardInfo.owner}. <a href="https://wa.me/99999">Contact Admin</a></p>
+                `;
             } else {
-                awardDiv.innerHTML = `<h3>${awardType.replace(/([A-Z])/g, ' $1')}</h3><p>No winner yet.</p>`;
+                awardDiv.innerHTML = `
+                    <h3>${awardType.replace(/([A-Z])/g, ' $1')}</h3>
+                    <p>No winner yet.</p>
+                `;
             }
         }
     }
