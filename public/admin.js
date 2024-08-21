@@ -37,36 +37,24 @@ document.addEventListener('DOMContentLoaded', () => {
 startGameButton.addEventListener('click', () => {
     set(ref(database, 'gameInfo/status'), 'started');
     set(ref(database, 'gameInfo/board'), generateBoardNumbers());
-  showMessage('Game has started.');
 });
 
 endGameButton.addEventListener('click', () => {
     set(ref(database, 'gameInfo/status'), 'ended');
     set(ref(database, 'gameInfo/board'), null); // Clear the board
     set(ref(database, 'calledNumbers'), []);
-          showMessage('Game has ended.');
 });
 
 setGameTimeButton.addEventListener('click', () => {
-        const gameDateTime = gameDateTimeInput.value;
-
-        if (gameDateTime) {
-            const [date, time] = gameDateTime.split('T');
-            const formattedDate = new Date(gameDateTime).toLocaleString();
-
-            // Update the database with the selected date and time
-            update(ref(database, 'gameInfo'), {
-                gameTime: time,
-                gameDate: date
-            }).then(() => {
-                showMessage(`Game time set to ${formattedDate}.`);
-            }).catch(error => {
-                showMessage(`Error updating game time: ${error.message}`);
-            });
-        } else {
-            showMessage('Please select a date and time.');
-        }
-    });
+    const gameTime = prompt("Enter the game start time (YYYY-MM-DDTHH:MM:SSZ):");
+    const gameDate = prompt("Enter the game start date (YYYY-MM-DD):");
+    if (gameTime && gameDate) {
+        update(ref(database, 'gameInfo'), {
+            gameTime: gameTime,
+            gameDate: gameDate
+        });
+    }
+});
 
 setTicketLimitButton.addEventListener('click', () => {
     const limit = prompt("Enter the number of tickets:");
@@ -92,7 +80,7 @@ bookTicketButton.addEventListener('click', () => {
     const ticketNumber = prompt("Enter the ticket number to book:");
     const ownerName = prompt("Enter the owner's name:");
     if (ticketNumber && ownerName) {
-        update(ref(database, `tickets/${ticketNumber}`), {
+        update(ref(database, tickets/${ticketNumber}), {
             bookedBy: ownerName
         });
     }
@@ -111,10 +99,10 @@ function loadAwardSettings() {
 
         for (const [awardName, awardDetails] of Object.entries(awards)) {
             const row = document.createElement('tr');
-            row.innerHTML = `
+            row.innerHTML = 
                 <td>${awardName}</td>
                 <td><input type="number" id="${awardName}Amount" value="${awardDetails.amount || 0}" /></td>
-            `;
+            ;
             awardsTable.appendChild(row);
         }
     });
@@ -126,7 +114,7 @@ function saveAwardSettings() {
     const awardNames = ['fullHouse', 'firstRow']; // Add more awards as needed
 
     awardNames.forEach(name => {
-        const amount = document.getElementById(`${name}Amount`).value;
+        const amount = document.getElementById(${name}Amount).value;
         awards[name] = { amount: parseFloat(amount) };
     });
 
@@ -149,29 +137,29 @@ function displayAwardsTable() {
     table.innerHTML = ''; // Clear existing content
 
     // Create table headers
-    table.innerHTML = `
+    table.innerHTML = 
         <tr>
             <th>Award Name</th>
             <th>Price</th>
             <th>Action</th>
         </tr>
-    `;
+    ;
 
     // Populate table with awards
     awards.forEach(award => {
         const row = document.createElement('tr');
-        row.innerHTML = `
+        row.innerHTML = 
             <td>${award.name}</td>
             <td><input type="text" value="${award.price}" data-id="${award.id}"></td>
             <td><button onclick="saveAward(${award.id})">Save</button></td>
-        `;
+        ;
         table.appendChild(row);
     });
 }
 
 // Function to save award price
 function saveAward(awardId) {
-    const input = document.querySelector(`input[data-id="${awardId}"]`);
+    const input = document.querySelector(input[data-id="${awardId}"]);
     const price = input.value;
 
     // Save the price to the database
@@ -205,55 +193,3 @@ function updateAwardPrice(awardId, price) {
 
 // Initialize the awards table
 displayAwardsTable();
-
-// Function to check and update the visibility of the ticket status message
-function updateTicketStatusMessage() {
-    const ticketStatusMessage = document.getElementById('ticketStatusMessage');
-
-    onValue(ref(database, 'gameInfo/status'), (snapshot) => {
-        const status = snapshot.val();
-        if (status === 'started') {
-            ticketStatusMessage.style.display = 'none';
-        } else {
-            ticketStatusMessage.style.display = 'block';
-        }
-    });
-}
-
-// Initialize ticket status message visibility
-updateTicketStatusMessage();
-
-// Add event listeners to update the ticket status message when the game status changes
-startGameButton.addEventListener('click', updateTicketStatusMessage);
-endGameButton.addEventListener('click', updateTicketStatusMessage);
-
-
-document.addEventListener('DOMContentLoaded', () => {
-    const setGameTimeButton = document.getElementById('setGameTime');
-    const gameDateTimeInput = document.getElementById('gameDateTime');
-    const messageDiv = document.getElementById('message');
-
-    setGameTimeButton.addEventListener('click', () => {
-        const gameDateTime = gameDateTimeInput.value;
-
-        if (gameDateTime) {
-            const [date, time] = gameDateTime.split('T');
-            const formattedDate = new Date(gameDateTime).toLocaleString();
-
-            // Update the database with the selected date and time
-            update(ref(database, 'gameInfo'), {
-                gameTime: time,
-                gameDate: date
-            });
-
-            showMessage(`Game time set to ${formattedDate}.`);
-        } else {
-            showMessage('Please select a date and time.');
-        }
-    });
-
-    function showMessage(message) {
-        messageDiv.textContent = message;
-        messageDiv.classList.add('bg-green-500', 'p-4', 'rounded');
-    }
-});
