@@ -342,3 +342,45 @@ onValue(ref(database, 'awards'), (snapshot) => {
         }
     }
 });
+
+
+//UPDATE 11:27 AM
+
+// user.js
+
+// Function to check if a ticket has won
+function checkWinner(ticketNumber) {
+    // Assuming you have a list of winning combinations
+    const winningCombinations = getWinningCombinations();
+
+    // Check if the ticket number matches any winning combination
+    for (const combo of winningCombinations) {
+        if (combo.includes(ticketNumber)) {
+            // Update the award box
+            updateAwardBox(ticketNumber, combo);
+            return;
+        }
+    }
+}
+
+// Function to update the award box
+function updateAwardBox(ticketNumber, combo) {
+    // Get the award box element
+    const awardBox = document.getElementById('award-box');
+
+    // Display the winning ticket and award
+    awardBox.innerHTML = `Ticket ${ticketNumber} is a winner! Award: ${getAwardForCombination(combo)}`;
+
+    // Optionally, contact admin functionality
+    contactAdmin(ticketNumber);
+}
+
+// Function to contact the admin (optional)
+function contactAdmin(ticketNumber) {
+    // Your code to notify admin
+    console.log(`Admin notified about ticket ${ticketNumber}`);
+}
+
+// Simulate a ticket being checked
+const ticketNumber = 8; // This should be dynamically set
+checkWinner(ticketNumber);
