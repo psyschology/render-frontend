@@ -279,35 +279,3 @@ const generatedTickets = generateTickets();
 console.log(generatedTickets);
 
 
-function updateAwardsDisplay() {
-    const awardsRef = ref(database, 'gameInfo/awards');
-
-    onValue(awardsRef, (snapshot) => {
-        const awards = snapshot.val();
-        const awardsDiv = document.getElementById('awards');
-        awardsDiv.innerHTML = ''; // Clear existing content
-
-        Object.keys(awards).forEach((award) => {
-            const awardBox = document.createElement('div');
-            awardBox.className = 'award-box';
-
-            const awardName = document.createElement('h3');
-            awardName.textContent = award;
-
-            const awardDetails = document.createElement('p');
-            if (awards[award].winner) {
-                awardDetails.textContent = `Winner: Ticket ${awards[award].winner.ticketNumber} - ${awards[award].winner.owner}`;
-            } else {
-                awardDetails.textContent = `Winning Amount: ${awards[award].amount}`;
-            }
-
-            awardBox.appendChild(awardName);
-            awardBox.appendChild(awardDetails);
-            awardsDiv.appendChild(awardBox);
-        });
-    });
-}
-
-// Call this function whenever the awards data changes
-updateAwardsDisplay();
-
