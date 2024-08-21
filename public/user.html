@@ -136,47 +136,49 @@
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.3); /* Shadow for the main container */
     display: flex;
     justify-content: center; /* Center the contents horizontally */
+    flex-direction: column; /* Stack content vertically */
 }
 
 .info-box {
     background-color: #003366; /* Dark blue background for the boxes */
     color: #FFFFFF; /* White text */
-    padding: 2px 5px; /* Reduced padding inside the boxes */
+    padding: 10px 15px; /* Adjusted padding for better spacing */
     border-radius: 7px; /* Rounded corners to match the box */
     border: 3px solid #FFFFFF; /* White border to distinguish each box */
-    font-size: 16px; /* Adjusted font size */
+    font-size: 18px; /* Adjusted font size */
     text-align: center; /* Center the text */
     min-width: 100px; /* Minimum width for uniformity */
-    max-width: 350px; /* Maximum width for uniformity */
+    max-width: 100%; /* Allow full width in mobile view */
     box-sizing: border-box; /* Include padding and border in the element's total width and height */
     box-shadow: 0 0 20px rgba(0, 51, 102, 0.7); /* Dark blue glow effect */
+    margin: 10px 0; /* Add margin between boxes */
     flex: 1; /* Allow boxes to expand evenly */
-    margin: 0; /* Remove margin to ensure no space between boxes */
 }
 
 #gameInfo {
     display: flex;
-    gap: 0; /* Remove gap between the boxes */
+    flex-direction: column; /* Stack boxes vertically */
+    gap: 10px; /* Add gap between boxes */
 }
 
 /* Mobile Styles */
 @media (max-width: 600px) {
     .info-box {
         font-size: 16px; /* Adjust font size for mobile */
-        padding: 2px 3px; /* Reduced padding for smaller screens */
-        min-width: 70px; /* Smaller width for mobile */
-    }
-
-    #gameInfo {
-        flex-direction: column; /* Stack boxes on smaller screens */
-        gap: 0; /* Remove gap for mobile */
+        padding: 10px 15px; /* Adjusted padding for smaller screens */
+        min-width: 100%; /* Full width for mobile */
     }
 
     .main-box {
-        padding: 4px; /* Adjust padding for the main box on mobile */
-        max-width: 100px; /* Full width on mobile */
+        padding: 10px; /* Adjust padding for the main box on mobile */
+        max-width: 100%; /* Full width on mobile */
+    }
+
+    #gameInfo {
+        gap: 10px; /* Add gap between boxes */
     }
 }
+
         </style>
 
     <div id="gameBoard">
