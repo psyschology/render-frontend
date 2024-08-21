@@ -272,11 +272,12 @@ body {
 
 .dynamic-ticket-header .ticket-owner {
     text-align: right; /* Align owner text to the right */
+    margin-left: auto; /* Push owner to the right end */
 }
 
 /* Adjust the width of the ticket table to fit within the dynamic-ticket container */
 .dynamic-ticket .ticket-table {
-    width: 570px; /* Make the table fill the width of the ticket container */
+    width: 100%; /* Make the table fill the width of the ticket container */
     border-collapse: collapse; /* Ensure table borders collapse */
 }
 
@@ -302,7 +303,7 @@ body {
 /* Mobile-specific styles */
 @media (max-width: 768px) {
     .dynamic-ticket {
-        width: 100%; /* Make the ticket container full width on mobile */
+        width: 300px; /* Make the ticket container full width on mobile */
         padding: 5px; /* Reduced padding for smaller screens */
     }
 
@@ -313,6 +314,7 @@ body {
 
     .dynamic-ticket-header .ticket-owner {
         text-align: left; /* Align owner text to the left */
+        margin-left: 0; /* Remove margin-left for mobile */
         margin-top: 5px; /* Space above the owner section */
     }
 
@@ -322,6 +324,7 @@ body {
         height: 25px; /* Reduced height for smaller screens */
     }
 }
+
 
 
     </style>
