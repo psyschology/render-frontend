@@ -275,5 +275,5 @@ function generateTickets() {
 }
 
 // Call this function to generate the tickets
-const generatedTickets = generateTickets();
+const generatedTickets = generateTicket();
 console.log(generatedTickets);
