@@ -157,5 +157,5 @@ function saveAwardSettings() {
 // Event listener for the save button
 document.getElementById('saveAwardsButton').addEventListener('click', saveAwardSettings);
 
-// Call this function to initialize the settings when the admin page loads
+// Initialize the settings when the admin page loads
 loadAwardSettings();
