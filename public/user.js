@@ -104,7 +104,7 @@ onValue(ref(database, 'tickets'), (snapshot) => {
     for (const [ticketNumber, ticket] of Object.entries(tickets)) {
         if (ticketNumber !== 'limit') {
             const ticketDiv = document.createElement('div');
-            ticketDiv.className = 'dynamic-ticket'; // Add class for styling
+            ticketDiv.className = 'ticket'; // Add class for styling
             ticketDiv.innerHTML = `
                 <div class="ticket-header">Ticket ${ticketNumber}</div>
                 <div class="ticket-owner">
@@ -275,5 +275,5 @@ function generateTickets() {
 }
 
 // Call this function to generate the tickets
-const generatedTickets = generateTicket();
+const generatedTickets = generateTickets();
 console.log(generatedTickets);
