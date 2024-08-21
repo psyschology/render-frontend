@@ -122,7 +122,7 @@ console.log(generatedTickets);
 
         // Generate tickets based on the specified limit
         for (let i = 1; i <= limit; i++) {
-            tickets[i] = generateTicket(limit);
+            tickets[i] = generateTicket();
         }
 
         // Store the tickets in Firebase
