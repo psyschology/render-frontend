@@ -123,3 +123,39 @@ function generateBoardNumbers() {
     const board = Array.from({ length: 90 }, (_, i) => i + 1);
     return board;
 }
+// Load award settings and display them in the admin interface
+function loadAwardSettings() {
+    onValue(ref(database, 'awardSettings'), (snapshot) => {
+        const awards = snapshot.val();
+        const awardsTable = document.getElementById('awardsTable');
+        awardsTable.innerHTML = ''; // Clear previous content
+
+        for (const [awardName, awardDetails] of Object.entries(awards)) {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${awardName}</td>
+                <td><input type="number" id="${awardName}Amount" value="${awardDetails.amount || 0}" /></td>
+            `;
+            awardsTable.appendChild(row);
+        }
+    });
+}
+
+// Save award settings to Firebase
+function saveAwardSettings() {
+    const awards = {};
+    const awardNames = ['fullHouse', 'firstRow']; // Add more awards as needed
+
+    awardNames.forEach(name => {
+        const amount = document.getElementById(`${name}Amount`).value;
+        awards[name] = { amount: parseFloat(amount) };
+    });
+
+    set(ref(database, 'awardSettings'), awards);
+}
+
+// Event listener for the save button
+document.getElementById('saveAwardsButton').addEventListener('click', saveAwardSettings);
+
+// Call this function to initialize the settings when the admin page loads
+loadAwardSettings();
