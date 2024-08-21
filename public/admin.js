@@ -201,9 +201,9 @@ function updateTicketStatusMessage() {
     onValue(ref(database, 'gameInfo/status'), (snapshot) => {
         const status = snapshot.val();
         if (status === 'started') {
-            ticketStatusMessage.style.display = 'block';
-        } else {
             ticketStatusMessage.style.display = 'none';
+        } else {
+            ticketStatusMessage.style.display = 'block';
         }
     });
 }
