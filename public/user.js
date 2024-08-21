@@ -105,27 +105,24 @@ onValue(ref(database, 'tickets'), (snapshot) => {
         if (ticketNumber !== 'limit') {
             const ticketDiv = document.createElement('div');
             ticketDiv.className = 'ticket'; // Add class for styling
-            ticketDiv.innerHTML = 
+            ticketDiv.innerHTML = `
                 <div class="ticket-header">Ticket ${ticketNumber}</div>
                 <div class="ticket-owner">
-                    ${ticket.bookedBy ? Booked by: ${ticket.bookedBy} : <a href="https://wa.me/99999" target="_blank">Book Now</a>}
+                    ${ticket.bookedBy ? `Booked by: ${ticket.bookedBy}` : `<a href="https://wa.me/99999" target="_blank">Book Now</a>`}
                 </div>
                 <div id="ticket-${ticketNumber}" class="ticket-grid"></div>
-            ;
+            `;
             ticketsContainer.appendChild(ticketDiv);
 
-            const ticketGrid = document.getElementById(ticket-${ticketNumber});
+            const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
             const table = document.createElement('table');
             table.className = 'ticket-table'; // Add a class for styling
-            
             for (let i = 0; i < 3; i++) {
                 const tr = document.createElement('tr');
                 for (let j = 0; j < 9; j++) {
                     const td = document.createElement('td');
-                    const number = ticket.numbers[i * 9 + j]; // Extract number based on matrix position
-                    
-                    td.className = (number !== null && number !== undefined) ? '' : 'empty'; // Empty cell styling
-                    td.textContent = number || ''; // Display number or empty
+                    td.className = ticket.blockedIndices.includes(i * 9 + j) ? '' : 'empty';
+                    td.textContent = ticket.numbers[i * 9 + j] || '';
                     if (calledNumbers.includes(ticket.numbers[i * 9 + j])) {
                         td.classList.add('called'); // Add class to highlight called numbers
                     }
@@ -137,8 +134,6 @@ onValue(ref(database, 'tickets'), (snapshot) => {
         }
     }
 });
-
-
 
 function generateBoard(board) {
     const table = document.createElement('table');
@@ -247,4 +242,38 @@ function announceNumber(number) {
     }
 }
 
+// Function to generate tickets based on the rules
+function generateTickets() {
+    const tickets = [];
+    for (let i = 0; i < 6; i++) {
+        const ticket = Array.from({ length: 3 }, () => Array(9).fill(''));
+        const columns = Array.from({ length: 9 }, (_, index) => index);
 
+        columns.forEach(column => {
+            const availableRows = [0, 1, 2];
+            const numbersInColumn = [];
+
+            for (let j = 0; j < 3; j++) {
+                const randomIndex = Math.floor(Math.random() * availableRows.length);
+                const row = availableRows.splice(randomIndex, 1)[0];
+                const start = column * 10 + 1;
+                const end = column === 8 ? 90 : start + 9;
+                let number;
+
+                do {
+                    number = Math.floor(Math.random() * (end - start + 1)) + start;
+                } while (numbersInColumn.includes(number));
+
+                numbersInColumn.push(number);
+                ticket[row][column] = number;
+            }
+        });
+
+        tickets.push(ticket);
+    }
+    return tickets;
+}
+
+// Call this function to generate the tickets
+const generatedTickets = generateTickets();
+console.log(generatedTickets);
