@@ -115,7 +115,7 @@ bookTicketButton.addEventListener('click', () => {
     const ticketNumber = prompt("Enter the ticket number to book:");
     const ownerName = prompt("Enter the owner's name:");
     if (ticketNumber && ownerName) {
-        update(ref(database, `tickets/${ticketNumber}`), {
+        update(ref(database, tickets/${ticketNumber}), {
             bookedBy: ownerName
         });
     }
@@ -125,56 +125,67 @@ function generateBoardNumbers() {
     const board = Array.from({ length: 90 }, (_, i) => i + 1);
     return board;
 }
-
-// Set Awards
 setAwardsButton.addEventListener('click', () => {
     const awards = {};
-    const awardTypes = ['Full House', 'Second Full House', 'First Row'];
+    const awardTypes = ['Full House', 'Second Full House', 'First Row']; // You can add more types as needed
 
     awardTypes.forEach((award) => {
         const amount = prompt(`Enter the winning amount for ${award}:`);
         awards[award] = {
             amount: amount,
-            winner: null
+            winner: null // Initially, no winner
         };
     });
 
     set(ref(database, 'gameInfo/awards'), awards);
 });
-
-// Helper Functions
-function generateBoardNumbers() {
-    return Array.from({ length: 90 }, (_, i) => i + 1);
-}
-
-function updateAwardsDisplay() {
+function checkAwards(ticketNumber, ticketData) {
     const awardsRef = ref(database, 'gameInfo/awards');
 
-    onValue(awardsRef, (snapshot) => {
-        const awards = snapshot.val();
-        const awardsDiv = document.getElementById('awards');
-        awardsDiv.innerHTML = '';
+    // Get the current awards from the database
+    get(awardsRef).then((snapshot) => {
+        if (snapshot.exists()) {
+            const awards = snapshot.val();
 
-        Object.keys(awards).forEach((award) => {
-            const awardBox = document.createElement('div');
-            awardBox.className = 'award-box';
-
-            const awardName = document.createElement('h3');
-            awardName.textContent = award;
-
-            const awardDetails = document.createElement('p');
-            if (awards[award].winner) {
-                awardDetails.textContent = `Winner: Ticket ${awards[award].winner.ticketNumber} - ${awards[award].winner.owner}`;
-            } else {
-                awardDetails.textContent = `Winning Amount: ${awards[award].amount}`;
-            }
-
-            awardBox.appendChild(awardName);
-            awardBox.appendChild(awardDetails);
-            awardsDiv.appendChild(awardBox);
-        });
+            Object.keys(awards).forEach((award) => {
+                if (awards[award].winner === null) { // Only check if no winner has been declared
+                    if (award === 'Full House' && isFullHouse(ticketData)) {
+                        update(ref(database, `gameInfo/awards/${award}`), {
+                            winner: {
+                                ticketNumber: ticketNumber,
+                                owner: ticketData.bookedBy
+                            }
+                        });
+                    } else if (award === 'First Row' && isFirstRow(ticketData)) {
+                        update(ref(database, `gameInfo/awards/${award}`), {
+                            winner: {
+                                ticketNumber: ticketNumber,
+                                owner: ticketData.bookedBy
+                            }
+                        });
+                    }
+                    // Add logic for other awards like Second Full House, etc.
+                }
+            });
+        }
     });
 }
 
-updateAwardsDisplay();
+function isFullHouse(ticketData) {
+    return ticketData.numbers.every((num, index) => ticketData.blockedIndices.includes(index) || num.marked);
+}
 
+function isFirstRow(ticketData) {
+    return ticketData.numbers.slice(0, 9).every((num, index) => ticketData.blockedIndices.includes(index) || num.marked);
+}
+
+// Call this function whenever a number is marked on a ticket
+markNumberOnTicket(ticketNumber, number).then(() => {
+    const ticketRef = ref(database, `tickets/${ticketNumber}`);
+    get(ticketRef).then((snapshot) => {
+        if (snapshot.exists()) {
+            const ticketData = snapshot.val();
+            checkAwards(ticketNumber, ticketData);
+        }
+    });
+});
