@@ -244,33 +244,56 @@ function announceNumber(number) {
 
 // Function to generate tickets based on the rules
 function generateTickets() {
-    const tickets = [];
-    for (let i = 0; i < 6; i++) {
-        const ticket = Array.from({ length: 3 }, () => Array(9).fill(''));
-        const columns = Array.from({ length: 9 }, (_, index) => index);
+    // Initialize the number ranges for each column
+    const columns = [
+        Array.from({ length: 9 }, (_, i) => i + 1),        // Column 1: 1-9
+        Array.from({ length: 10 }, (_, i) => i + 10),      // Column 2: 10-19
+        Array.from({ length: 10 }, (_, i) => i + 20),      // Column 3: 20-29
+        Array.from({ length: 10 }, (_, i) => i + 30),      // Column 4: 30-39
+        Array.from({ length: 10 }, (_, i) => i + 40),      // Column 5: 40-49
+        Array.from({ length: 10 }, (_, i) => i + 50),      // Column 6: 50-59
+        Array.from({ length: 10 }, (_, i) => i + 60),      // Column 7: 60-69
+        Array.from({ length: 10 }, (_, i) => i + 70),      // Column 8: 70-79
+        Array.from({ length: 11 }, (_, i) => i + 80)       // Column 9: 80-90
+    ];
 
-        columns.forEach(column => {
-            const availableRows = [0, 1, 2];
-            const numbersInColumn = [];
+    // Shuffle numbers within each column
+    columns.forEach(column => column.sort(() => Math.random() - 0.5));
 
-            for (let j = 0; j < 3; j++) {
-                const randomIndex = Math.floor(Math.random() * availableRows.length);
-                const row = availableRows.splice(randomIndex, 1)[0];
-                const start = column * 10 + 1;
-                const end = column === 8 ? 90 : start + 9;
-                let number;
+    // Initialize 6 tickets, each as a 3x9 matrix filled with nulls
+    const tickets = Array.from({ length: 6 }, () => Array.from({ length: 3 }, () => Array(9).fill(null)));
 
-                do {
-                    number = Math.floor(Math.random() * (end - start + 1)) + start;
-                } while (numbersInColumn.includes(number));
+    // Distribute numbers across tickets while following the rules
+    columns.forEach((columnNumbers, colIndex) => {
+        let availableTickets = Array.from({ length: 6 }, (_, i) => i); // Indices of available tickets
 
-                numbersInColumn.push(number);
-                ticket[row][column] = number;
+        columnNumbers.forEach((number, rowIndex) => {
+            // Choose a random ticket from available tickets for this number
+            const ticketIndex = availableTickets[Math.floor(Math.random() * availableTickets.length)];
+            const ticketRow = tickets[ticketIndex];
+            
+            // Find an empty spot in the current column of the chosen ticket
+            let placed = false;
+            for (let i = 0; i < 3; i++) {
+                if (ticketRow[i][colIndex] === null) {
+                    ticketRow[i][colIndex] = number;
+                    placed = true;
+                    break;
+                }
+            }
+            
+            // If number was placed, remove this ticket from available ones
+            if (placed) {
+                availableTickets = availableTickets.filter(index => index !== ticketIndex);
             }
         });
+    });
 
-        tickets.push(ticket);
-    }
+    // Shuffle the rows of each ticket so that the numbers are randomly distributed while maintaining column-wise sorting
+    tickets.forEach(ticket => {
+        ticket.forEach(row => row.sort((a, b) => a - b));
+    });
+
     return tickets;
 }
 
