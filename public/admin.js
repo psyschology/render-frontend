@@ -159,3 +159,70 @@ document.getElementById('saveAwardsButton').addEventListener('click', saveAwardS
 
 // Initialize the settings when the admin page loads
 loadAwardSettings();
+
+//UPDATE 11:25 am
+// admin.js
+
+// Function to display the awards table
+function displayAwardsTable() {
+    const awards = getLoadedAwards(); // Fetch the loaded awards
+    const table = document.getElementById('awards-table');
+    table.innerHTML = ''; // Clear existing content
+
+    // Create table headers
+    table.innerHTML = `
+        <tr>
+            <th>Award Name</th>
+            <th>Price</th>
+            <th>Action</th>
+        </tr>
+    `;
+
+    // Populate table with awards
+    awards.forEach(award => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${award.name}</td>
+            <td><input type="text" value="${award.price}" data-id="${award.id}"></td>
+            <td><button onclick="saveAward(${award.id})">Save</button></td>
+        `;
+        table.appendChild(row);
+    });
+}
+
+// Function to save award price
+function saveAward(awardId) {
+    const input = document.querySelector(`input[data-id="${awardId}"]`);
+    const price = input.value;
+
+    // Save the price to the database
+    updateAwardPrice(awardId, price)
+        .then(response => {
+            if (response.success) {
+                alert('Award price updated successfully!');
+            } else {
+                alert('Failed to update award price.');
+            }
+        });
+}
+
+// Mock function to get loaded awards
+function getLoadedAwards() {
+    // Replace with actual logic to fetch awards
+    return [
+        { id: 1, name: 'First Full House', price: '1000' },
+        { id: 2, name: 'Second Full House', price: '500' },
+        // Add more awards as needed
+    ];
+}
+
+// Mock function to update award price
+function updateAwardPrice(awardId, price) {
+    // Replace with actual API call to save award price
+    return new Promise(resolve => {
+        setTimeout(() => resolve({ success: true }), 500);
+    });
+}
+
+// Initialize the awards table
+displayAwardsTable();
