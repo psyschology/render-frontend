@@ -343,6 +343,30 @@ function updateAward(awardType, ticketNumber, owner) {
         achieved: true
     });
 }
+// Function to update the award status on the page
+function updateAwardDisplay(awardType, ticketNumber, owner) {
+    const statusElement = document.getElementById(`${awardType}-status`);
+    if (ticketNumber && owner) {
+        statusElement.textContent = `Won by Ticket ${ticketNumber}, Owner: ${owner}`;
+    } else {
+        statusElement.textContent = "No winner yet";
+    }
+}
+
+// Example function to fetch award data from Firebase and update the page
+function fetchAndDisplayAwards() {
+    const awardsRef = ref(database, 'awards/');
+    onValue(awardsRef, (snapshot) => {
+        const awards = snapshot.val();
+        updateAwardDisplay('full-house', awards.fullHouse?.ticketNumber, awards.fullHouse?.owner);
+        updateAwardDisplay('first-row', awards.firstRow?.ticketNumber, awards.firstRow?.owner);
+        updateAwardDisplay('second-row', awards.secondRow?.ticketNumber, awards.secondRow?.owner);
+        updateAwardDisplay('third-row', awards.thirdRow?.ticketNumber, awards.thirdRow?.owner);
+    });
+}
+
+// Call this function to initialize the display
+fetchAndDisplayAwards();
 
 
 // Display awards when the game starts
