@@ -105,36 +105,34 @@ onValue(ref(database, 'tickets'), (snapshot) => {
         if (ticketNumber !== 'limit') {
             const ticketDiv = document.createElement('div');
             ticketDiv.className = 'dynamic-ticket'; // Add class for styling
-            ticketDiv.innerHTML = 
+            ticketDiv.innerHTML = `
                 <div class="ticket-header">Ticket ${ticketNumber}</div>
                 <div class="ticket-owner">
-                    ${ticket.bookedBy ? Booked by: ${ticket.bookedBy} : <a href="https://wa.me/99999" target="_blank">Book Now</a>}
+                    ${ticket.bookedBy ? `Booked by: ${ticket.bookedBy}` : `<a href="https://wa.me/99999" target="_blank">Book Now</a>`}
                 </div>
                 <div id="ticket-${ticketNumber}" class="ticket-grid"></div>
-            ;
+            `;
             ticketsContainer.appendChild(ticketDiv);
 
-            const ticketGrid = document.getElementById(ticket-${ticketNumber});
+            const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
             const table = document.createElement('table');
             table.className = 'ticket-table'; // Add a class for styling
-            for (let i = 0; i < 3; i++) {
+
+            ticket.forEach(row => {
                 const tr = document.createElement('tr');
-                for (let j = 0; j < 9; j++) {
+                row.forEach(cell => {
                     const td = document.createElement('td');
-                    td.className = ticket.blockedIndices.includes(i * 9 + j) ? '' : 'empty';
-                    td.textContent = ticket.numbers[i * 9 + j] || '';
-                    if (calledNumbers.includes(ticket.numbers[i * 9 + j])) {
-                        td.classList.add('called'); // Add class to highlight called numbers
-                    }
+                    td.className = cell === null ? 'empty' : ''; // Add class for blocked cells
+                    td.textContent = cell || '';
                     tr.appendChild(td);
-                }
+                });
                 table.appendChild(tr);
-            }
+            });
+
             ticketGrid.appendChild(table);
         }
     }
 });
-
 
 
 function generateBoard(board) {
