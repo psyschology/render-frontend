@@ -37,24 +37,36 @@ document.addEventListener('DOMContentLoaded', () => {
 startGameButton.addEventListener('click', () => {
     set(ref(database, 'gameInfo/status'), 'started');
     set(ref(database, 'gameInfo/board'), generateBoardNumbers());
+  showMessage('Game has started.');
 });
 
 endGameButton.addEventListener('click', () => {
     set(ref(database, 'gameInfo/status'), 'ended');
     set(ref(database, 'gameInfo/board'), null); // Clear the board
     set(ref(database, 'calledNumbers'), []);
+          showMessage('Game has ended.');
 });
 
 setGameTimeButton.addEventListener('click', () => {
-    const gameTime = prompt("Enter the game start time (YYYY-MM-DDTHH:MM:SSZ):");
-    const gameDate = prompt("Enter the game start date (YYYY-MM-DD):");
-    if (gameTime && gameDate) {
-        update(ref(database, 'gameInfo'), {
-            gameTime: gameTime,
-            gameDate: gameDate
-        });
-    }
-});
+        const gameDateTime = gameDateTimeInput.value;
+
+        if (gameDateTime) {
+            const [date, time] = gameDateTime.split('T');
+            const formattedDate = new Date(gameDateTime).toLocaleString();
+
+            // Update the database with the selected date and time
+            update(ref(database, 'gameInfo'), {
+                gameTime: time,
+                gameDate: date
+            }).then(() => {
+                showMessage(`Game time set to ${formattedDate}.`);
+            }).catch(error => {
+                showMessage(`Error updating game time: ${error.message}`);
+            });
+        } else {
+            showMessage('Please select a date and time.');
+        }
+    });
 
 setTicketLimitButton.addEventListener('click', () => {
     const limit = prompt("Enter the number of tickets:");
