@@ -123,35 +123,36 @@ body {
 
     <!-- Styles -->
     <style>
-       .main-box {
-    background-color: #8A2BE2; /* Purple background to match the main container in the image */
+.main-box {
+    background-color: #8A2BE2; /* Purple background for the main container */
     padding: 5px; /* Reduced padding inside the main container */
-    border-radius: 20px; /* Rounded corners for the main container */
+    border-radius: 10px; /* Rounded corners for the main container */
     border: 3px solid #FFFFFF; /* White border around the main container */
-    max-width: 900px; /* Maximum width for the main container */
+    max-width: 580px; /* Maximum width for the main container */
     margin: 0 auto; /* Center the main container on the page */
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.3); /* Shadow for the main container */
+    display: flex;
+    justify-content: center; /* Center the contents horizontally */
 }
 
 .info-box {
-    background-color: #FFCC00; /* Yellow background to match the boxes */
-    color: #000000; /* Black text */
-    padding: 4px 5px; /* Reduced padding inside the boxes */
-    border-radius: 10px; /* Rounded corners to match the box */
-    border: 5px solid #FFFFFF; /* White border to distinguish each box */
-    font-size: 1.5rem; /* Increase font size to match the image */
-    font-weight: bold; /* Bold text */
+    background-color: #003366; /* Dark blue background for the boxes */
+    color: #FFFFFF; /* White text */
+    padding: 2px 5px; /* Reduced padding inside the boxes */
+    border-radius: 7px; /* Rounded corners to match the box */
+    border: 3px solid #FFFFFF; /* White border to distinguish each box */
+    font-size: 16px; /* Adjusted font size */
     text-align: center; /* Center the text */
-    min-width: 180px; /* Minimum width for uniformity */
-    max-width: 250px; /* Maximum width for uniformity */
+    min-width: 100px; /* Minimum width for uniformity */
+    max-width: 350px; /* Maximum width for uniformity */
     box-sizing: border-box; /* Include padding and border in the element's total width and height */
-    box-shadow: 0 0 20px rgba(255, 204, 0, 0.7); /* Strong yellow glow effect */
-    margin-right: -5px; /* Overlap the boxes slightly */
+    box-shadow: 0 0 20px rgba(0, 51, 102, 0.7); /* Dark blue glow effect */
+    flex: 1; /* Allow boxes to expand evenly */
+    margin: 0; /* Remove margin to ensure no space between boxes */
 }
 
 #gameInfo {
     display: flex;
-    justify-content: space-between; /* Align boxes with space between them */
     gap: 0; /* Remove gap between the boxes */
 }
 
@@ -165,16 +166,15 @@ body {
 
     #gameInfo {
         flex-direction: column; /* Stack boxes on smaller screens */
-        gap: 5px; /* Smaller gap for mobile */
+        gap: 0; /* Remove gap for mobile */
     }
 
     .main-box {
-        padding: 7px; /* Reduced padding for the main box on mobile */
+        padding: 7px; /* Adjust padding for the main box on mobile */
         max-width: 100%; /* Full width on mobile */
     }
 }
-
-    </style>
+        </style>
 
     <div id="gameBoard">
         <table id="board"></table>
