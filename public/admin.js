@@ -24,6 +24,8 @@ const endGameButton = document.getElementById('endGame');
 const setGameTimeButton = document.getElementById('setGameTime');
 const setTicketLimitButton = document.getElementById('setTicketLimit');
 const bookTicketButton = document.getElementById('bookTicket');
+const setAwardsButton = document.getElementById('setAwards');
+
 
 // Prompt for password on page load
 document.addEventListener('DOMContentLoaded', () => {
@@ -124,5 +126,55 @@ function generateBoardNumbers() {
     return board;
 }
 
+// Set Awards
+setAwardsButton.addEventListener('click', () => {
+    const awards = {};
+    const awardTypes = ['Full House', 'Second Full House', 'First Row'];
 
+    awardTypes.forEach((award) => {
+        const amount = prompt(`Enter the winning amount for ${award}:`);
+        awards[award] = {
+            amount: amount,
+            winner: null
+        };
+    });
+
+    set(ref(database, 'gameInfo/awards'), awards);
+});
+
+// Helper Functions
+function generateBoardNumbers() {
+    return Array.from({ length: 90 }, (_, i) => i + 1);
+}
+
+function updateAwardsDisplay() {
+    const awardsRef = ref(database, 'gameInfo/awards');
+
+    onValue(awardsRef, (snapshot) => {
+        const awards = snapshot.val();
+        const awardsDiv = document.getElementById('awards');
+        awardsDiv.innerHTML = '';
+
+        Object.keys(awards).forEach((award) => {
+            const awardBox = document.createElement('div');
+            awardBox.className = 'award-box';
+
+            const awardName = document.createElement('h3');
+            awardName.textContent = award;
+
+            const awardDetails = document.createElement('p');
+            if (awards[award].winner) {
+                awardDetails.textContent = `Winner: Ticket ${awards[award].winner.ticketNumber} - ${awards[award].winner.owner}`;
+            } else {
+                awardDetails.textContent = `Winning Amount: ${awards[award].amount}`;
+            }
+
+            awardBox.appendChild(awardName);
+            awardBox.appendChild(awardDetails);
+            awardsDiv.appendChild(awardBox);
+        });
+    });
+}
+
+updateAwardsDisplay();
 
