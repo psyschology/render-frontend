@@ -107,17 +107,16 @@ onValue(ref(database, 'tickets'), (snapshot) => {
         if (ticketNumber !== 'limit') {
             const ticketDiv = document.createElement('div');
             ticketDiv.className = 'ticket'; // Add class for styling
-            ticketDiv.innerHTML = `
+            ticketDiv.innerHTML = 
                 <div class="ticket-header">Ticket ${ticketNumber}</div>
                 <div class="ticket-owner">
-                    ${ticket.bookedBy ? `Booked by: ${ticket.bookedBy}` : `<a href="https://wa.me/99999" target="_blank">Book Now</a>`}
+                    ${ticket.bookedBy ? Booked by: ${ticket.bookedBy} : <a href="https://wa.me/99999" target="_blank">Book Now</a>}
                 </div>
                 <div id="ticket-${ticketNumber}" class="ticket-grid"></div>
-                <div class="ticket-awards" id="awards-${ticketNumber}"></div> <!-- Award section -->
-            `;
+            ;
             ticketsContainer.appendChild(ticketDiv);
 
-            const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
+            const ticketGrid = document.getElementById(ticket-${ticketNumber});
             const table = document.createElement('table');
             table.className = 'ticket-table'; // Add a class for styling
             for (let i = 0; i < 3; i++) {
@@ -134,36 +133,9 @@ onValue(ref(database, 'tickets'), (snapshot) => {
                 table.appendChild(tr);
             }
             ticketGrid.appendChild(table);
-
-            // Check for awards
-            const awardsDiv = document.getElementById(`awards-${ticketNumber}`);
-            const awards = checkForAwards(ticket.numbers, calledNumbers);
-            if (awards.length > 0) {
-                awardsDiv.innerHTML = `Awards: ${awards.join(', ')}`;
-                awardsDiv.classList.add('awarded'); // Add a class for styling
-            } else {
-                awardsDiv.innerHTML = 'No awards yet';
-                awardsDiv.classList.add('no-awards'); // Add a class for styling
-            }
         }
     }
 });
-
-// Example checkForAwards function (You would replace this with your actual logic)
-function checkForAwards(ticketNumbers, calledNumbers) {
-    // Logic to check for awards goes here
-    // This example assumes you return an array of awards
-    let awards = [];
-
-    // Example condition: Full house
-    if (ticketNumbers.every(num => calledNumbers.includes(num))) {
-        awards.push('Full House');
-    }
-
-    // Add more award conditions as needed
-
-    return awards;
-}
 
 
 function generateBoard(board) {
