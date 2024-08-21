@@ -22,7 +22,70 @@
     <!-- Award settings will be dynamically inserted here -->
 </table>
 <button id="saveAwardsButton">Save Awards</button>
+<style>
+    /* Admin Page Styles */
+#awardsTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
 
+#awardsTable th, #awardsTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+#awardsTable th {
+    background-color: #f4f4f4;
+}
+
+button {
+    background-color: #4CAF50; /* Green */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* User Page Styles */
+#awards {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+#awards h2 {
+    margin-top: 0;
+}
+
+#awards div {
+    margin-bottom: 10px;
+}
+
+#awards h3 {
+    margin: 0;
+    color: #333;
+}
+
+#awards p {
+    margin: 5px 0;
+    color: #666;
+}
+
+</style>
 
     <!-- Firebase SDKs -->
     <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
