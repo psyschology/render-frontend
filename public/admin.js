@@ -193,3 +193,24 @@ function updateAwardPrice(awardId, price) {
 
 // Initialize the awards table
 displayAwardsTable();
+
+// Function to check and update the visibility of the ticket status message
+function updateTicketStatusMessage() {
+    const ticketStatusMessage = document.getElementById('ticketStatusMessage');
+
+    onValue(ref(database, 'gameInfo/status'), (snapshot) => {
+        const status = snapshot.val();
+        if (status === 'started') {
+            ticketStatusMessage.style.display = 'block';
+        } else {
+            ticketStatusMessage.style.display = 'none';
+        }
+    });
+}
+
+// Initialize ticket status message visibility
+updateTicketStatusMessage();
+
+// Add event listeners to update the ticket status message when the game status changes
+startGameButton.addEventListener('click', updateTicketStatusMessage);
+endGameButton.addEventListener('click', updateTicketStatusMessage);
