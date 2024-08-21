@@ -69,11 +69,13 @@ onValue(ref(database, 'gameInfo/status'), (snapshot) => {
                 gameBoard.style.display = 'block';
                 generateBoard(board);
                 startNumberCalling();
+                                document.getElementById('awards').style.display = 'block'; // Show awards
             }
         });
     } else if (status === 'ended') {
         gameBoard.style.display = 'none';
         stopNumberCalling();
+                document.getElementById('awards').style.display = 'none'; // Hide awards
     }
 });
 
@@ -277,3 +279,39 @@ function generateTickets() {
 // Call this function to generate the tickets
 const generatedTickets = generateTickets();
 console.log(generatedTickets);
+// Check ticket for awards
+function checkForAwards(ticket, ticketNumber, owner) {
+    const isFullHouse = ticket.every(row => row.every(number => calledNumbers.includes(number)));
+    if (isFullHouse) {
+        updateAward('fullHouse', ticketNumber, owner);
+    }
+
+    const isFirstRow = ticket[0].every(number => calledNumbers.includes(number));
+    if (isFirstRow) {
+        updateAward('firstRow', ticketNumber, owner);
+    }
+}
+
+// Update award information in Firebase
+function updateAward(awardType, ticketNumber, owner) {
+    set(ref(database, `awards/${awardType}`), {
+        ticketNumber,
+        owner,
+        achieved: true
+    });
+}
+
+// Update the UI with award information
+onValue(ref(database, 'awards'), (snapshot) => {
+    const awards = snapshot.val();
+    if (awards) {
+        for (const [awardType, awardInfo] of Object.entries(awards)) {
+            const awardDiv = document.getElementById(awardType);
+            if (awardInfo.achieved) {
+                awardDiv.innerHTML = `<h3>${awardType.replace(/([A-Z])/g, ' $1')}</h3><p>Winner: Ticket ${awardInfo.ticketNumber}, Owner: ${awardInfo.owner}. <a href="https://wa.me/99999">Contact Admin</a></p>`;
+            } else {
+                awardDiv.innerHTML = `<h3>${awardType.replace(/([A-Z])/g, ' $1')}</h3><p>No winner yet.</p>`;
+            }
+        }
+    }
+});
