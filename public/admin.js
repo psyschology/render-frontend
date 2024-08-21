@@ -119,13 +119,13 @@ function generateTickets(limit) {
 
 
 // Call this function to generate the tickets
-const generatedTickets = generateTickets();
+const generatedTickets = generateTickets(limit);
 console.log(generatedTickets);
 
 
         // Generate tickets based on the specified limit
         for (let i = 1; i <= limit; i++) {
-            tickets[i] = generateTicket();
+            tickets[i] = generateTicket(limit);
         }
 
         // Store the tickets in Firebase
