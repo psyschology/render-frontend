@@ -114,81 +114,75 @@ onValue(ref(database, 'tickets'), (snapshot) => {
             `;
             ticketsContainer.appendChild(ticketDiv);
 
-         const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
-const table = document.createElement('table');
-table.className = 'ticket-table'; // Add a class for styling
+            const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
+            const table = document.createElement('table');
+            table.className = 'ticket-table'; // Add a class for styling
 
-// Function to generate a random number from a given range
-const getRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+            // Initialize an array for columns to hold numbers
+            const columns = Array.from({ length: 9 }, () => []);
+            
+            // Populate columns with numbers ensuring at least one number per column
+            for (let col = 0; col < 9; col++) {
+                const startRange = col * 10 + 1;
+                const endRange = startRange + 9;
+                
+                // Generate exactly 3 numbers per column
+                while (columns[col].length < 3) {
+                    const number = getRandomNumber(startRange, endRange);
+                    if (!columns[col].includes(number)) {
+                        columns[col].push(number);
+                    }
+                }
+            }
 
-// Initialize an array for columns to hold numbers
-const columns = Array.from({ length: 9 }, () => []);
+            // Sort each column in ascending order
+            columns.forEach(col => col.sort((a, b) => a - b));
 
-// Generate numbers for each column
-for (let col = 0; col < 9; col++) {
-    const startRange = col * 10 + 1;
-    const endRange = startRange + 9;
-    
-    while (columns[col].length < 3) { // At least one number per column
-        const number = getRandomNumber(startRange, endRange);
-        if (!columns[col].includes(number)) {
-            columns[col].push(number);
-        }
-    }
-}
+            // Function to create and fill rows
+            const createRow = (columns, rowIndex, calledNumbers) => {
+                const tr = document.createElement('tr');
+                const cells = Array(9).fill(null); // Create an array with 9 empty cells
 
-// Ensure each column has at least one number and sort numbers in ascending order
-columns.forEach(col => col.sort((a, b) => a - b));
+                // Place numbers in the row
+                columns.forEach((col, colIndex) => {
+                    if (col[rowIndex] !== undefined) {
+                        cells[colIndex] = col[rowIndex];
+                    }
+                });
 
-// Function to create and fill rows
-const createRow = (columns, rowIndex, calledNumbers) => {
-    const tr = document.createElement('tr');
-    const cells = Array(9).fill(null); // Create an array with 9 empty cells
-    
-    // Place numbers in the row
-    let numbersPlaced = 0;
-    columns.forEach((col, colIndex) => {
-        if (col[rowIndex] !== undefined) {
-            cells[colIndex] = col[rowIndex];
-            numbersPlaced++;
-        }
-    });
+                // Ensure each row has exactly 5 numbers
+                while (cells.filter(value => value !== null).length < 5) {
+                    const emptyIndex = cells.indexOf(null);
+                    if (emptyIndex !== -1) {
+                        cells[emptyIndex] = ' ';
+                    }
+                }
 
-    // Fill remaining cells with empty values to ensure exactly 5 numbers
-    while (numbersPlaced < 5) {
-        const emptyIndex = cells.indexOf(null);
-        if (emptyIndex !== -1) {
-            cells[emptyIndex] = ' ';
-            numbersPlaced++;
-        }
-    }
+                // Fill cells
+                cells.forEach((value, colIndex) => {
+                    const td = document.createElement('td');
+                    td.className = value === ' ' ? 'empty' : ''; // Empty cell styling
+                    td.textContent = value === ' ' ? '' : value; // Display number or empty
+                    if (ticket.calledNumbers && ticket.calledNumbers.includes(value)) {
+                        td.classList.add('called'); // Highlight called numbers
+                    }
+                    tr.appendChild(td);
+                });
 
-    // Fill cells
-    cells.forEach((value, colIndex) => {
-        const td = document.createElement('td');
-        td.className = value === ' ' ? 'empty' : ''; // Empty cell styling
-        td.textContent = value === ' ' ? '' : value; // Display number or empty
-        if (calledNumbers.includes(value)) {
-            td.classList.add('called'); // Highlight called numbers
-        }
-        tr.appendChild(td);
-    });
+                return tr;
+            };
 
-    return tr;
-};
+            // Create 3 rows for the ticket
+            for (let rowIndex = 0; rowIndex < 3; rowIndex++) {
+                const row = createRow(columns, rowIndex, ticket.calledNumbers || []);
+                table.appendChild(row);
+            }
 
-// Create 3 rows for the ticket
-for (let rowIndex = 0; rowIndex < 3; rowIndex++) {
-    const row = createRow(columns, rowIndex, calledNumbers);
-    table.appendChild(row);
-}
-
-ticketGrid.appendChild(table);
-
-   
+            ticketGrid.appendChild(table);
         }
     }
 });
+
 
 function generateBoard(board) {
     const table = document.createElement('table');
