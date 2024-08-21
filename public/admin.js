@@ -25,7 +25,6 @@ const setGameTimeButton = document.getElementById('setGameTime');
 const setTicketLimitButton = document.getElementById('setTicketLimit');
 const bookTicketButton = document.getElementById('bookTicket');
 
-
 // Prompt for password on page load
 document.addEventListener('DOMContentLoaded', () => {
     const password = prompt('Enter password:');
