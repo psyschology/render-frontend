@@ -113,7 +113,7 @@ bookTicketButton.addEventListener('click', () => {
     const ticketNumber = prompt("Enter the ticket number to book:");
     const ownerName = prompt("Enter the owner's name:");
     if (ticketNumber && ownerName) {
-        update(ref(database, tickets/${ticketNumber}), {
+        update(ref(database, `tickets/${ticketNumber}`), {
             bookedBy: ownerName
         });
     }
