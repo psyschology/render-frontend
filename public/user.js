@@ -286,11 +286,16 @@ function checkForAwards(ticket, ticketNumber, owner) {
     let isSecondRow = true;
     let isThirdRow = true;
 
+    console.log("Checking ticket:", ticketNumber, "for owner:", owner);
+    console.log("Called numbers are:", calledNumbers);
+
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 9; j++) {
             const number = ticket[i][j];
             if (number) { // Check only if the cell is not empty
+                console.log(`Checking number ${number} at row ${i+1}, column ${j+1}`);
                 if (!calledNumbers.includes(number)) {
+                    console.log(`Number ${number} not found in called numbers`);
                     if (i === 0) isFirstRow = false; // First row
                     if (i === 1) isSecondRow = false; // Second row
                     if (i === 2) isThirdRow = false; // Third row
@@ -301,21 +306,37 @@ function checkForAwards(ticket, ticketNumber, owner) {
     }
 
     if (isFullHouse) {
+        console.log("Full House achieved!");
         updateAward('fullHouse', ticketNumber, owner);
+    } else {
+        console.log("Full House not achieved.");
     }
+
     if (isFirstRow) {
+        console.log("First Row achieved!");
         updateAward('firstRow', ticketNumber, owner);
+    } else {
+        console.log("First Row not achieved.");
     }
+
     if (isSecondRow) {
+        console.log("Second Row achieved!");
         updateAward('secondRow', ticketNumber, owner);
+    } else {
+        console.log("Second Row not achieved.");
     }
+
     if (isThirdRow) {
+        console.log("Third Row achieved!");
         updateAward('thirdRow', ticketNumber, owner);
+    } else {
+        console.log("Third Row not achieved.");
     }
 }
 
 // Update award information in Firebase
 function updateAward(awardType, ticketNumber, owner) {
+    console.log(`Award ${awardType} is being updated for ticket ${ticketNumber} owned by ${owner}`);
     set(ref(database, `awards/${awardType}`), {
         ticketNumber,
         owner,
