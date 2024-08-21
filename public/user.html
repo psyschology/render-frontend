@@ -195,6 +195,15 @@ body {
     background-color: #ffeb3b; /* Highlight color for called numbers */
     color: #000; /* Text color for highlighted numbers */
 }
+    /* Mobile optimization */
+@media (max-width: 600px) {
+    .called-numbers-table td {
+        width: 1.5rem; /* Reduce width for smaller screens */
+        height: 1.5rem; /* Reduce height for smaller screens */
+        font-size: 0.8rem; /* Adjust font size for smaller screens */
+        padding: 0.1rem; /* Adjust padding for smaller screens */
+    }
+}
 </style>
 
 <div id="search-container">
@@ -240,7 +249,7 @@ body {
     background-color: #fff; /* White background */
     border-radius: 10px; /* Rounded corners */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Box shadow for 3D effect */
-    max-width: 300px; /* Set a maximum width for the ticket container */
+    max-width: 900px; /* Set a maximum width for the ticket container */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -257,11 +266,11 @@ body {
 .ticket-grid {
     display: flex;
     justify-content: center;
-    width: 100%;
+    width: 300%;
 }
 
 .ticket-table {
-    width: 100%;
+    width: 300%;
     border-collapse: collapse;
 }
 
