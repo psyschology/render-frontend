@@ -114,7 +114,58 @@ onValue(ref(database, 'tickets'), (snapshot) => {
             `;
             ticketsContainer.appendChild(ticketDiv);
 
-            
+         const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
+const table = document.createElement('table');
+table.className = 'ticket-table'; // Add a class for styling
+
+// Function to generate a random number from a given range
+const getRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+// Function to create and fill rows
+const createRow = (numbers, calledNumbers) => {
+    const tr = document.createElement('tr');
+    const cells = Array(9).fill(null); // Create an array with 9 empty cells
+
+    // Place numbers in cells
+    numbers.forEach((number, index) => {
+        const col = Math.floor(number / 10); // Determine column based on number range
+        cells[col] = number; // Assign number to the appropriate column
+    });
+
+    // Fill cells
+    cells.forEach((number, colIndex) => {
+        const td = document.createElement('td');
+        td.className = number !== null ? '' : 'empty'; // Empty cell styling
+        td.textContent = number || ''; // Display number or empty
+        if (calledNumbers.includes(number)) {
+            td.classList.add('called'); // Highlight called numbers
+        }
+        tr.appendChild(td);
+    });
+
+    return tr;
+};
+
+// Create ticket rows with 5 numbers and 4 empty cells per row
+for (let i = 0; i < 3; i++) {
+    const rowNumbers = [];
+    const startRange = i * 10 + 1;
+    const endRange = startRange + 9;
+
+    while (rowNumbers.length < 5) {
+        const number = getRandomNumber(startRange, endRange);
+        if (!rowNumbers.includes(number)) {
+            rowNumbers.push(number);
+        }
+    }
+
+    // Fill remaining cells with empty values
+    const row = createRow(rowNumbers, calledNumbers);
+    table.appendChild(row);
+}
+
+ticketGrid.appendChild(table);
+   
         }
     }
 });
