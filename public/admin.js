@@ -61,8 +61,41 @@ setTicketLimitButton.addEventListener('click', () => {
     if (limit) {
         const tickets = {};
 
-       
+        function generateTicket() {
+            const ticketNumbers = Array(27).fill(null); // 27 cells for the ticket
+            const blockedIndices = [];
 
+            for (let row = 0; row < 3; row++) {
+                const rowNumbers = new Set();
+                
+                // Generate 5 unique numbers for the row
+                while (rowNumbers.size < 5) {
+                    const col = Math.floor(Math.random() * 9); // Choose a column randomly (0-8)
+                    let num = Math.floor(Math.random() * 10) + 1 + (col * 10); // Generate number based on column range
+                    
+                    // Ensure the number is not already in the ticket and fits within the column range
+                    if (!ticketNumbers.includes(num)) {
+                        rowNumbers.add({ num, col });
+                    }
+                }
+
+                // Sort row numbers by column to ensure proper placement
+                const sortedRowNumbers = Array.from(rowNumbers).sort((a, b) => a.col - b.col);
+                for (let { num, col } of sortedRowNumbers) {
+                    const index = row * 9 + col; // Calculate the index in the ticket array
+                    ticketNumbers[index] = num; // Place the number in the correct cell
+                }
+
+                // Determine which columns will be blocked
+                const blockedCols = Array.from({ length: 9 }, (_, i) => i).filter(i => !sortedRowNumbers.some(({ col }) => col === i));
+                blockedIndices.push(...blockedCols.map(col => row * 9 + col)); // Calculate blocked indices
+            }
+
+            return {
+                numbers: ticketNumbers,
+                blockedIndices: blockedIndices
+            };
+        }
 
         // Generate tickets based on the specified limit
         for (let i = 1; i <= limit; i++) {
@@ -90,106 +123,6 @@ function generateBoardNumbers() {
     const board = Array.from({ length: 90 }, (_, i) => i + 1);
     return board;
 }
-// Load award settings and display them in the admin interface
-function loadAwardSettings() {
-    onValue(ref(database, 'awardSettings'), (snapshot) => {
-        const awards = snapshot.val();
-        const awardsTable = document.getElementById('awardsTable');
-        awardsTable.innerHTML = ''; // Clear previous content
 
-        for (const [awardName, awardDetails] of Object.entries(awards)) {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${awardName}</td>
-                <td><input type="number" id="${awardName}Amount" value="${awardDetails.amount || 0}" /></td>
-            `;
-            awardsTable.appendChild(row);
-        }
-    });
-}
 
-// Save award settings to Firebase
-function saveAwardSettings() {
-    const awards = {};
-    const awardNames = ['fullHouse', 'firstRow']; // Add more awards as needed
 
-    awardNames.forEach(name => {
-        const amount = document.getElementById(`${name}Amount`).value;
-        awards[name] = { amount: parseFloat(amount) };
-    });
-
-    set(ref(database, 'awardSettings'), awards);
-}
-
-// Event listener for the save button
-document.getElementById('saveAwardsButton').addEventListener('click', saveAwardSettings);
-
-// Initialize the settings when the admin page loads
-loadAwardSettings();
-
-//UPDATE 11:25 am
-// admin.js
-
-// Function to display the awards table
-function displayAwardsTable() {
-    const awards = getLoadedAwards(); // Fetch the loaded awards
-    const table = document.getElementById('awards-table');
-    table.innerHTML = ''; // Clear existing content
-
-    // Create table headers
-    table.innerHTML = `
-        <tr>
-            <th>Award Name</th>
-            <th>Price</th>
-            <th>Action</th>
-        </tr>
-    `;
-
-    // Populate table with awards
-    awards.forEach(award => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${award.name}</td>
-            <td><input type="text" value="${award.price}" data-id="${award.id}"></td>
-            <td><button onclick="saveAward(${award.id})">Save</button></td>
-        `;
-        table.appendChild(row);
-    });
-}
-
-// Function to save award price
-function saveAward(awardId) {
-    const input = document.querySelector(`input[data-id="${awardId}"]`);
-    const price = input.value;
-
-    // Save the price to the database
-    updateAwardPrice(awardId, price)
-        .then(response => {
-            if (response.success) {
-                alert('Award price updated successfully!');
-            } else {
-                alert('Failed to update award price.');
-            }
-        });
-}
-
-// Mock function to get loaded awards
-function getLoadedAwards() {
-    // Replace with actual logic to fetch awards
-    return [
-        { id: 1, name: 'First Full House', price: '1000' },
-        { id: 2, name: 'Second Full House', price: '500' },
-        // Add more awards as needed
-    ];
-}
-
-// Mock function to update award price
-function updateAwardPrice(awardId, price) {
-    // Replace with actual API call to save award price
-    return new Promise(resolve => {
-        setTimeout(() => resolve({ success: true }), 500);
-    });
-}
-
-// Initialize the awards table
-displayAwardsTable();
