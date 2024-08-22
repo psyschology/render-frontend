@@ -277,14 +277,19 @@
         font-size: 14px; /* Adjust font size for mobile */
         padding: 2px 5px; /* Reduced padding for smaller screens */
         min-width: 90px; /* Smaller width for mobile */
+        max-width: 340px;
+        margin: 0;
+        flex-basis: 0;
     }
 
     #gameInfo {
         justify-content: space-between; /* Ensure items are still spaced evenly */
+        width: 100%; /* Ensure it uses the full width of the parent */
+    flex-wrap: wrap; /* Allows wrapping, but we will manage it with media queries */
     }
 
     .main-box {
-        padding: 5px;
+        padding: 4px;
         max-width: 100%;
     }
 
@@ -367,7 +372,6 @@
 
 </style>
 
-        <input type="text" id="ticketSearchBar" class="search-bar" placeholder="Search for tickets...">
 <script>
     // Hide main content until the announcement is accepted
     const announcementPopup = document.getElementById('announcement-popup');
@@ -401,19 +405,6 @@
     }
 </script>
 
-<!-- Add this to your user HTML file -->
-<div id="awards" style="display: none;">
-    <h2>Awards</h2>
-    <div id="fullHouse">
-        <h3>Full House</h3>
-        <p>No winner yet.</p>
-    </div>
-    <div id="firstRow">
-        <h3>First Row</h3>
-        <p>No winner yet.</p>
-    </div>
-    <!-- Add more awards as needed -->
-</div>
 
 
     
