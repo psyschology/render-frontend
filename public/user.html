@@ -147,25 +147,48 @@
     <!-- Main Content -->
     <div id="main-content">
     <!-- Banner Image Section -->
-    <header class="mb-8">
-        <div class="flex justify-center">
-            <img src="banner.png" alt="Banner Image" class="w-full max-w-screen-xl" style="height: 50%; max-height: 200px;">
-        </div>
-    </header>
+<header class="mb-8">
+    <div class="flex justify-center">
+        <img src="banner.png" alt="Banner Image" class="w-full max-w-screen-xl rounded-lg" style="height: 50%; max-height: 200px;">
+    </div>
+</header>
 
+<!-- Divider -->
+<hr class="border-t-2 border-gray-600 my-4">
+
+<!-- Flex Row with Images Only -->
+<div class="flex-row">
+    <!-- Admin Login Image -->
+    <a href="admin.html" class="flex items-center justify-center">
+        <img src="agent.png" alt="Admin Login" class="h-12 w-12">
+    </a>
+
+    <!-- WhatsApp Image -->
+    <a href="https://wa.me/99999" target="_blank" class="flex items-center justify-center">
+        <img src="wp.png" alt="WhatsApp" class="h-12 w-12">
+    </a>
+
+    <!-- Call Image -->
+    <a href="tel:99999" class="flex items-center justify-center">
+        <img src="call.png" alt="Call" class="h-12 w-12">
+    </a>
+</div>
+
+<!-- Divider -->
+<hr class="border-t-2 border-gray-600 my-4">
 <style>
-/* For the Flex Container */
+    /* For the Flex Container */
 .flex-row {
     display: flex;
-    gap: 5px; /* Remove gaps between the boxes */
-    justify-content: space-between;
+    gap: 10px; /* Spacing between the images */
+    justify-content: center; /* Center the images horizontally */
 }
 
 /* For the Flex Items */
 .flex-row a {
     flex: 1; /* Allow items to take equal space */
     margin: 0; /* Remove margin between the items */
-    text-align: center; /* Center the text and icons */
+    text-align: center; /* Center the items */
 }
 
 /* Mobile Styles */
@@ -181,42 +204,16 @@
         margin-right: 5px; /* Ensure spacing between icon and text */
     }
 }
-.flex-row a {
-    display: flex;
-    align-items: center;
-    justify-content: center; /* Center text and icon */
-    text-align: center;
-    padding: 10px 8px; /* Adjust padding for consistency */
+
+/* Image Styling */
+.flex-row a img {
+    display: block; /* Remove any extra space below images */
+    max-width: 100%; /* Ensure images fit within their container */
+    height: auto; /* Maintain aspect ratio */
+    object-fit: contain; /* Maintain aspect ratio */
 }
 
-</style>
-
-<!-- HTML Section -->
-<!-- Divider -->
-<hr class="border-t-2 border-gray-600 my-4">
-
-<div class="flex-row">
-    <!-- Admin Login -->
-    <a href="admin.html" class="flex items-center text-lg bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
-        <img src="agent.png" alt="Admin Login" class="h-6 w-6 mr-2">
-        Login as Admin
-    </a>
-
-    <!-- WhatsApp -->
-    <a href="https://wa.me/99999" target="_blank" class="flex items-center text-lg bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
-        <img src="wp.png" alt="WhatsApp" class="h-6 w-6 mr-2">
-        WhatsApp Now
-    </a>
-
-    <!-- Call -->
-    <a href="tel:99999" class="flex items-center text-lg bg-red-600 hover:bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
-        <img src="call.png" alt="Call" class="h-6 w-6 mr-2">
-        Call Now
-    </a>
-</div>
-
-<!-- Divider -->
-<hr class="border-t-2 border-gray-600 my-4">
+    </style>
 
 
 
