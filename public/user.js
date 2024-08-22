@@ -116,7 +116,7 @@ onValue(ref(database, 'tickets'), (snapshot) => {
 
             const ticketGrid = document.getElementById(ticket-${ticketNumber});
             const table = document.createElement('table');
-            table.className = 'ticket-table'; // Add a class for styling
+            table.className = 'dynamic-ticket'; // Add a class for styling
             for (let i = 0; i < 3; i++) {
                 const tr = document.createElement('tr');
                 for (let j = 0; j < 9; j++) {
