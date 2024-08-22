@@ -208,7 +208,7 @@
 @media (max-width: 600px) {
     .info-box {
         font-size: 14px; /* Adjust font size for mobile */
-        padding: 2px 3px; /* Reduced padding for smaller screens */
+        padding: 2px 5px; /* Reduced padding for smaller screens */
         min-width: 90px; /* Smaller width for mobile */
     }
 
@@ -217,7 +217,7 @@
     }
 
     .main-box {
-        padding: 4px;
+        padding: 5px;
         max-width: 100%;
     }
 
@@ -254,12 +254,13 @@
     <div id="calledNumbersTable"></div>
 
 <style>
-    /* Styles for the called numbers table */
+/* Styles for the called numbers table */
 .called-numbers-table {
     border-collapse: collapse;
     width: 100%;
     border: 2px solid #333; /* Border for the entire table */
     margin-top: 20px;
+    overflow-x: auto; /* Ensure the table is scrollable on small screens */
 }
 
 .called-numbers-table tr {
@@ -267,33 +268,36 @@
 }
 
 .called-numbers-table td {
-    width: 2rem; /* Adjust width as needed */
-    height: 2rem; /* Adjust height as needed */
+    width: 1.5rem; /* Adjust width for mobile screens */
+    height: 1.5rem; /* Adjust height for mobile screens */
     text-align: center;
     vertical-align: middle;
     border: 1px solid #ccc; /* Border for each cell */
     background-color: #f0f0f0; /* Light background color */
     color: #333; /* Text color */
     font-weight: bold;
-    font-size: 1rem; /* Adjust font size as needed */
-    margin: 0.2rem; /* Space around cells */
-    padding: 0.2rem; /* Padding inside cells */
+    font-size: 0.8rem; /* Adjust font size for mobile screens */
+    padding: 0.1rem; /* Adjust padding for mobile screens */
     border-radius: 5px; /* Rounded corners for cells */
+    box-sizing: border-box; /* Ensure proper sizing */
 }
 
+/* Highlight style for called numbers */
 .called-numbers-table td.called {
     background-color: #ffeb3b; /* Highlight color for called numbers */
     color: #000; /* Text color for highlighted numbers */
 }
-    /* Mobile optimization */
+
+/* Mobile optimization */
 @media (max-width: 600px) {
     .called-numbers-table td {
-        width: 1.5rem; /* Reduce width for smaller screens */
-        height: 1.5rem; /* Reduce height for smaller screens */
-        font-size: 0.8rem; /* Adjust font size for smaller screens */
+        width: 1.2rem; /* Reduce width for smaller screens */
+        height: 1.2rem; /* Reduce height for smaller screens */
+        font-size: 0.7rem; /* Adjust font size for smaller screens */
         padding: 0.1rem; /* Adjust padding for smaller screens */
     }
 }
+
 </style>
 
 <div id="search-container">
