@@ -135,8 +135,6 @@ onValue(ref(database, 'tickets'), (snapshot) => {
     }
 });
 
-
-
 function generateBoard(board) {
     const table = document.createElement('table');
     for (let i = 0; i < 9; i++) {
@@ -192,9 +190,9 @@ function updateCalledNumbersTable() {
     let row = document.createElement('tr');
     table.appendChild(row);
 
-    // Fill the table with called numbers, dividing into rows of up to 23 columns
+    // Fill the table with called numbers, dividing into rows of up to 22 columns
     calledNumbers.forEach((number, index) => {
-        if (index % 23 === 0 && index !== 0) {
+        if (index % 22 === 0 && index !== 0) {
             row = document.createElement('tr');
             table.appendChild(row);
         }
@@ -205,77 +203,59 @@ function updateCalledNumbersTable() {
     });
 
     // Add empty cells to fill out the last row if necessary
-    const totalCells = Math.ceil(calledNumbers.length / 23) * 23;
-    for (let i = calledNumbers.length; i < totalCells; i++) {
-        if (i % 20 === 0 && i !== 0) {
-            row = document.createElement('tr');
-            table.appendChild(row);
-        }
+    const totalCells = Math.ceil(calledNumbers.length / 22) * 22;
+    const emptyCells = totalCells - calledNumbers.length;
+    for (let i = 0; i < emptyCells; i++) {
         const cell = document.createElement('td');
-        cell.textContent = '';
+        cell.className = 'empty'; // Class for empty cells
         row.appendChild(cell);
     }
 
-    // Clear previous content and add new table
-    calledNumbersTableContainer.innerHTML = '';
+    calledNumbersTableContainer.innerHTML = ''; // Clear previous content
     calledNumbersTableContainer.appendChild(table);
 }
 
-
-
 function updateTicketsWithCalledNumbers() {
-    const ticketTables = document.querySelectorAll('.ticket-grid table');
-    ticketTables.forEach(table => {
-        table.querySelectorAll('td').forEach(td => {
-            const number = parseInt(td.textContent);
+    const tickets = document.getElementsByClassName('ticket-table');
+    Array.from(tickets).forEach(ticket => {
+        Array.from(ticket.getElementsByTagName('td')).forEach(cell => {
+            const number = parseInt(cell.textContent);
             if (calledNumbers.includes(number)) {
-                td.style.backgroundColor = 'yellow'; // Mark called numbers in yellow
+                cell.classList.add('called');
+                cell.style.backgroundColor = 'yellow'; // Mark the cell in yellow
             }
         });
     });
 }
 
 function announceNumber(number) {
-    if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(`Number ${number}`);
-        speechSynthesis.speak(utterance);
-    } else {
-        console.warn('SpeechSynthesis is not supported in this browser.');
-    }
+    const msg = new SpeechSynthesisUtterance(number.toString());
+    msg.lang = 'en-IN'; // Set language for Indian English accent
+    speechSynthesis.speak(msg);
 }
 
-// Function to generate tickets based on the rules
-function generateTickets() {
-    const tickets = [];
-    for (let i = 0; i < 6; i++) {
-        const ticket = Array.from({ length: 3 }, () => Array(9).fill(''));
-        const columns = Array.from({ length: 9 }, (_, index) => index);
+function createTicket() {
+    const ticket = Array.from({ length: 27 }, () => null);
+    const blockedIndices = [];
 
-        columns.forEach(column => {
-            const availableRows = [0, 1, 2];
-            const numbersInColumn = [];
-
-            for (let j = 0; j < 3; j++) {
-                const randomIndex = Math.floor(Math.random() * availableRows.length);
-                const row = availableRows.splice(randomIndex, 1)[0];
-                const start = column * 10 + 1;
-                const end = column === 8 ? 90 : start + 9;
-                let number;
-
-                do {
-                    number = Math.floor(Math.random() * (end - start + 1)) + start;
-                } while (numbersInColumn.includes(number));
-
-                numbersInColumn.push(number);
-                ticket[row][column] = number;
-            }
+    // Allocate 5 numbers in each row
+    for (let row = 0; row < 3; row++) {
+        const indices = [...Array(9).keys()];
+        indices.sort(() => 0.5 - Math.random());
+        const selectedIndices = indices.slice(0, 5);
+        selectedIndices.forEach(index => {
+            let min = index * 10 + 1;
+            let max = index * 10 + 10;
+            if (index === 0) min = 1; // Adjust for 1-9 range
+            if (index === 8) max = 90; // Adjust for 81-90 range
+            const possibleNumbers = Array.from({ length: max - min + 1 }, (_, i) => i + min);
+            const chosenNumber = possibleNumbers[Math.floor(Math.random() * possibleNumbers.length)];
+            ticket[row * 9 + index] = chosenNumber;
         });
 
-        tickets.push(ticket);
+        // Store blocked indices for each row
+        blockedIndices.push(...selectedIndices.map(i => row * 9 + i));
     }
-    return tickets;
-}
 
-// Call this function to generate the tickets
-const generatedTickets = generateTickets();
-console.log(generatedTickets);
+    return { numbers: ticket, blockedIndices };
+}
