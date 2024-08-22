@@ -192,9 +192,9 @@ function updateCalledNumbersTable() {
     let row = document.createElement('tr');
     table.appendChild(row);
 
-    // Fill the table with called numbers, dividing into rows of up to 26 columns
+    // Fill the table with called numbers, dividing into rows of up to 23 columns
     calledNumbers.forEach((number, index) => {
-        if (index % 26 === 0 && index !== 0) {
+        if (index % 23 === 0 && index !== 0) {
             row = document.createElement('tr');
             table.appendChild(row);
         }
@@ -205,7 +205,7 @@ function updateCalledNumbersTable() {
     });
 
     // Add empty cells to fill out the last row if necessary
-    const totalCells = Math.ceil(calledNumbers.length / 26) * 26;
+    const totalCells = Math.ceil(calledNumbers.length / 23) * 23;
     for (let i = calledNumbers.length; i < totalCells; i++) {
         if (i % 20 === 0 && i !== 0) {
             row = document.createElement('tr');
