@@ -117,11 +117,12 @@ onValue(ref(database, 'tickets'), (snapshot) => {
             const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
             const table = document.createElement('table');
             table.className = 'ticket-table'; // Add a class for styling
+
             for (let i = 0; i < 3; i++) {
                 const tr = document.createElement('tr');
                 for (let j = 0; j < 9; j++) {
                     const td = document.createElement('td');
-                    td.className = ticket.blockedIndices.includes(i * 9 + j) ? '' : 'empty';
+                    td.className = ticket.blockedIndices.includes(i * 9 + j) ? 'blocked' : 'filled';
                     td.textContent = ticket.numbers[i * 9 + j] || '';
                     if (calledNumbers.includes(ticket.numbers[i * 9 + j])) {
                         td.classList.add('called'); // Add class to highlight called numbers
@@ -134,6 +135,7 @@ onValue(ref(database, 'tickets'), (snapshot) => {
         }
     }
 });
+
 
 function generateBoard(board) {
     const table = document.createElement('table');
