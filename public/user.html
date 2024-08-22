@@ -369,23 +369,25 @@
 
         <input type="text" id="ticketSearchBar" class="search-bar" placeholder="Search for tickets...">
 <script>
-        // Hide main content until the announcement is accepted
-        const announcementPopup = document.getElementById('announcement-popup');
-        const mainContent = document.getElementById('main-content');
-        const acceptButton = document.getElementById('accept-button');
+    // Hide main content until the announcement is accepted
+    const announcementPopup = document.getElementById('announcement-popup');
+    const mainContent = document.getElementById('main-content');
+    const acceptButton = document.getElementById('accept-button');
 
-        acceptButton.addEventListener('click', () => {
-            announcementPopup.style.display = 'none';
-            mainContent.style.display = 'block';
-        });
+    acceptButton.addEventListener('click', () => {
+        announcementPopup.style.display = 'none';
+        mainContent.style.display = 'block';
+    });
 
-        // Search bar functionality
-        const searchBar = document.getElementById('ticketSearchBar');
-        const ticketsContainer = document.getElementById('tickets');
+    // Search bar functionality
+    const searchBar = document.getElementById('ticketSearchBar');
+    const ticketsContainer = document.getElementById('tickets');
+
+    if (ticketsContainer) {
+        const tickets = ticketsContainer.getElementsByClassName('dynamic-ticket');
 
         searchBar.addEventListener('input', function() {
             const searchText = searchBar.value.toLowerCase();
-            const tickets = ticketsContainer.getElementsByClassName('dynamic-ticket');
 
             Array.from(tickets).forEach(ticket => {
                 const ticketText = ticket.textContent.toLowerCase();
@@ -396,7 +398,9 @@
                 }
             });
         });
-    </script>
+    }
+</script>
+
 <!-- Add this to your user HTML file -->
 <div id="awards" style="display: none;">
     <h2>Awards</h2>
