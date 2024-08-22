@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
 import { getDatabase, ref, set, update } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
+import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -25,12 +26,26 @@ const setGameTimeButton = document.getElementById('setGameTime');
 const setTicketLimitButton = document.getElementById('setTicketLimit');
 const bookTicketButton = document.getElementById('bookTicket');
 
-// Prompt for password on page load
+// Prompt for email and password on page load
 document.addEventListener('DOMContentLoaded', () => {
-    const password = prompt('Enter password:');
-    if (password !== 'jaybasotia') {
-        alert('Incorrect password');
-        window.location.href = 'about:blank'; // Redirect to a blank page if the password is incorrect
+    const email = prompt('Enter your email:');
+    const password = prompt('Enter your password:');
+    
+    if (email && password) {
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // User signed in successfully
+                const user = userCredential.user;
+                console.log('User signed in:', user.email);
+            })
+            .catch((error) => {
+                // Authentication failed
+                alert('Incorrect email or password');
+                window.location.href = 'about:blank'; // Redirect to a blank page if authentication fails
+            });
+    } else {
+        alert('Please enter both email and password');
+        window.location.href = 'about:blank'; // Redirect to a blank page if email or password is missing
     }
 });
 
