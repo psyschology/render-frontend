@@ -207,7 +207,7 @@ function updateCalledNumbersTable() {
     // Add empty cells to fill out the last row if necessary
     const totalCells = Math.ceil(calledNumbers.length / 26) * 26;
     for (let i = calledNumbers.length; i < totalCells; i++) {
-        if (i % 26 === 0 && i !== 0) {
+        if (i % 20 === 0 && i !== 0) {
             row = document.createElement('tr');
             table.appendChild(row);
         }
