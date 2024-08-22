@@ -122,10 +122,20 @@ onValue(ref(database, 'tickets'), (snapshot) => {
                 const tr = document.createElement('tr');
                 for (let j = 0; j < 9; j++) {
                     const td = document.createElement('td');
-                    td.className = ticket.blockedIndices.includes(i * 9 + j) ? 'blocked' : 'filled';
-                    td.textContent = ticket.numbers[i * 9 + j] || '';
-                    if (calledNumbers.includes(ticket.numbers[i * 9 + j])) {
-                        td.classList.add('called'); // Add class to highlight called numbers
+                    const cellIndex = i * 9 + j;
+
+                    // Apply the appropriate class and text content
+                    if (ticket.blockedIndices.includes(cellIndex)) {
+                        td.className = 'blocked'; // Add a class for blocked cells
+                        td.textContent = ''; // Blocked cells are empty
+                    } else {
+                        td.className = 'number'; // Add a class for numbered cells
+                        td.textContent = ticket.numbers[cellIndex] || '';
+                        
+                        // Highlight the called numbers
+                        if (calledNumbers.includes(ticket.numbers[cellIndex])) {
+                            td.classList.add('called'); // Add class to highlight called numbers
+                        }
                     }
                     tr.appendChild(td);
                 }
@@ -135,6 +145,7 @@ onValue(ref(database, 'tickets'), (snapshot) => {
         }
     }
 });
+
 
 
 function generateBoard(board) {
