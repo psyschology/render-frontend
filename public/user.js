@@ -236,28 +236,29 @@ function announceNumber(number) {
     speechSynthesis.speak(msg);
 }
 
-function createTicket() {
-    const ticket = Array.from({ length: 27 }, () => null);
-    const blockedIndices = [];
+ function generateTicket() {
+            const ticketNumbers = Array(27).fill(null); // 27 cells for the ticket
+            const blockedIndices = [];
 
-    // Allocate 5 numbers in each row
-    for (let row = 0; row < 3; row++) {
-        const indices = [...Array(9).keys()];
-        indices.sort(() => 0.5 - Math.random());
-        const selectedIndices = indices.slice(0, 5);
-        selectedIndices.forEach(index => {
-            let min = index * 10 + 1;
-            let max = index * 10 + 10;
-            if (index === 0) min = 1; // Adjust for 1-9 range
-            if (index === 8) max = 90; // Adjust for 81-90 range
-            const possibleNumbers = Array.from({ length: max - min + 1 }, (_, i) => i + min);
-            const chosenNumber = possibleNumbers[Math.floor(Math.random() * possibleNumbers.length)];
-            ticket[row * 9 + index] = chosenNumber;
-        });
+            // Allocate 5 numbers in each row
+            for (let row = 0; row < 3; row++) {
+                const availableIndices = [...Array(9).keys()];
+                const selectedIndices = availableIndices.sort(() => 0.5 - Math.random()).slice(0, 5);
 
-        // Store blocked indices for each row
-        blockedIndices.push(...selectedIndices.map(i => row * 9 + i));
-    }
+                selectedIndices.forEach(index => {
+                    let min = index * 10 + 1;
+                    let max = index * 10 + 10;
+                    if (index === 0) min = 1; // Adjust for 1-9 range
+                    if (index === 8) max = 90; // Adjust for 81-90 range
+                    const possibleNumbers = Array.from({ length: max - min + 1 }, (_, i) => i + min);
+                    const chosenNumber = possibleNumbers[Math.floor(Math.random() * possibleNumbers.length)];
+                    ticketNumbers[row * 9 + index] = chosenNumber;
+                });
 
-    return { numbers: ticket, blockedIndices };
-}
+                // Store blocked indices for each row (those not selected)
+                const blockedCols = availableIndices.filter(index => !selectedIndices.includes(index));
+                blockedIndices.push(...blockedCols.map(i => row * 9 + i));
+            }
+
+            return { numbers: ticketNumbers, blockedIndices: blockedIndices };
+        }
