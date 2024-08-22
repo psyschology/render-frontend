@@ -104,17 +104,17 @@ onValue(ref(database, 'tickets'), (snapshot) => {
     for (const [ticketNumber, ticket] of Object.entries(tickets)) {
         if (ticketNumber !== 'limit') {
             const ticketDiv = document.createElement('div');
-            ticketDiv.className = 'ticket'; // Add class for styling
-            ticketDiv.innerHTML = `
+            ticketDiv.className = 'dynamic-ticket'; // Add class for styling
+            ticketDiv.innerHTML = 
                 <div class="ticket-header">Ticket ${ticketNumber}</div>
                 <div class="ticket-owner">
-                    ${ticket.bookedBy ? `Booked by: ${ticket.bookedBy}` : `<a href="https://wa.me/99999" target="_blank">Book Now</a>`}
+                    ${ticket.bookedBy ? Booked by: ${ticket.bookedBy} : <a href="https://wa.me/99999" target="_blank">Book Now</a>}
                 </div>
                 <div id="ticket-${ticketNumber}" class="ticket-grid"></div>
-            `;
+            ;
             ticketsContainer.appendChild(ticketDiv);
 
-            const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
+            const ticketGrid = document.getElementById(ticket-${ticketNumber});
             const table = document.createElement('table');
             table.className = 'ticket-table'; // Add a class for styling
             for (let i = 0; i < 3; i++) {
@@ -134,6 +134,8 @@ onValue(ref(database, 'tickets'), (snapshot) => {
         }
     }
 });
+
+
 
 function generateBoard(board) {
     const table = document.createElement('table');
