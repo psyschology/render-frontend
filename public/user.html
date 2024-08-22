@@ -143,60 +143,68 @@
 
 
     <!-- Styles -->
-    <style>
+<style>
 .main-box {
-    background-color: #8A2BE2; /* Purple background for the main container */
-    padding: 5px; /* Reduced padding inside the main container */
-    border-radius: 10px; /* Rounded corners for the main container */
-    border: 3px solid #FFFFFF; /* White border around the main container */
-    max-width: 580px; /* Maximum width for the main container */
-    margin: 0 auto; /* Center the main container on the page */
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3); /* Shadow for the main container */
+    background-color: #8A2BE2;
+    padding: 5px;
+    border-radius: 10px;
+    border: 3px solid #FFFFFF;
+    max-width: 580px;
+    margin: 0 auto;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
     display: flex;
-    justify-content: center; /* Center the contents horizontally */
+    justify-content: center;
 }
 
 .info-box {
-    background-color: #003366; /* Dark blue background for the boxes */
-    color: #FFFFFF; /* White text */
-    padding: 2px 5px; /* Reduced padding inside the boxes */
-    border-radius: 7px; /* Rounded corners to match the box */
-    border: 3px solid #FFFFFF; /* White border to distinguish each box */
-    font-size: 16px; /* Adjusted font size */
-    text-align: center; /* Center the text */
-    min-width: 100px; /* Minimum width for uniformity */
-    max-width: 350px; /* Maximum width for uniformity */
-    box-sizing: border-box; /* Include padding and border in the element's total width and height */
-    box-shadow: 0 0 20px rgba(0, 51, 102, 0.7); /* Dark blue glow effect */
-    flex: 1; /* Allow boxes to expand evenly */
+    background-color: #003366;
+    color: #FFFFFF;
+    padding: 2px 5px;
+    border-radius: 7px;
+    border: 3px solid #FFFFFF;
+    font-size: 16px;
+    text-align: center;
+    min-width: 100px;
+    max-width: 350px;
+    box-sizing: border-box;
+    box-shadow: 0 0 20px rgba(0, 51, 102, 0.7);
+    flex: 1;
     margin: 0; /* Remove margin to ensure no space between boxes */
+    flex-basis: 0; /* Allow items to shrink and stay in one row */
 }
 
 #gameInfo {
     display: flex;
-    gap: 0; /* Remove gap between the boxes */
+    gap: 0;
+    justify-content: space-between; /* Ensure even spacing between boxes */
+    width: 100%; /* Ensure it uses the full width of the parent */
+    flex-wrap: wrap; /* Allows wrapping, but we will manage it with media queries */
 }
 
 /* Mobile Styles */
 @media (max-width: 600px) {
     .info-box {
-        font-size: 16px; /* Adjust font size for mobile */
+        font-size: 14px; /* Adjust font size for mobile */
         padding: 2px 3px; /* Reduced padding for smaller screens */
-        min-width: 100px; /* Smaller width for mobile */
+        min-width: 90px; /* Smaller width for mobile */
     }
 
     #gameInfo {
-        flex-direction: column; /* Stack boxes on smaller screens */
-        gap: 0; /* Remove gap for mobile */
+        justify-content: space-between; /* Ensure items are still spaced evenly */
     }
 
     .main-box {
-        padding: 4px; /* Adjust padding for the main box on mobile */
-        max-width: 100%; /* Full width on mobile */
+        padding: 4px;
+        max-width: 100%;
+    }
+
+    .info-box {
+        flex: 1 1 30%; /* Ensure boxes take up roughly a third of the row */
+        max-width: 100px; /* Cap the max-width to avoid overflow */
     }
 }
+</style>
 
-        </style>
 
     <div id="gameBoard">
         <table id="board"></table>
