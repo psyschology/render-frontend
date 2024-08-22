@@ -237,35 +237,48 @@ function announceNumber(number) {
 }
 
 function generateTicket() {
-    const ticketNumbers = Array(27).fill(null); // 27 cells for the ticket
+    const ticketNumbers = Array(27).fill(null); // Initialize a 3x9 grid with nulls
     const blockedIndices = [];
-    const columns = Array.from({ length: 9 }, (_, i) => {
-        const start = i * 10 + 1;
-        const end = i === 8 ? 90 : start + 9;
-        return Array.from({ length: end - start + 1 }, (_, j) => start + j);
-    });
+    const usedColumns = new Set(); // To track columns that have been used by numbers
 
     for (let row = 0; row < 3; row++) {
-        const rowNumbers = [];
-        const selectedIndices = [];
+        const columns = [...Array(9).keys()]; // Array of column indices [0-8]
+        columns.sort(() => 0.5 - Math.random()); // Shuffle the columns to randomize selection
 
-        while (rowNumbers.length < 5) {
-            const colIndex = Math.floor(Math.random() * 9);
-            if (!selectedIndices.includes(colIndex) && columns[colIndex].length > 0) {
-                const numIndex = Math.floor(Math.random() * columns[colIndex].length);
-                rowNumbers.push(columns[colIndex].splice(numIndex, 1)[0]);
-                selectedIndices.push(colIndex);
-            }
+        const selectedColumns = columns.slice(0, 5); // Select 5 columns randomly
+
+        // Ensure each row does not share the exact pattern of columns
+        while (usedColumns.has(selectedColumns.toString())) {
+            columns.sort(() => 0.5 - Math.random());
+            selectedColumns = columns.slice(0, 5);
+        }
+        usedColumns.add(selectedColumns.toString());
+
+        for (const col of selectedColumns) {
+            let min = col * 10 + 1; // Column's minimum value
+            let max = col * 10 + 10; // Column's maximum value
+            if (col === 0) min = 1;  // Adjust for 1-9 range
+            if (col === 8) max = 90; // Adjust for 81-90 range
+
+            const possibleNumbers = Array.from({ length: max - min + 1 }, (_, i) => i + min);
+            let chosenNumber;
+
+            // Ensure chosenNumber is unique within the ticket
+            do {
+                chosenNumber = possibleNumbers[Math.floor(Math.random() * possibleNumbers.length)];
+            } while (ticketNumbers.includes(chosenNumber));
+
+            const index = row * 9 + col; // Calculate the index in the ticket array
+            ticketNumbers[index] = chosenNumber; // Place the number in the correct cell
         }
 
-        selectedIndices.forEach((colIndex, i) => {
-            ticketNumbers[row * 9 + colIndex] = rowNumbers[i];
-        });
-
-        const blockedCols = [...Array(9).keys()].filter(index => !selectedIndices.includes(index));
-        blockedIndices.push(...blockedCols.map(i => row * 9 + i));
+        // Block the columns not selected for this row
+        const blockedCols = Array.from({ length: 9 }, (_, i) => i).filter(i => !selectedColumns.includes(i));
+        blockedIndices.push(...blockedCols.map(col => row * 9 + col)); // Calculate blocked indices
     }
 
-    return { numbers: ticketNumbers, blockedIndices: blockedIndices };
+    return {
+        numbers: ticketNumbers,
+        blockedIndices: blockedIndices
+    };
 }
-
