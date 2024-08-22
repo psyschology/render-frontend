@@ -76,9 +76,76 @@
 }
 
 
+        /* Basic styling for the search bar */
+        .search-bar {
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        /* Styling for the announcement popup */
+        .announcement-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: orange;
+            border: 5px solid blue;
+            padding: 20px;
+            width: 400px;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .announcement-popup h1 {
+            color: red;
+            margin-bottom: 20px;
+        }
+
+        .announcement-popup p {
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .announcement-popup a {
+            color: blue;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .announcement-popup button {
+            padding: 10px 20px;
+            background-color: blue;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* Hide content until the user accepts the announcement */
+        #main-content {
+            display: none;
+        }
     </style>
 </head>
 <body>
+     <!-- Announcement Popup -->
+    <div class="announcement-popup" id="announcement-popup">
+        <h1>!!ANNOUNCEMENT!!</h1>
+        <p>Tambola is a legal game in India except in Assam and Odisha.</p>
+        <p>In case of a system failure during the game, there will be a re-game. In case of a re-game, the ticket cannot be cancelled.</p>
+        <p>This website is starttambola.com certified, and it's a legit website.</p>
+        <p>Check legitimacy by clicking <a href="https://starttambola.com/certified" target="_blank">here</a>.</p>
+        <button id="accept-button">I ACCEPT</button>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content">
     <!-- Banner Image Section -->
     <header class="mb-8">
         <div class="flex justify-center">
@@ -301,20 +368,37 @@
 </style>
 
 <div id="search-container">
-    <input type="text" id="ticketSearch" placeholder="Search Tickets..." />
+        <input type="text" id="ticketSearchBar" class="search-bar" placeholder="Search for tickets...">
 </div>
-<style>
-    #search-container {
-    margin: 20px;
-}
+<script>
+        // Hide main content until the announcement is accepted
+        const announcementPopup = document.getElementById('announcement-popup');
+        const mainContent = document.getElementById('main-content');
+        const acceptButton = document.getElementById('accept-button');
 
-#ticketSearch {
-    padding: 10px;
-    width: 100%;
-    box-sizing: border-box;
-    font-size: 16px;
-}
-</style>
+        acceptButton.addEventListener('click', () => {
+            announcementPopup.style.display = 'none';
+            mainContent.style.display = 'block';
+        });
+
+        // Search bar functionality
+        const searchBar = document.getElementById('ticketSearchBar');
+        const ticketsContainer = document.getElementById('tickets');
+
+        searchBar.addEventListener('input', function() {
+            const searchText = searchBar.value.toLowerCase();
+            const tickets = ticketsContainer.getElementsByClassName('dynamic-ticket');
+
+            Array.from(tickets).forEach(ticket => {
+                const ticketText = ticket.textContent.toLowerCase();
+                if (ticketText.includes(searchText)) {
+                    ticket.style.display = '';
+                } else {
+                    ticket.style.display = 'none';
+                }
+            });
+        });
+    </script>
 <!-- Add this to your user HTML file -->
 <div id="awards" style="display: none;">
     <h2>Awards</h2>
