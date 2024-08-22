@@ -86,10 +86,39 @@
         </div>
     </header>
 
+<style>
+/* For the Flex Container */
+.flex-row {
+    display: flex;
+    gap: 0; /* Remove gaps between the boxes */
+    justify-content: space-between;
+}
+
+/* For the Flex Items */
+.flex-row a {
+    flex: 1; /* Allow items to take equal space */
+    margin: 0; /* Remove margin between the items */
+    text-align: center; /* Center the text and icons */
+}
+
+/* Mobile Styles */
+@media (max-width: 600px) {
+    .flex-row {
+        flex-wrap: nowrap; /* Prevent wrapping on mobile */
+    }
+
+    .flex-row a {
+        flex: 1 1 33%; /* Ensure each box takes one-third of the row */
+        margin-right: -3px; /* Remove any gap between items */
+    }
+}
+</style>
+
+<!-- HTML Section -->
 <!-- Divider -->
 <hr class="border-t-2 border-gray-600 my-4">
 
-<div class="flex flex-col md:flex-row justify-center mt-4 space-y-4 md:space-y-0 md:space-x-8">
+<div class="flex-row">
     <!-- Admin Login -->
     <a href="admin.html" class="flex items-center text-lg bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
         <img src="agent.png" alt="Admin Login" class="h-6 w-6 mr-2">
@@ -109,27 +138,11 @@
     </a>
 </div>
 
-
 <!-- Divider -->
 <hr class="border-t-2 border-gray-600 my-4">
 
-    
-<div id="ticketStatusMessage" class="ticket-status-message">
-    Check available ticket
-</div>
 
-<style>
-    .ticket-status-message {
-        font-weight: bold;
-    background-color: #6a1b9a;
-    color: white;
-    padding: 15px;
-    border-radius: 8px;
-    font-size: 16px;
-    text-align: center;
-        margin-bottom: 20px;
-}
-</style>
+
     
 
     <!-- Game Info Section -->
@@ -201,10 +214,28 @@
     .info-box {
         flex: 1 1 30%; /* Ensure boxes take up roughly a third of the row */
         max-width: 100px; /* Cap the max-width to avoid overflow */
+        margin-right: -3px; /*Remove Gap*/
     }
 }
 </style>
 
+        
+<div id="ticketStatusMessage" class="ticket-status-message">
+    Check available ticket
+</div>
+
+<style>
+    .ticket-status-message {
+        font-weight: bold;
+    background-color: #6a1b9a;
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 16px;
+    text-align: center;
+        margin-bottom: 20px;
+}
+</style>
 
     <div id="gameBoard">
         <table id="board"></table>
