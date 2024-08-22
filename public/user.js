@@ -104,7 +104,7 @@ onValue(ref(database, 'tickets'), (snapshot) => {
     for (const [ticketNumber, ticket] of Object.entries(tickets)) {
         if (ticketNumber !== 'limit') {
             const ticketDiv = document.createElement('div');
-            ticketDiv.className = 'ticket'; // Add class for styling
+            ticketDiv.className = 'dynamic-ticket'; // Add class for styling
             ticketDiv.innerHTML = `
                 <div class="ticket-header">Ticket ${ticketNumber}</div>
                 <div class="ticket-owner">
@@ -116,7 +116,7 @@ onValue(ref(database, 'tickets'), (snapshot) => {
 
             const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
             const table = document.createElement('table');
-            table.className = 'dynamic-table'; // Add a class for styling
+            table.className = 'ticket-table'; // Add a class for styling
             for (let i = 0; i < 3; i++) {
                 const tr = document.createElement('tr');
                 for (let j = 0; j < 9; j++) {
