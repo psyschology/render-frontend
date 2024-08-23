@@ -27,11 +27,47 @@
             <button id="bookTicket" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded">Book Ticket</button>
         </div>
 
-        <h2 class="text-2xl font-semibold mt-10">Manage Awards</h2>
-        <table id="awardsTable" class="min-w-full bg-gray-800 mt-4 rounded-lg overflow-hidden">
-            <!-- Award settings will be dynamically inserted here -->
-        </table>
-        <button id="saveAwardsButton" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded mt-4">Save Awards</button>
+        <!-- New awards section -->
+    <h2>Set Awards</h2>
+    <table id="awardsTable">
+        <tr>
+            <th>Award Type</th>
+            <th>Amount</th>
+        </tr>
+        <tr>
+            <td>Full House</td>
+            <td><input type="number" id="fullHouseAmount" /></td>
+        </tr>
+        <tr>
+            <td>Top Line</td>
+            <td><input type="number" id="topLineAmount" /></td>
+        </tr>
+        <tr>
+            <td>Middle Line</td>
+            <td><input type="number" id="middleLineAmount" /></td>
+        </tr>
+        <tr>
+            <td>Bottom Line</td>
+            <td><input type="number" id="bottomLineAmount" /></td>
+        </tr>
+        <tr>
+            <td>Four Corners</td>
+            <td><input type="number" id="fourCornersAmount" /></td>
+        </tr>
+        <tr>
+            <td>Early Five</td>
+            <td><input type="number" id="earlyFiveAmount" /></td>
+        </tr>
+        <tr>
+            <td>Odd-Even</td>
+            <td><input type="number" id="oddEvenAmount" /></td>
+        </tr>
+        <tr>
+            <td>Diagonal</td>
+            <td><input type="number" id="diagonalAmount" /></td>
+        </tr>
+    </table>
+    <button id="setAwardsButton">Set Awards for the Game</button>
         
         <div id="message" class="mt-6"></div>
 <style>
