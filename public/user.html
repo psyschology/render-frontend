@@ -317,7 +317,8 @@
     <div id="gameBoard">
         <table id="board"></table>
     </div>
-    <div id="calledNumbersTable"></div>
+   <h2 id="calledNumbersTableHeading" style="display: none;">Called Numbers</h2>
+<div id="calledNumbersTable"></div>
 
 <style>
 /* Styles for the called numbers table */
@@ -398,8 +399,26 @@
         });
     }
 </script>
+        <script>
+         // Listen for changes in game status
+onValue(ref(database, 'gameInfo/status'), (snapshot) => {
+    const status = snapshot.val();
+    const ticketStatusMessage = document.getElementById('ticketStatusMessage');
+    const calledNumbersTableHeading = document.getElementById('calledNumbersTableHeading');
+    
+    if (status === 'started') {
+        ticketStatusMessage.textContent = 'Game is Live';
+        ticketStatusMessage.style.color = 'green'; // Optional: Highlight the message
+        calledNumbersTableHeading.style.display = 'block'; // Show the heading
+    } else {
+        ticketStatusMessage.textContent = 'Check Available Ticket';
+        ticketStatusMessage.style.color = 'red'; // Optional: Change color when not live
+        calledNumbersTableHeading.style.display = 'none'; // Hide the heading
+    }
+});
+        </script>   
 <style>
-    /* Add this to your CSS file or in a <style> tag in your HTML */
+/* Add this to your CSS file or in a <style> tag in your HTML */
 
 #awardBox {
     margin: 20px;
@@ -407,10 +426,19 @@
     border: 1px solid #ddd;
     border-radius: 8px;
     background-color: #f9f9f9;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
 .award-container {
+    flex: 1 1 300px; /* Adjust the size of the award boxes */
     margin-bottom: 15px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .award-name {
@@ -453,8 +481,87 @@
     color: #777;
 }
 </style>
+
     <div id="awardBox"></div>
 
+        <input type="text" id="ticketSearchBar" placeholder="Search Tickets...">
+<script>
+    const ticketSearchBar = document.getElementById('ticketSearchBar');
+
+// Function to render tickets based on the search query
+function renderTickets(tickets) {
+    const ticketsContainer = document.getElementById('tickets');
+    ticketsContainer.innerHTML = '';
+
+    for (const [ticketNumber, ticket] of Object.entries(tickets)) {
+        if (ticketNumber !== 'limit') {
+            const ticketDiv = document.createElement('div');
+            ticketDiv.className = 'dynamic-ticket';
+            ticketDiv.innerHTML = `
+                <div class="ticket-header">Ticket ${ticketNumber}</div>
+                <div class="ticket-owner">
+                    ${ticket.bookedBy ? `Booked by: ${ticket.bookedBy}` : `<a href="https://wa.me/99999" target="_blank">Book Now</a>`}
+                </div>
+                <div id="ticket-${ticketNumber}" class="ticket-grid"></div>
+            `;
+            ticketsContainer.appendChild(ticketDiv);
+
+            const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
+            const table = document.createElement('table');
+            table.className = 'ticket-table';
+
+            for (let i = 0; i < 3; i++) {
+                const tr = document.createElement('tr');
+                for (let j = 0; j < 9; j++) {
+                    const index = i * 9 + j;
+                    const td = document.createElement('td');
+
+                    if (ticket.numbers[index] !== null) {
+                        td.className = 'filled';
+                        td.textContent = ticket.numbers[index];
+                    } else {
+                        td.className = 'blocked';
+                    }
+
+                    tr.appendChild(td);
+                }
+                table.appendChild(tr);
+            }
+            ticketGrid.appendChild(table);
+        }
+    }
+}
+
+// Function to filter tickets based on search query
+function filterTickets(query) {
+    get(ref(database, 'tickets')).then((snapshot) => {
+        const tickets = snapshot.val();
+        if (tickets) {
+            const filteredTickets = {};
+            for (const [ticketNumber, ticket] of Object.entries(tickets)) {
+                if (ticketNumber.includes(query) || (ticket.bookedBy && ticket.bookedBy.toLowerCase().includes(query.toLowerCase()))) {
+                    filteredTickets[ticketNumber] = ticket;
+                }
+            }
+            renderTickets(filteredTickets);
+        }
+    });
+}
+
+// Event listener for search input
+ticketSearchBar.addEventListener('input', (e) => {
+    const query = e.target.value;
+    filterTickets(query);
+});
+
+// Initial call to render all tickets
+get(ref(database, 'tickets')).then((snapshot) => {
+    const tickets = snapshot.val();
+    if (tickets) {
+        renderTickets(tickets);
+    }
+});
+</script>
     
     <div class="flex flex-wrap justify-center">
     <div id="tickets"></div>
