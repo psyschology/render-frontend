@@ -390,19 +390,6 @@ function updateWinnerDetails(winnerDetailsElement, awardData) {
 
 updateAwardDisplay(); // Call this function to initialize display
 
-// Display awards
-const awardBox = document.getElementById('awardBox');
-onValue(ref(database, 'gameInfo/awards'), (snapshot) => {
-    const awards = snapshot.val();
-    awardBox.innerHTML = '';
-
-    for (const [award, amount] of Object.entries(awards)) {
-        const awardDiv = document.createElement('div');
-        awardDiv.innerHTML = `${award}: ${amount ? `$${amount}` : 'Not set'}`;
-        awardBox.appendChild(awardDiv);
-    }
-});
-
 // Check for winning tickets and update awardBox
 function checkAwards() {
     // Assume `ticketNumbers` and `calledNumbers` are defined
