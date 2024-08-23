@@ -373,16 +373,18 @@
     const mainContent = document.getElementById('main-content');
     const acceptButton = document.getElementById('accept-button');
 
-    acceptButton.addEventListener('click', () => {
-        announcementPopup.style.display = 'none';
-        mainContent.style.display = 'block';
-    });
+    if (acceptButton) {
+        acceptButton.addEventListener('click', () => {
+            announcementPopup.style.display = 'none';
+            mainContent.style.display = 'block';
+        });
+    }
 
     // Search bar functionality
     const searchBar = document.getElementById('ticketSearchBar');
     const ticketsContainer = document.getElementById('tickets');
 
-    if (ticketsContainer) {
+    if (searchBar && ticketsContainer) {
         const tickets = ticketsContainer.getElementsByClassName('dynamic-ticket');
 
         searchBar.addEventListener('input', function() {
@@ -398,25 +400,77 @@
             });
         });
     }
+
+    // Listen for changes in game status
+    onValue(ref(database, 'gameInfo/status'), (snapshot) => {
+        const status = snapshot.val();
+        const ticketStatusMessage = document.getElementById('ticketStatusMessage');
+        const calledNumbersTableHeading = document.getElementById('calledNumbersTableHeading');
+
+        if (status === 'started') {
+            if (ticketStatusMessage) {
+                ticketStatusMessage.textContent = 'Game is Live';
+                ticketStatusMessage.style.color = 'green'; // Optional: Highlight the message
+            }
+            if (calledNumbersTableHeading) {
+                calledNumbersTableHeading.style.display = 'block'; // Show the heading
+            }
+        } else {
+            if (ticketStatusMessage) {
+                ticketStatusMessage.textContent = 'Check Available Ticket';
+                ticketStatusMessage.style.color = 'red'; // Optional: Change color when not live
+            }
+            if (calledNumbersTableHeading) {
+                calledNumbersTableHeading.style.display = 'none'; // Hide the heading
+            }
+        }
+    });
 </script>
-        <script>
-         // Listen for changes in game status
-onValue(ref(database, 'gameInfo/status'), (snapshot) => {
-    const status = snapshot.val();
-    const ticketStatusMessage = document.getElementById('ticketStatusMessage');
-    const calledNumbersTableHeading = document.getElementById('calledNumbersTableHeading');
-    
-    if (status === 'started') {
-        ticketStatusMessage.textContent = 'Game is Live';
-        ticketStatusMessage.style.color = 'green'; // Optional: Highlight the message
-        calledNumbersTableHeading.style.display = 'block'; // Show the heading
-    } else {
-        ticketStatusMessage.textContent = 'Check Available Ticket';
-        ticketStatusMessage.style.color = 'red'; // Optional: Change color when not live
-        calledNumbersTableHeading.style.display = 'none'; // Hide the heading
+
+<script>
+    // Function to render tickets based on the search query
+    function renderTickets(tickets) {
+        const ticketsContainer = document.getElementById('tickets');
+        if (ticketsContainer) {
+            ticketsContainer.innerHTML = '';
+
+            for (const [ticketNumber, ticket] of Object.entries(tickets)) {
+                if (ticketNumber !== 'limit') {
+                    const ticketDiv = document.createElement('div');
+                    ticketDiv.className = 'dynamic-ticket';
+                    ticketDiv.innerHTML = `
+                        <div class="ticket-header">Ticket ${ticketNumber}</div>
+                        <div class="ticket-owner">
+                            ${ticket.bookedBy ? `Booked by: ${ticket.bookedBy}` : `<a href="https://wa.me/99999" target="_blank">Book Now</a>`}
+                        </div>
+                        <div id="ticket-${ticketNumber}" class="ticket-grid"></div>
+                    `;
+                    ticketsContainer.appendChild(ticketDiv);
+
+                    const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
+                    const table = document.createElement('table');
+                    table.className = 'ticket-table';
+
+                    for (let i = 0; i < 3; i++) {
+                        const tr = document.createElement('tr');
+                        for (let j = 0; j < 9; j++) {
+                            const index = i * 9 + j;
+                            const td = document.createElement('td');
+
+                            if (ticket.numbers[index] !== null) {
+                                td.textContent = ticket.numbers[index];
+                            }
+                            tr.appendChild(td);
+                        }
+                        table.appendChild(tr);
+                    }
+                    ticketGrid.appendChild(table);
+                }
+            }
+        }
     }
-});
-        </script>   
+</script>
+
 <style>
 /* Add this to your CSS file or in a <style> tag in your HTML */
 
@@ -480,6 +534,26 @@ onValue(ref(database, 'gameInfo/status'), (snapshot) => {
     font-size: 16px;
     color: #777;
 }
+    /* Basic styling for the search bar */
+#ticketSearchBar {
+    margin: 10px 0; /* Margin around the search bar */
+    padding: 10px; /* Padding inside the search bar */
+    width: 100%; /* Full width of the container */
+    font-size: 16px; /* Font size for the text inside the search bar */
+    border: 1px solid #ccc; /* Light border color */
+    border-radius: 5px; /* Rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    background-color: #fff; /* Background color of the search bar */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition effect */
+}
+
+/* Styling for focus state */
+#ticketSearchBar:focus {
+    border-color: #007bff; /* Border color on focus */
+    box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3); /* Shadow effect on focus */
+    outline: none; /* Remove default focus outline */
+}
+
 </style>
 
     <div id="awardBox"></div>
