@@ -312,10 +312,10 @@ function generateTicket() {
 
 
 // Existing code...
-// Show or hide awards based on game status
+// Show or hide awards based on game status// Show or hide awards based on game status
 function updateAwardDisplay() {
     const awardBox = document.getElementById('awardBox');
-    const gameStatusRef = ref(database, 'gameInfo/status'); // Assume you have a status field
+    const gameStatusRef = ref(database, 'gameInfo/status'); // Check game status
 
     onValue(gameStatusRef, (snapshot) => {
         const gameStatus = snapshot.val();
