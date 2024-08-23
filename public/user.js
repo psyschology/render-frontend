@@ -39,18 +39,39 @@ function initializeNumberPool() {
 // Update UI based on game state
 onValue(ref(database, 'gameInfo'), (snapshot) => {
     const gameInfo = snapshot.val();
+    
     if (gameInfo) {
         nextGameTime.textContent = `Next Game Time: ${gameInfo.gameTime || 'N/A'}`;
         nextGameDate.textContent = `Next Game Date: ${gameInfo.gameDate || 'N/A'}`;
 
-        // Calculate time left
-        if (gameInfo.gameTime) {
-            const now = new Date();
-            const gameTime = new Date(gameInfo.gameTime);
-            const timeDiff = gameTime - now;
-            const hours = Math.floor(timeDiff / (1000 * 60 * 60));
-            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-            timeLeft.textContent = `Time Left: ${hours}h ${minutes}m`;
+        if (gameInfo.gameTime && gameInfo.gameDate) {
+            // Combine game date and time into a single Date object
+            const gameDateTime = new Date(`${gameInfo.gameDate}T${gameInfo.gameTime}`);
+
+            // Clear any existing interval to prevent multiple intervals running at the same time
+            if (window.countdownInterval) {
+                clearInterval(window.countdownInterval);
+            }
+
+            // Set up a countdown timer
+            window.countdownInterval = setInterval(() => {
+                const now = new Date();
+                const timeDiff = gameDateTime - now;
+
+                if (timeDiff > 0) {
+                    const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+                    timeLeft.textContent = `Time Left: ${hours}h ${minutes}m ${seconds}s`;
+                } else {
+                    // Time is up, clear the interval and update the display
+                    clearInterval(window.countdownInterval);
+                    timeLeft.textContent = 'Time Left: 0h 0m 0s';
+                }
+            }, 1000); // Update every second
+        } else {
+            timeLeft.textContent = 'Time Left: N/A';
         }
     } else {
         nextGameTime.textContent = 'Next Game Time: N/A';
@@ -58,6 +79,7 @@ onValue(ref(database, 'gameInfo'), (snapshot) => {
         timeLeft.textContent = 'Time Left: N/A';
     }
 });
+
 
 onValue(ref(database, 'gameInfo/status'), (snapshot) => {
     const status = snapshot.val();
