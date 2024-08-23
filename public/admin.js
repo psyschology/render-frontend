@@ -180,3 +180,21 @@ function generateBoardNumbers() {
 }
 
 
+
+// New function to set awards
+document.getElementById('setAwardsButton').addEventListener('click', () => {
+    const awards = {
+        'Full House': document.getElementById('fullHouseAmount').value,
+        'Top Line': document.getElementById('topLineAmount').value,
+        'Middle Line': document.getElementById('middleLineAmount').value,
+        'Bottom Line': document.getElementById('bottomLineAmount').value,
+        'Four Corners': document.getElementById('fourCornersAmount').value,
+        'Early Five': document.getElementById('earlyFiveAmount').value,
+        'Odd-Even': document.getElementById('oddEvenAmount').value,
+        'Diagonal': document.getElementById('diagonalAmount').value
+    };
+
+    set(ref(database, 'gameInfo/awards'), awards)
+        .then(() => alert('Awards set successfully!'))
+        .catch(error => console.error('Error setting awards:', error));
+});
