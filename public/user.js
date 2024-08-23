@@ -307,3 +307,131 @@ function generateTicket() {
 
     return { numbers: ticketNumbers };
 }
+
+
+
+
+// Existing code...
+
+// Display awards
+const awardBox = document.getElementById('awardBox');
+onValue(ref(database, 'gameInfo/awards'), (snapshot) => {
+    const awards = snapshot.val();
+    awardBox.innerHTML = '';
+
+    for (const [award, amount] of Object.entries(awards)) {
+        const awardDiv = document.createElement('div');
+        awardDiv.innerHTML = `${award}: ${amount ? `$${amount}` : 'Not set'}`;
+        awardBox.appendChild(awardDiv);
+    }
+});
+
+// Check for winning tickets and update awardBox
+function checkAwards() {
+    // Assume `ticketNumbers` and `calledNumbers` are defined
+    onValue(ref(database, 'calledNumbers'), (snapshot) => {
+        const calledNumbers = snapshot.val() || [];
+        onValue(ref(database, 'tickets'), (snapshot) => {
+            const tickets = snapshot.val();
+            for (const [ticketNumber, ticket] of Object.entries(tickets)) {
+                const ticketNumbers = ticket.numbers;
+                checkAwardsForTicket(ticketNumber, ticketNumbers, calledNumbers);
+            }
+        });
+    });
+}
+
+// Function to check awards for a specific ticket
+function checkAwardsForTicket(ticketNumber, ticketNumbers, calledNumbers) {
+    const awardsRef = ref(database, 'gameInfo/awards');
+    get(awardsRef).then((snapshot) => {
+        const awards = snapshot.val();
+        const winners = [];
+
+        if (checkFullHouse(ticketNumbers, calledNumbers)) {
+            winners.push('Full House');
+        }
+        if (checkLine(ticketNumbers, calledNumbers, 'top')) {
+            winners.push('Top Line');
+        }
+        if (checkLine(ticketNumbers, calledNumbers, 'middle')) {
+            winners.push('Middle Line');
+        }
+        if (checkLine(ticketNumbers, calledNumbers, 'bottom')) {
+            winners.push('Bottom Line');
+        }
+        if (checkFourCorners(ticketNumbers, calledNumbers)) {
+            winners.push('Four Corners');
+        }
+        if (checkEarlyFive(ticketNumbers, calledNumbers)) {
+            winners.push('Early Five');
+        }
+        if (checkOddEven(ticketNumbers, calledNumbers)) {
+            winners.push('Odd-Even');
+        }
+        if (checkDiagonal(ticketNumbers, calledNumbers)) {
+            winners.push('Diagonal');
+        }
+
+        if (winners.length > 0) {
+            announceWinners(winners, ticketNumber);
+        }
+    });
+}
+
+// Function to announce winners and update Firebase
+function announceWinners(winners, ticketNumber) {
+    const awardBox = document.getElementById('awardBox');
+    awardBox.innerHTML += `<br>Ticket ${ticketNumber} won: ${winners.join(', ')}`;
+    
+    const updates = {};
+    winners.forEach((award) => {
+        updates[`gameInfo/awards/${award}/winner`] = ticketNumber;
+    });
+    update(ref(database), updates);
+}
+
+// Helper functions (add these to `user.js`):
+function checkFullHouse(ticketNumbers, calledNumbers) {
+    return ticketNumbers.every(number => calledNumbers.includes(number));
+}
+
+function checkLine(ticketNumbers, calledNumbers, lineType) {
+    const lines = {
+        top: ticketNumbers.slice(0, 9),
+        middle: ticketNumbers.slice(9, 18),
+        bottom: ticketNumbers.slice(18, 27)
+    };
+    return lines[lineType].every(number => calledNumbers.includes(number));
+}
+
+function checkFourCorners(ticketNumbers, calledNumbers) {
+    const corners = [
+        ticketNumbers[0], // Top-left
+        ticketNumbers[8], // Top-right
+        ticketNumbers[18], // Bottom-left
+        ticketNumbers[26] // Bottom-right
+    ];
+    return corners.every(number => calledNumbers.includes(number));
+}
+
+function checkEarlyFive(ticketNumbers, calledNumbers) {
+    const markedNumbers = ticketNumbers.filter(number => calledNumbers.includes(number));
+    return markedNumbers.length >= 5;
+}
+
+function checkOddEven(ticketNumbers, calledNumbers) {
+    const oddNumbers = ticketNumbers.filter(number => number % 2 !== 0);
+    const evenNumbers = ticketNumbers.filter(number => number % 2 === 0);
+    const allOdd = oddNumbers.every(number => calledNumbers.includes(number));
+    const allEven = evenNumbers.every(number => calledNumbers.includes(number));
+    return allOdd || allEven;
+}
+
+function checkDiagonal(ticketNumbers, calledNumbers) {
+    const diagonals = [
+        [ticketNumbers[0], ticketNumbers[10], ticketNumbers[20]], // Top-left to bottom-right
+        [ticketNumbers[8], ticketNumbers[16], ticketNumbers[24]] // Top-right to bottom-left
+    ];
+    return diagonals.some(diagonal => diagonal.every(number => calledNumbers.includes(number)));
+}
