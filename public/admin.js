@@ -78,14 +78,19 @@ setTicketLimitButton.addEventListener('click', () => {
 
 function generateTicket() {
     const ticketNumbers = Array(27).fill(null); // 27 cells for the ticket
-    const blockedIndices = [];
     const usedNumbers = new Set();
 
     for (let row = 0; row < 3; row++) {
         const rowNumbers = new Set();
 
-        while (rowNumbers.size < 5) {
-            const col = Math.floor(Math.random() * 9); // Choose a column randomly (0-8)
+        // Randomly select 5 unique columns out of 9 for this row
+        const selectedColumns = new Set();
+        while (selectedColumns.size < 5) {
+            const col = Math.floor(Math.random() * 9);
+            selectedColumns.add(col);
+        }
+
+        selectedColumns.forEach(col => {
             let min = col * 10 + 1;
             let max = col * 10 + 10;
 
@@ -93,29 +98,22 @@ function generateTicket() {
             if (col === 8) max = 90; // Adjust for 81-90 range
 
             const possibleNumbers = Array.from({ length: max - min + 1 }, (_, i) => i + min);
-            const chosenNumber = possibleNumbers[Math.floor(Math.random() * possibleNumbers.length)];
+            let chosenNumber;
 
-            if (!rowNumbers.has(chosenNumber) && !usedNumbers.has(chosenNumber)) {
-                rowNumbers.add(chosenNumber);
-                usedNumbers.add(chosenNumber);
-            }
-        }
+            // Ensure the chosen number is unique and hasn't been used
+            do {
+                chosenNumber = possibleNumbers[Math.floor(Math.random() * possibleNumbers.length)];
+            } while (usedNumbers.has(chosenNumber));
 
-        // Sort the row numbers to ensure they are placed in the correct columns
-        const sortedRowNumbers = Array.from(rowNumbers).sort((a, b) => Math.floor((a - 1) / 10) - Math.floor((b - 1) / 10));
+            rowNumbers.add(chosenNumber);
+            usedNumbers.add(chosenNumber);
 
-        // Place numbers in the ticket
-        sortedRowNumbers.forEach(num => {
-            const col = Math.floor((num - 1) / 10);
-            ticketNumbers[row * 9 + col] = num;
+            // Place the number in the ticket at the correct position
+            ticketNumbers[row * 9 + col] = chosenNumber;
         });
-
-        // Determine blocked indices for this row (those not selected)
-        const blockedCols = [...Array(9).keys()].filter(col => !sortedRowNumbers.some(num => Math.floor((num - 1) / 10) === col));
-        blockedIndices.push(...blockedCols.map(col => row * 9 + col));
     }
 
-    return { numbers: ticketNumbers, blockedIndices: blockedIndices };
+    return { numbers: ticketNumbers };
 }
 
 
