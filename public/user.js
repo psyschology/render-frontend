@@ -123,15 +123,16 @@ onValue(ref(database, 'tickets'), (snapshot) => {
                 for (let j = 0; j < 9; j++) {
                     const index = i * 9 + j;
                     const td = document.createElement('td');
-                    
-                    if (ticket.blockedIndices.includes(index)) {
-                        td.className = 'blocked'; // Blocked cells
-                    } else {
+
+                    // Handle filled and blocked cells
+                    if (ticket.numbers[index] !== null) {
                         td.className = 'filled'; // Filled cells
                         td.textContent = ticket.numbers[index];
                         if (calledNumbers.includes(ticket.numbers[index])) {
                             td.classList.add('called'); // Highlight called numbers
                         }
+                    } else {
+                        td.className = 'blocked'; // Blocked cells
                     }
 
                     tr.appendChild(td);
