@@ -1,7 +1,3 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
-import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
-
 // Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyB9hgV5BCLAXQC4-MhcEfadzJCRVcwp8CQ",
@@ -26,7 +22,6 @@ const timeLeft = document.getElementById('timeLeft');
 const ticketsContainer = document.getElementById('tickets');
 const calledNumbersContainer = document.getElementById('calledNumbers');
 const calledNumbersTableContainer = document.getElementById('calledNumbersTable'); // New element for the called numbers table
-const awardBox = document.getElementById('awardBox');
 
 let calledNumbers = [];
 let intervalId = null;
@@ -42,12 +37,12 @@ onValue(ref(database, 'gameInfo'), (snapshot) => {
     const gameInfo = snapshot.val();
     
     if (gameInfo) {
-        nextGameTime.textContent = `Next Game Time: ${gameInfo.gameTime || 'N/A'}`;
-        nextGameDate.textContent = `Next Game Date: ${gameInfo.gameDate || 'N/A'}`;
+        nextGameTime.textContent = Next Game Time: ${gameInfo.gameTime || 'N/A'};
+        nextGameDate.textContent = Next Game Date: ${gameInfo.gameDate || 'N/A'};
 
         if (gameInfo.gameTime && gameInfo.gameDate) {
             // Combine game date and time into a single Date object
-            const gameDateTime = new Date(`${gameInfo.gameDate}T${gameInfo.gameTime}`);
+            const gameDateTime = new Date(${gameInfo.gameDate}T${gameInfo.gameTime});
 
             // Clear any existing interval to prevent multiple intervals running at the same time
             if (window.countdownInterval) {
@@ -64,7 +59,7 @@ onValue(ref(database, 'gameInfo'), (snapshot) => {
                     const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
                     const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
-                    timeLeft.textContent = `Time Left: ${hours}h ${minutes}m ${seconds}s`;
+                    timeLeft.textContent = Time Left: ${hours}h ${minutes}m ${seconds}s;
                 } else {
                     // Time is up, clear the interval and update the display
                     clearInterval(window.countdownInterval);
@@ -92,7 +87,6 @@ onValue(ref(database, 'gameInfo/status'), (snapshot) => {
                 gameBoard.style.display = 'block';
                 generateBoard(board);
                 startNumberCalling();
-                updateAwardDisplay(); // Ensure awards are updated when the game starts
             }
         });
     } else if (status === 'ended') {
@@ -105,11 +99,11 @@ onValue(ref(database, 'calledNumbers'), (snapshot) => {
     const numbers = snapshot.val() || [];
     calledNumbers = numbers;
     updateCalledNumbersTable();
-    calledNumbersContainer.innerHTML = numbers.map(number => `<span class="called-number">${number}</span>`).join(' ');
+    calledNumbersContainer.innerHTML = numbers.map(number => <span class="called-number">${number}</span>).join(' ');
 
     // Update board with called numbers
     numbers.forEach(number => {
-        const cell = document.getElementById(`cell-${number}`);
+        const cell = document.getElementById(cell-${number});
         if (cell) {
             cell.classList.add('called');
             cell.style.backgroundColor = 'yellow'; // Mark the cell in yellow
@@ -118,8 +112,6 @@ onValue(ref(database, 'calledNumbers'), (snapshot) => {
 
     // Update tickets with called numbers
     updateTicketsWithCalledNumbers();
-    checkAwards(); // Check for awards each time numbers are called
-
 });
 
 // Fetch the tickets and render them
@@ -131,16 +123,16 @@ onValue(ref(database, 'tickets'), (snapshot) => {
         if (ticketNumber !== 'limit') {
             const ticketDiv = document.createElement('div');
             ticketDiv.className = 'dynamic-ticket'; // Add class for styling
-            ticketDiv.innerHTML = `
+            ticketDiv.innerHTML = 
                 <div class="ticket-header">Ticket ${ticketNumber}</div>
                 <div class="ticket-owner">
-                    ${ticket.bookedBy ? `Booked by: ${ticket.bookedBy}` : `<a href="https://wa.me/99999" target="_blank">Book Now</a>`}
+                    ${ticket.bookedBy ? Booked by: ${ticket.bookedBy} : <a href="https://wa.me/99999" target="_blank">Book Now</a>}
                 </div>
                 <div id="ticket-${ticketNumber}" class="ticket-grid"></div>
-            `;
+            ;
             ticketsContainer.appendChild(ticketDiv);
 
-            const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
+            const ticketGrid = document.getElementById(ticket-${ticketNumber});
             const table = document.createElement('table');
             table.className = 'ticket-table'; // Add a class for styling
 
@@ -181,7 +173,7 @@ function generateBoard(board) {
             const td = document.createElement('td');
             const num = board[i * 10 + j];
             td.textContent = num;
-            td.id = `cell-${num}`;
+            td.id = cell-${num};
             tr.appendChild(td);
         }
         table.appendChild(tr);
@@ -212,14 +204,13 @@ function stopNumberCalling() {
 function updateCalledNumbers(number) {
     calledNumbers.push(number);
     set(ref(database, 'calledNumbers'), calledNumbers);
-    const container = document.getElementById(`cell-${number}`);
+    const container = document.getElementById(cell-${number});
     if (container) {
         container.classList.add('called');
         container.style.backgroundColor = 'yellow'; // Mark the cell in yellow
     }
     updateTicketsWithCalledNumbers(); // Update ticket grids when a number is called
     updateCalledNumbersTable(); // Update the called numbers table
-    checkAwards(); // Check for awards each time a number is called
 }
 
 function updateCalledNumbersTable() {
@@ -266,51 +257,6 @@ function updateTicketsWithCalledNumbers() {
         });
     });
 }
-
-function checkAwards() {
-    // Define your awards here
-    const awards = {
-        '5 in a row': { count: 5 },
-        'Full House': { count: 15 },
-        // Add more awards as needed
-    };
-    const tickets = document.querySelectorAll('.ticket-table');
-    tickets.forEach(ticket => {
-        const cells = ticket.querySelectorAll('td');
-        const numbers = Array.from(cells).map(cell => parseInt(cell.textContent)).filter(num => !isNaN(num));
-        const rowCount = [0, 0, 0];
-        let fullHouse = true;
-
-        for (let i = 0; i < 3; i++) {
-            const rowNumbers = numbers.slice(i * 9, (i + 1) * 9);
-            rowCount[i] = rowNumbers.filter(num => calledNumbers.includes(num)).length;
-
-            if (rowNumbers.length !== 9) {
-                fullHouse = false;
-            }
-        }
-
-        Object.keys(awards).forEach(award => {
-            const { count } = awards[award];
-            if (rowCount.includes(count)) {
-                announceAward(award);
-            } else if (award === 'Full House' && fullHouse) {
-                announceAward(award);
-            }
-        });
-    });
-}
-
-function announceAward(award) {
-    const announcement = document.createElement('div');
-    announcement.className = 'award-announcement';
-    announcement.textContent = `Award Won: ${award}`;
-    awardBox.appendChild(announcement);
-    setTimeout(() => {
-        announcement.remove();
-    }, 5000);
-}
-
 
 function announceNumber(number) {
     const msg = new SpeechSynthesisUtterance(number.toString());
@@ -422,10 +368,10 @@ function loadAwards() {
 
 function updateWinnerDetails(winnerDetailsElement, awardData) {
     if (awardData.winner) {
-        winnerDetailsElement.innerHTML = `
+        winnerDetailsElement.innerHTML = 
             <p>Ticket Number: ${awardData.winner.ticketNumber}</p>
             <p>Owner: ${awardData.winner.owner}</p>
-        `;
+        ;
     } else {
         winnerDetailsElement.innerHTML = '<p class="no-winner-message">No winners yet</p>';
     }
@@ -488,11 +434,11 @@ function checkAwardsForTicket(ticketNumber, ticketNumbers, calledNumbers) {
 // Function to announce winners and update Firebase
 function announceWinners(winners, ticketNumber) {
     const awardBox = document.getElementById('awardBox');
-    awardBox.innerHTML += `<br>Ticket ${ticketNumber} won: ${winners.join(', ')}`;
+    awardBox.innerHTML += <br>Ticket ${ticketNumber} won: ${winners.join(', ')};
     
     const updates = {};
     winners.forEach((award) => {
-        updates[`gameInfo/awards/${award}/winner`] = {
+        updates[gameInfo/awards/${award}/winner] = {
             ticketNumber: ticketNumber,
             owner: 'Unknown' // Replace with actual owner if available
         };
