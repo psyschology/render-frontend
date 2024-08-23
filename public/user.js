@@ -247,51 +247,41 @@ function announceNumber(number) {
 function generateTicket() {
     const ticketNumbers = Array(27).fill(null); // 27 cells for the ticket
     const blockedIndices = [];
-
-    // Define the column ranges
-    const columnRanges = [
-        [1, 9], [10, 19], [20, 29], [30, 39], [40, 49], 
-        [50, 59], [60, 69], [70, 79], [80, 90]
-    ];
-
-    // Initialize the number set to ensure uniqueness across the entire ticket
     const usedNumbers = new Set();
 
-    // Allocate 5 numbers in each row
     for (let row = 0; row < 3; row++) {
-        const selectedIndices = [];
+        const rowNumbers = new Set();
 
-        // Select 5 unique columns for this row
-        while (selectedIndices.length < 5) {
-            const colIndex = Math.floor(Math.random() * 9);
-            if (!selectedIndices.includes(colIndex)) {
-                selectedIndices.push(colIndex);
+        while (rowNumbers.size < 5) {
+            const col = Math.floor(Math.random() * 9); // Choose a column randomly (0-8)
+            let min = col * 10 + 1;
+            let max = col * 10 + 10;
+
+            if (col === 0) min = 1; // Adjust for 1-9 range
+            if (col === 8) max = 90; // Adjust for 81-90 range
+
+            const possibleNumbers = Array.from({ length: max - min + 1 }, (_, i) => i + min);
+            const chosenNumber = possibleNumbers[Math.floor(Math.random() * possibleNumbers.length)];
+
+            if (!rowNumbers.has(chosenNumber) && !usedNumbers.has(chosenNumber)) {
+                rowNumbers.add(chosenNumber);
+                usedNumbers.add(chosenNumber);
             }
         }
 
-        // Sort selected indices to maintain column order
-        selectedIndices.sort((a, b) => a - b);
+        // Sort the row numbers to ensure they are placed in the correct columns
+        const sortedRowNumbers = Array.from(rowNumbers).sort((a, b) => Math.floor((a - 1) / 10) - Math.floor((b - 1) / 10));
 
-        selectedIndices.forEach(colIndex => {
-            let [min, max] = columnRanges[colIndex];
-            let num;
-
-            // Generate a unique number for this column
-            do {
-                num = Math.floor(Math.random() * (max - min + 1)) + min;
-            } while (usedNumbers.has(num));
-
-            usedNumbers.add(num);
-            ticketNumbers[row * 9 + colIndex] = num;
+        // Place numbers in the ticket
+        sortedRowNumbers.forEach(num => {
+            const col = Math.floor((num - 1) / 10);
+            ticketNumbers[row * 9 + col] = num;
         });
 
-        // Mark the remaining columns as blocked
-        const blockedCols = [...Array(9).keys()].filter(i => !selectedIndices.includes(i));
-        blockedIndices.push(...blockedCols.map(i => row * 9 + i));
+        // Determine blocked indices for this row (those not selected)
+        const blockedCols = [...Array(9).keys()].filter(col => !sortedRowNumbers.some(num => Math.floor((num - 1) / 10) === col));
+        blockedIndices.push(...blockedCols.map(col => row * 9 + col));
     }
 
-    return {
-        numbers: ticketNumbers,
-        blockedIndices: blockedIndices
-    };
+    return { numbers: ticketNumbers, blockedIndices: blockedIndices };
 }
