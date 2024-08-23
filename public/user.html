@@ -399,7 +399,62 @@
         });
     }
 </script>
+<style>
+    /* Add this to your CSS file or in a <style> tag in your HTML */
 
+#awardBox {
+    display: none;
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.award-container {
+    margin-bottom: 15px;
+}
+
+.award-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.view-winner-button {
+    display: block;
+    margin-bottom: 10px;
+    padding: 10px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.view-winner-button:hover {
+    background-color: #0056b3;
+}
+
+.winner-details {
+    display: none; /* Hidden by default */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+.winner-details p {
+    margin: 0;
+    font-size: 16px;
+}
+
+.no-winner-message {
+    font-size: 16px;
+    color: #777;
+}
+</style>
  <h2>Awards</h2>
     <div id="awardBox"></div>
 
