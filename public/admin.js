@@ -61,15 +61,49 @@ endGameButton.addEventListener('click', () => {
 });
 
 setGameTimeButton.addEventListener('click', () => {
-    const gameTime = prompt("Enter the game start time (YYYY-MM-DDTHH:MM:SSZ):");
-    const gameDate = prompt("Enter the game start date (YYYY-MM-DD):");
-    if (gameTime && gameDate) {
-        update(ref(database, 'gameInfo'), {
-            gameTime: gameTime,
-            gameDate: gameDate
-        });
-    }
+    // Create a container for the date and time input elements
+    const inputContainer = document.createElement('div');
+
+    // Create a datetime-local input for selecting the game start time
+    const dateTimeInput = document.createElement('input');
+    dateTimeInput.type = 'datetime-local';
+    dateTimeInput.id = 'gameDateTime';
+    dateTimeInput.name = 'gameDateTime';
+
+    // Create a submit button
+    const submitButton = document.createElement('button');
+    submitButton.textContent = 'Set Game Time';
+
+    // Append the input and button to the container
+    inputContainer.appendChild(dateTimeInput);
+    inputContainer.appendChild(submitButton);
+
+    // Append the container to the body or a specific part of the page
+    document.body.appendChild(inputContainer);
+
+    // Handle the click event on the submit button
+    submitButton.addEventListener('click', () => {
+        const selectedDateTime = dateTimeInput.value;
+
+        if (selectedDateTime) {
+            const [gameDate, gameTime] = selectedDateTime.split('T');
+
+            // Update the game info in the database
+            update(ref(database, 'gameInfo'), {
+                gameTime: gameTime + ':00Z', // Adding seconds and timezone format
+                gameDate: gameDate
+            }).then(() => {
+                alert('Game time and date set successfully!');
+                document.body.removeChild(inputContainer); // Remove the input elements after setting the time
+            }).catch(error => {
+                alert('Error setting game time and date:', error);
+            });
+        } else {
+            alert('Please select a valid date and time.');
+        }
+    });
 });
+
 
 setTicketLimitButton.addEventListener('click', () => {
     const limit = prompt("Enter the number of tickets:");
