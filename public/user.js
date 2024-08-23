@@ -140,17 +140,18 @@ onValue(ref(database, 'tickets'), (snapshot) => {
             const table = document.createElement('table');
             table.className = 'ticket-table'; // Add a class for styling
 
+            const ticketNumbers = generateTicketNumbers(); // Generate numbers for this ticket
+
             for (let i = 0; i < 3; i++) {
                 const tr = document.createElement('tr');
                 for (let j = 0; j < 9; j++) {
-                    const index = i * 9 + j;
                     const td = document.createElement('td');
+                    const number = ticketNumbers[i][j];
 
-                    // Handle filled and blocked cells
-                    if (ticket.numbers[index] !== null) {
+                    if (number !== null) {
                         td.className = 'filled'; // Filled cells
-                        td.textContent = ticket.numbers[index];
-                        if (calledNumbers.includes(ticket.numbers[index])) {
+                        td.textContent = number;
+                        if (calledNumbers.includes(number)) {
                             td.classList.add('called'); // Highlight called numbers
                         }
                     } else {
@@ -166,6 +167,55 @@ onValue(ref(database, 'tickets'), (snapshot) => {
     }
 });
 
+
+function generateTicketNumbers() {
+    const numbers = [];
+    const columns = 9; // 9 columns
+    const rows = 3; // 3 rows
+    const columnRanges = [
+        [1, 9],
+        [10, 19],
+        [20, 29],
+        [30, 39],
+        [40, 49],
+        [50, 59],
+        [60, 69],
+        [70, 79],
+        [80, 90]
+    ];
+
+    // Initialize columns with arrays to store numbers
+    const columnsArray = Array.from({ length: columns }, () => []);
+
+    // Populate each column with numbers in ascending order
+    columnRanges.forEach((range, colIndex) => {
+        for (let num = range[0]; num <= range[1]; num++) {
+            columnsArray[colIndex].push(num);
+        }
+    });
+
+    // Shuffle numbers within each column to distribute randomly
+    columnsArray.forEach(col => {
+        col.sort(() => Math.random() - 0.5);
+    });
+
+    // Fill rows with numbers
+    for (let row = 0; row < rows; row++) {
+        numbers[row] = [];
+        for (let col = 0; col < columns; col++) {
+            numbers[row][col] = columnsArray[col].shift(); // Get one number from the column
+        }
+    }
+
+    // Ensure each row has exactly 5 numbers
+    numbers.forEach(row => {
+        while (row.length < 9) {
+            row.push(null); // Fill remaining cells with null
+        }
+    });
+
+    return numbers;
+}
 
 
 
