@@ -110,47 +110,38 @@ setTicketLimitButton.addEventListener('click', () => {
     if (limit) {
         const tickets = {};
 
-function generateTicket() {
-    const ticketNumbers = Array(27).fill(null); // 27 cells for the ticket
-    const usedNumbers = new Set();
+        function generateTicket() {
+            const ticketNumbers = Array(27).fill(null); // 3 rows x 9 columns = 27 cells
+            const columnsArray = Array.from({ length: 9 }, () => []);
 
-    for (let row = 0; row < 3; row++) {
-        const rowNumbers = new Set();
+            // Populate columns with numbers in ascending order
+            for (let col = 0; col < 9; col++) {
+                const min = col * 10 + 1;
+                const max = col === 8 ? 90 : (col + 1) * 10;
 
-        // Randomly select 5 unique columns out of 9 for this row
-        const selectedColumns = new Set();
-        while (selectedColumns.size < 5) {
-            const col = Math.floor(Math.random() * 9);
-            selectedColumns.add(col);
+                for (let num = min; num <= max; num++) {
+                    columnsArray[col].push(num);
+                }
+                columnsArray[col].sort((a, b) => a - b); // Ensure ascending order
+            }
+
+            // Assign numbers to the ticket ensuring 5 per row
+            for (let row = 0; row < 3; row++) {
+                const selectedColumns = new Set();
+
+                while (selectedColumns.size < 5) {
+                    const col = Math.floor(Math.random() * 9);
+                    selectedColumns.add(col);
+                }
+
+                selectedColumns.forEach(col => {
+                    const number = columnsArray[col].shift(); // Get the smallest number in ascending order
+                    ticketNumbers[row * 9 + col] = number;
+                });
+            }
+
+            return { numbers: ticketNumbers };
         }
-
-        selectedColumns.forEach(col => {
-            let min = col * 10 + 1;
-            let max = col * 10 + 10;
-
-            if (col === 0) min = 1; // Adjust for 1-9 range
-            if (col === 8) max = 90; // Adjust for 81-90 range
-
-            const possibleNumbers = Array.from({ length: max - min + 1 }, (_, i) => i + min);
-            let chosenNumber;
-
-            // Ensure the chosen number is unique and hasn't been used
-            do {
-                chosenNumber = possibleNumbers[Math.floor(Math.random() * possibleNumbers.length)];
-            } while (usedNumbers.has(chosenNumber));
-
-            rowNumbers.add(chosenNumber);
-            usedNumbers.add(chosenNumber);
-
-            // Place the number in the ticket at the correct position
-            ticketNumbers[row * 9 + col] = chosenNumber;
-        });
-    }
-
-    return { numbers: ticketNumbers };
-}
-
-
 
         // Generate tickets based on the specified limit
         for (let i = 1; i <= limit; i++) {
@@ -161,6 +152,7 @@ function generateTicket() {
         set(ref(database, 'tickets'), tickets);
     }
 });
+
 
 
 
