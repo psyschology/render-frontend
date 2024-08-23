@@ -318,7 +318,7 @@ function updateAwardDisplay() {
     const gameStatusRef = ref(database, 'gameInfo/status'); // Check game status
 
     onValue(gameStatusRef, (snapshot) => {
-        const gameStatus = snapshot.val();
+        const gameStatus = started.val();
         if (gameStatus === 'running') {
             awardBox.style.display = 'block'; // Show awards if game is running
             loadAwards(); // Load and display awards if the game is running
