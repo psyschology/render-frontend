@@ -312,7 +312,8 @@ function generateTicket() {
 
 
 // Existing code...
-// Show or hide awards based on game status// Show or hide awards based on game status
+
+// Show or hide awards based on game status
 function updateAwardDisplay() {
     const awardBox = document.getElementById('awardBox');
     const gameStatusRef = ref(database, 'gameInfo/status'); // Check game status
@@ -330,7 +331,7 @@ function updateAwardDisplay() {
 
 function loadAwards() {
     const awardBox = document.getElementById('awardBox');
-    const awardsRef = ref(database, 'awards'); // Path to awards data in Firebase
+    const awardsRef = ref(database, 'gameInfo/awards'); // Correct path to awards data in Firebase
 
     onValue(awardsRef, (snapshot) => {
         const awards = snapshot.val();
@@ -359,15 +360,7 @@ function loadAwards() {
 
             const winnerDetails = document.createElement('div');
             winnerDetails.className = 'winner-details';
-
-            if (awardData.winner) {
-                winnerDetails.innerHTML = `
-                    <p>Ticket Number: ${awardData.winner.ticketNumber}</p>
-                    <p>Owner: ${awardData.winner.owner}</p>
-                `;
-            } else {
-                winnerDetails.innerHTML = '<p class="no-winner-message">No winners yet</p>';
-            }
+            winnerDetails.style.display = 'none'; // Hide by default
 
             awardContainer.appendChild(awardTitle);
             awardContainer.appendChild(viewWinnerButton);
@@ -392,7 +385,6 @@ updateAwardDisplay(); // Call this function to initialize display
 
 // Check for winning tickets and update awardBox
 function checkAwards() {
-    // Assume `ticketNumbers` and `calledNumbers` are defined
     onValue(ref(database, 'calledNumbers'), (snapshot) => {
         const calledNumbers = snapshot.val() || [];
         onValue(ref(database, 'tickets'), (snapshot) => {
@@ -450,12 +442,15 @@ function announceWinners(winners, ticketNumber) {
     
     const updates = {};
     winners.forEach((award) => {
-        updates[`gameInfo/awards/${award}/winner`] = ticketNumber;
+        updates[`gameInfo/awards/${award}/winner`] = {
+            ticketNumber: ticketNumber,
+            owner: 'Unknown' // Replace with actual owner if available
+        };
     });
     update(ref(database), updates);
 }
 
-// Helper functions (add these to `user.js`):
+// Helper functions
 function checkFullHouse(ticketNumbers, calledNumbers) {
     return ticketNumbers.every(number => calledNumbers.includes(number));
 }
