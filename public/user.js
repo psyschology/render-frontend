@@ -105,37 +105,26 @@ onValue(ref(database, 'tickets'), (snapshot) => {
         if (ticketNumber !== 'limit') {
             const ticketDiv = document.createElement('div');
             ticketDiv.className = 'dynamic-ticket'; // Add class for styling
-            ticketDiv.innerHTML = `
+            ticketDiv.innerHTML = 
                 <div class="ticket-header">Ticket ${ticketNumber}</div>
                 <div class="ticket-owner">
-                    ${ticket.bookedBy ? `Booked by: ${ticket.bookedBy}` : `<a href="https://wa.me/99999" target="_blank">Book Now</a>`}
+                    ${ticket.bookedBy ? Booked by: ${ticket.bookedBy} : <a href="https://wa.me/99999" target="_blank">Book Now</a>}
                 </div>
                 <div id="ticket-${ticketNumber}" class="ticket-grid"></div>
-            `;
+            ;
             ticketsContainer.appendChild(ticketDiv);
 
-            const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
+            const ticketGrid = document.getElementById(ticket-${ticketNumber});
             const table = document.createElement('table');
             table.className = 'ticket-table'; // Add a class for styling
-
             for (let i = 0; i < 3; i++) {
                 const tr = document.createElement('tr');
                 for (let j = 0; j < 9; j++) {
                     const td = document.createElement('td');
-                    const cellIndex = i * 9 + j;
-
-                    // Apply the appropriate class and text content
-                    if (ticket.blockedIndices.includes(cellIndex)) {
-                        td.className = 'blocked'; // Add a class for blocked cells
-                        td.textContent = ''; // Blocked cells are empty
-                    } else {
-                        td.className = 'number'; // Add a class for numbered cells
-                        td.textContent = ticket.numbers[cellIndex] || '';
-                        
-                        // Highlight the called numbers
-                        if (calledNumbers.includes(ticket.numbers[cellIndex])) {
-                            td.classList.add('called'); // Add class to highlight called numbers
-                        }
+                    td.className = ticket.blockedIndices.includes(i * 9 + j) ? '' : 'empty';
+                    td.textContent = ticket.numbers[i * 9 + j] || '';
+                    if (calledNumbers.includes(ticket.numbers[i * 9 + j])) {
+                        td.classList.add('called'); // Add class to highlight called numbers
                     }
                     tr.appendChild(td);
                 }
@@ -145,6 +134,7 @@ onValue(ref(database, 'tickets'), (snapshot) => {
         }
     }
 });
+
 
 
 
@@ -248,34 +238,26 @@ function announceNumber(number) {
 }
 
 function createTicket() {
-    const ticket = Array(27).fill(null);
+    const ticket = Array.from({ length: 27 }, () => null);
     const blockedIndices = [];
 
+    // Allocate 5 numbers in each row
     for (let row = 0; row < 3; row++) {
-        const selectedIndices = new Set();
-        
-        // Ensure that 5 columns are selected for each row
-        while (selectedIndices.size < 5) {
-            const randomIndex = Math.floor(Math.random() * 9);
-            selectedIndices.add(randomIndex);
-        }
-
+        const indices = [...Array(9).keys()];
+        indices.sort(() => 0.5 - Math.random());
+        const selectedIndices = indices.slice(0, 5);
         selectedIndices.forEach(index => {
             let min = index * 10 + 1;
             let max = index * 10 + 10;
-            if (index === 0) min = 1;
-            if (index === 8) max = 90;
+            if (index === 0) min = 1; // Adjust for 1-9 range
+            if (index === 8) max = 90; // Adjust for 81-90 range
             const possibleNumbers = Array.from({ length: max - min + 1 }, (_, i) => i + min);
             const chosenNumber = possibleNumbers[Math.floor(Math.random() * possibleNumbers.length)];
             ticket[row * 9 + index] = chosenNumber;
         });
 
-        // Mark remaining columns as blocked
-        for (let col = 0; col < 9; col++) {
-            if (!selectedIndices.has(col)) {
-                blockedIndices.push(row * 9 + col);
-            }
-        }
+        // Store blocked indices for each row
+        blockedIndices.push(...selectedIndices.map(i => row * 9 + i));
     }
 
     return { numbers: ticket, blockedIndices };
