@@ -312,6 +312,83 @@ function generateTicket() {
 
 
 // Existing code...
+// Show or hide awards based on game status
+function updateAwardDisplay() {
+    const awardBox = document.getElementById('awardBox');
+    const gameStatusRef = ref(database, 'gameInfo/status'); // Assume you have a status field
+
+    onValue(gameStatusRef, (snapshot) => {
+        const gameStatus = snapshot.val();
+        if (gameStatus === 'running') {
+            awardBox.style.display = 'block'; // Show awards if game is running
+            loadAwards(); // Load and display awards if the game is running
+        } else {
+            awardBox.style.display = 'none';  // Hide awards otherwise
+        }
+    });
+}
+
+function loadAwards() {
+    const awardBox = document.getElementById('awardBox');
+    const awardsRef = ref(database, 'awards'); // Path to awards data in Firebase
+
+    onValue(awardsRef, (snapshot) => {
+        const awards = snapshot.val();
+        awardBox.innerHTML = ''; // Clear previous awards
+        
+        for (const [awardName, awardData] of Object.entries(awards)) {
+            const awardContainer = document.createElement('div');
+            awardContainer.className = 'award-container';
+
+            const awardTitle = document.createElement('div');
+            awardTitle.className = 'award-name';
+            awardTitle.textContent = awardName;
+
+            const viewWinnerButton = document.createElement('button');
+            viewWinnerButton.className = 'view-winner-button';
+            viewWinnerButton.textContent = 'View Winner';
+            viewWinnerButton.addEventListener('click', () => {
+                const winnerDetails = awardContainer.querySelector('.winner-details');
+                if (winnerDetails.style.display === 'none') {
+                    winnerDetails.style.display = 'block';
+                    updateWinnerDetails(winnerDetails, awardData);
+                } else {
+                    winnerDetails.style.display = 'none';
+                }
+            });
+
+            const winnerDetails = document.createElement('div');
+            winnerDetails.className = 'winner-details';
+
+            if (awardData.winner) {
+                winnerDetails.innerHTML = `
+                    <p>Ticket Number: ${awardData.winner.ticketNumber}</p>
+                    <p>Owner: ${awardData.winner.owner}</p>
+                `;
+            } else {
+                winnerDetails.innerHTML = '<p class="no-winner-message">No winners yet</p>';
+            }
+
+            awardContainer.appendChild(awardTitle);
+            awardContainer.appendChild(viewWinnerButton);
+            awardContainer.appendChild(winnerDetails);
+            awardBox.appendChild(awardContainer);
+        }
+    });
+}
+
+function updateWinnerDetails(winnerDetailsElement, awardData) {
+    if (awardData.winner) {
+        winnerDetailsElement.innerHTML = `
+            <p>Ticket Number: ${awardData.winner.ticketNumber}</p>
+            <p>Owner: ${awardData.winner.owner}</p>
+        `;
+    } else {
+        winnerDetailsElement.innerHTML = '<p class="no-winner-message">No winners yet</p>';
+    }
+}
+
+updateAwardDisplay(); // Call this function to initialize display
 
 // Display awards
 const awardBox = document.getElementById('awardBox');
