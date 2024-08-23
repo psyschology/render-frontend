@@ -26,6 +26,7 @@ const timeLeft = document.getElementById('timeLeft');
 const ticketsContainer = document.getElementById('tickets');
 const calledNumbersContainer = document.getElementById('calledNumbers');
 const calledNumbersTableContainer = document.getElementById('calledNumbersTable'); // New element for the called numbers table
+const awardBox = document.getElementById('awardBox');
 
 let calledNumbers = [];
 let intervalId = null;
@@ -91,6 +92,7 @@ onValue(ref(database, 'gameInfo/status'), (snapshot) => {
                 gameBoard.style.display = 'block';
                 generateBoard(board);
                 startNumberCalling();
+                updateAwardDisplay(); // Ensure awards are updated when the game starts
             }
         });
     } else if (status === 'ended') {
@@ -116,6 +118,8 @@ onValue(ref(database, 'calledNumbers'), (snapshot) => {
 
     // Update tickets with called numbers
     updateTicketsWithCalledNumbers();
+    checkAwards(); // Check for awards each time numbers are called
+
 });
 
 // Fetch the tickets and render them
@@ -215,6 +219,7 @@ function updateCalledNumbers(number) {
     }
     updateTicketsWithCalledNumbers(); // Update ticket grids when a number is called
     updateCalledNumbersTable(); // Update the called numbers table
+    checkAwards(); // Check for awards each time a number is called
 }
 
 function updateCalledNumbersTable() {
@@ -261,6 +266,51 @@ function updateTicketsWithCalledNumbers() {
         });
     });
 }
+
+function checkAwards() {
+    // Define your awards here
+    const awards = {
+        '5 in a row': { count: 5 },
+        'Full House': { count: 15 },
+        // Add more awards as needed
+    };
+    const tickets = document.querySelectorAll('.ticket-table');
+    tickets.forEach(ticket => {
+        const cells = ticket.querySelectorAll('td');
+        const numbers = Array.from(cells).map(cell => parseInt(cell.textContent)).filter(num => !isNaN(num));
+        const rowCount = [0, 0, 0];
+        let fullHouse = true;
+
+        for (let i = 0; i < 3; i++) {
+            const rowNumbers = numbers.slice(i * 9, (i + 1) * 9);
+            rowCount[i] = rowNumbers.filter(num => calledNumbers.includes(num)).length;
+
+            if (rowNumbers.length !== 9) {
+                fullHouse = false;
+            }
+        }
+
+        Object.keys(awards).forEach(award => {
+            const { count } = awards[award];
+            if (rowCount.includes(count)) {
+                announceAward(award);
+            } else if (award === 'Full House' && fullHouse) {
+                announceAward(award);
+            }
+        });
+    });
+}
+
+function announceAward(award) {
+    const announcement = document.createElement('div');
+    announcement.className = 'award-announcement';
+    announcement.textContent = `Award Won: ${award}`;
+    awardBox.appendChild(announcement);
+    setTimeout(() => {
+        announcement.remove();
+    }, 5000);
+}
+
 
 function announceNumber(number) {
     const msg = new SpeechSynthesisUtterance(number.toString());
