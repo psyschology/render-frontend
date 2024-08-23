@@ -65,27 +65,36 @@ setTicketLimitButton.addEventListener('click', () => {
             const ticketNumbers = Array(27).fill(null); // 27 cells for the ticket
             const blockedIndices = [];
 
-            // Allocate 5 numbers in each row
             for (let row = 0; row < 3; row++) {
-                const availableIndices = [...Array(9).keys()];
-                const selectedIndices = availableIndices.sort(() => 0.5 - Math.random()).slice(0, 5);
+                const rowNumbers = new Set();
+                
+                // Generate 5 unique numbers for the row
+                while (rowNumbers.size < 5) {
+                    const col = Math.floor(Math.random() * 9); // Choose a column randomly (0-8)
+                    let num = Math.floor(Math.random() * 10) + 1 + (col * 10); // Generate number based on column range
+                    
+                    // Ensure the number is not already in the ticket and fits within the column range
+                    if (!ticketNumbers.includes(num)) {
+                        rowNumbers.add({ num, col });
+                    }
+                }
 
-                selectedIndices.forEach(index => {
-                    let min = index * 10 + 1;
-                    let max = index * 10 + 10;
-                    if (index === 0) min = 1; // Adjust for 1-9 range
-                    if (index === 8) max = 90; // Adjust for 81-90 range
-                    const possibleNumbers = Array.from({ length: max - min + 1 }, (_, i) => i + min);
-                    const chosenNumber = possibleNumbers[Math.floor(Math.random() * possibleNumbers.length)];
-                    ticketNumbers[row * 9 + index] = chosenNumber;
-                });
+                // Sort row numbers by column to ensure proper placement
+                const sortedRowNumbers = Array.from(rowNumbers).sort((a, b) => a.col - b.col);
+                for (let { num, col } of sortedRowNumbers) {
+                    const index = row * 9 + col; // Calculate the index in the ticket array
+                    ticketNumbers[index] = num; // Place the number in the correct cell
+                }
 
-                // Store blocked indices for each row (those not selected)
-                const blockedCols = availableIndices.filter(index => !selectedIndices.includes(index));
-                blockedIndices.push(...blockedCols.map(i => row * 9 + i));
+                // Determine which columns will be blocked
+                const blockedCols = Array.from({ length: 9 }, (_, i) => i).filter(i => !sortedRowNumbers.some(({ col }) => col === i));
+                blockedIndices.push(...blockedCols.map(col => row * 9 + col)); // Calculate blocked indices
             }
 
-            return { numbers: ticketNumbers, blockedIndices: blockedIndices };
+            return {
+                numbers: ticketNumbers,
+                blockedIndices: blockedIndices
+            };
         }
 
         // Generate tickets based on the specified limit
@@ -97,7 +106,6 @@ setTicketLimitButton.addEventListener('click', () => {
         set(ref(database, 'tickets'), tickets);
     }
 });
-
 
 
 
@@ -115,4 +123,5 @@ function generateBoardNumbers() {
     const board = Array.from({ length: 90 }, (_, i) => i + 1);
     return board;
 }
+
 
