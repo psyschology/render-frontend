@@ -145,6 +145,7 @@ onValue(ref(database, 'tickets'), (snapshot) => {
 
 
 
+
 function generateBoard(board) {
     const table = document.createElement('table');
     for (let i = 0; i < 9; i++) {
