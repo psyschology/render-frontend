@@ -539,3 +539,86 @@ function checkDiagonal(ticketNumbers, calledNumbers) {
     ];
     return diagonals.some(diagonal => diagonal.every(number => calledNumbers.includes(number)));
 }
+
+
+
+
+
+
+//test
+
+    const ticketSearchBar = document.getElementById('ticketSearchBar');
+
+// Function to render tickets based on the search query
+function renderTickets(tickets) {
+    const ticketsContainer = document.getElementById('tickets');
+    ticketsContainer.innerHTML = '';
+
+    for (const [ticketNumber, ticket] of Object.entries(tickets)) {
+        if (ticketNumber !== 'limit') {
+            const ticketDiv = document.createElement('div');
+            ticketDiv.className = 'dynamic-ticket';
+            ticketDiv.innerHTML = `
+                <div class="ticket-header">Ticket ${ticketNumber}</div>
+                <div class="ticket-owner">
+                    ${ticket.bookedBy ? `Booked by: ${ticket.bookedBy}` : `<a href="https://wa.me/99999" target="_blank">Book Now</a>`}
+                </div>
+                <div id="ticket-${ticketNumber}" class="ticket-grid"></div>
+            `;
+            ticketsContainer.appendChild(ticketDiv);
+
+            const ticketGrid = document.getElementById(`ticket-${ticketNumber}`);
+            const table = document.createElement('table');
+            table.className = 'ticket-table';
+
+            for (let i = 0; i < 3; i++) {
+                const tr = document.createElement('tr');
+                for (let j = 0; j < 9; j++) {
+                    const index = i * 9 + j;
+                    const td = document.createElement('td');
+
+                    if (ticket.numbers[index] !== null) {
+                        td.className = 'filled';
+                        td.textContent = ticket.numbers[index];
+                    } else {
+                        td.className = 'blocked';
+                    }
+
+                    tr.appendChild(td);
+                }
+                table.appendChild(tr);
+            }
+            ticketGrid.appendChild(table);
+        }
+    }
+}
+
+// Function to filter tickets based on search query
+function filterTickets(query) {
+    get(ref(database, 'tickets')).then((snapshot) => {
+        const tickets = snapshot.val();
+        if (tickets) {
+            const filteredTickets = {};
+            for (const [ticketNumber, ticket] of Object.entries(tickets)) {
+                if (ticketNumber.includes(query) || (ticket.bookedBy && ticket.bookedBy.toLowerCase().includes(query.toLowerCase()))) {
+                    filteredTickets[ticketNumber] = ticket;
+                }
+            }
+            renderTickets(filteredTickets);
+        }
+    });
+}
+
+// Event listener for search input
+ticketSearchBar.addEventListener('input', (e) => {
+    const query = e.target.value;
+    filterTickets(query);
+});
+
+// Initial call to render all tickets
+get(ref(database, 'tickets')).then((snapshot) => {
+    const tickets = snapshot.val();
+    if (tickets) {
+        renderTickets(tickets);
+    }
+});
