@@ -173,17 +173,41 @@ function generateBoardNumbers() {
 
 
 
-// New function to set awards
+// Function to set awards in the Firebase database
 document.getElementById('setAwardsButton').addEventListener('click', () => {
     const awards = {
-        'Full House': document.getElementById('fullHouseAmount').value,
-        'Top Line': document.getElementById('topLineAmount').value,
-        'Middle Line': document.getElementById('middleLineAmount').value,
-        'Bottom Line': document.getElementById('bottomLineAmount').value,
-        'Four Corners': document.getElementById('fourCornersAmount').value,
-        'Early Five': document.getElementById('earlyFiveAmount').value,
-        'Odd-Even': document.getElementById('oddEvenAmount').value,
-        'Diagonal': document.getElementById('diagonalAmount').value
+        'Full House': {
+            amount: document.getElementById('fullHouseAmount').value,
+            winner: null
+        },
+        'Top Line': {
+            amount: document.getElementById('topLineAmount').value,
+            winner: null
+        },
+        'Middle Line': {
+            amount: document.getElementById('middleLineAmount').value,
+            winner: null
+        },
+        'Bottom Line': {
+            amount: document.getElementById('bottomLineAmount').value,
+            winner: null
+        },
+        'Four Corners': {
+            amount: document.getElementById('fourCornersAmount').value,
+            winner: null
+        },
+        'Early Five': {
+            amount: document.getElementById('earlyFiveAmount').value,
+            winner: null
+        },
+        'Odd-Even': {
+            amount: document.getElementById('oddEvenAmount').value,
+            winner: null
+        },
+        'Diagonal': {
+            amount: document.getElementById('diagonalAmount').value,
+            winner: null
+        }
     };
 
     set(ref(database, 'gameInfo/awards'), awards)
