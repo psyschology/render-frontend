@@ -427,17 +427,19 @@ function updateWinnerDetails(winnerDetailsElement, awardData) {
     }
 }
 
-// Initialize the award display
-updateAwardDisplay();
+updateAwardDisplay(); // Call this function to initialize display
 
-// Function to check for winning tickets and update the awardBox
+// Check for winning tickets and update awardBox
 function checkAwards() {
     onValue(ref(database, 'calledNumbers'), (snapshot) => {
         const calledNumbers = snapshot.val() || [];
+        console.log("Called Numbers:", calledNumbers);
         onValue(ref(database, 'tickets'), (snapshot) => {
             const tickets = snapshot.val();
+            console.log("Tickets:", tickets);
             for (const [ticketNumber, ticket] of Object.entries(tickets)) {
                 const ticketNumbers = ticket.numbers;
+                console.log(`Checking awards for Ticket ${ticketNumber}`, ticketNumbers);
                 checkAwardsForTicket(ticketNumber, ticketNumbers, calledNumbers);
             }
         });
@@ -449,67 +451,72 @@ function checkAwardsForTicket(ticketNumber, ticketNumbers, calledNumbers) {
     const awardsRef = ref(database, 'gameInfo/awards');
     get(awardsRef).then((snapshot) => {
         const awards = snapshot.val();
+        console.log("Awards:", awards);
         const winners = [];
 
         if (checkFullHouse(ticketNumbers, calledNumbers)) {
+            console.log(`Ticket ${ticketNumber} wins Full House`);
             winners.push('Full House');
         }
         if (checkLine(ticketNumbers, calledNumbers, 'top')) {
+            console.log(`Ticket ${ticketNumber} wins Top Line`);
             winners.push('Top Line');
         }
         if (checkLine(ticketNumbers, calledNumbers, 'middle')) {
+            console.log(`Ticket ${ticketNumber} wins Middle Line`);
             winners.push('Middle Line');
         }
         if (checkLine(ticketNumbers, calledNumbers, 'bottom')) {
+            console.log(`Ticket ${ticketNumber} wins Bottom Line`);
             winners.push('Bottom Line');
         }
         if (checkFourCorners(ticketNumbers, calledNumbers)) {
+            console.log(`Ticket ${ticketNumber} wins Four Corners`);
             winners.push('Four Corners');
         }
         if (checkEarlyFive(ticketNumbers, calledNumbers)) {
+            console.log(`Ticket ${ticketNumber} wins Early Five`);
             winners.push('Early Five');
         }
         if (checkOddEven(ticketNumbers, calledNumbers)) {
+            console.log(`Ticket ${ticketNumber} wins Odd-Even`);
             winners.push('Odd-Even');
         }
         if (checkDiagonal(ticketNumbers, calledNumbers)) {
+            console.log(`Ticket ${ticketNumber} wins Diagonal`);
             winners.push('Diagonal');
         }
 
         if (winners.length > 0) {
-            announceWinners(winners, ticketNumber, awards);
+            announceWinners(winners, ticketNumber);
+        } else {
+            console.log(`No awards for Ticket ${ticketNumber}`);
         }
     });
 }
 
 // Function to announce winners and update Firebase
-function announceWinners(winners, ticketNumber, awards) {
+function announceWinners(winners, ticketNumber) {
     const awardBox = document.getElementById('awardBox');
     awardBox.innerHTML += `<br>Ticket ${ticketNumber} won: ${winners.join(', ')}`;
-
+    
     const updates = {};
     winners.forEach((award) => {
-        if (!awards[award].winner) {  // Ensure no duplicate winners for the same award
-            updates[`gameInfo/awards/${award}/winner`] = {
-                ticketNumber: ticketNumber,
-                owner: 'Unknown' // Replace with actual owner if available
-            };
-        }
+        updates[`gameInfo/awards/${award}/winner`] = {
+            ticketNumber: ticketNumber,
+            owner: 'Unknown' // Replace with actual owner if available
+        };
     });
-
-    // Update Firebase with the new winner details
     update(ref(database), updates)
-        .then(() => {
-            console.log('Winners updated successfully!');
-        })
-        .catch((error) => {
-            console.error('Error updating winners:', error);
-        });
+        .then(() => console.log(`Winners updated for Ticket ${ticketNumber}: ${winners.join(', ')}`))
+        .catch((error) => console.error('Error updating winners:', error));
 }
 
-// Helper functions to check different award conditions
+// Helper functions
 function checkFullHouse(ticketNumbers, calledNumbers) {
-    return ticketNumbers.every(number => calledNumbers.includes(number));
+    const result = ticketNumbers.every(number => calledNumbers.includes(number));
+    console.log(`Full House check: ${result}`);
+    return result;
 }
 
 function checkLine(ticketNumbers, calledNumbers, lineType) {
@@ -518,22 +525,28 @@ function checkLine(ticketNumbers, calledNumbers, lineType) {
         middle: ticketNumbers.slice(9, 18),
         bottom: ticketNumbers.slice(18, 27)
     };
-    return lines[lineType].every(number => calledNumbers.includes(number));
+    const result = lines[lineType].every(number => calledNumbers.includes(number));
+    console.log(`${lineType} Line check: ${result}`);
+    return result;
 }
 
 function checkFourCorners(ticketNumbers, calledNumbers) {
     const corners = [
-        ticketNumbers[0],  // Top-left
-        ticketNumbers[8],  // Top-right
+        ticketNumbers[0], // Top-left
+        ticketNumbers[8], // Top-right
         ticketNumbers[18], // Bottom-left
-        ticketNumbers[26]  // Bottom-right
+        ticketNumbers[26] // Bottom-right
     ];
-    return corners.every(number => calledNumbers.includes(number));
+    const result = corners.every(number => calledNumbers.includes(number));
+    console.log(`Four Corners check: ${result}`);
+    return result;
 }
 
 function checkEarlyFive(ticketNumbers, calledNumbers) {
     const markedNumbers = ticketNumbers.filter(number => calledNumbers.includes(number));
-    return markedNumbers.length >= 5;
+    const result = markedNumbers.length >= 5;
+    console.log(`Early Five check: ${result}`);
+    return result;
 }
 
 function checkOddEven(ticketNumbers, calledNumbers) {
@@ -541,15 +554,19 @@ function checkOddEven(ticketNumbers, calledNumbers) {
     const evenNumbers = ticketNumbers.filter(number => number % 2 === 0);
     const allOdd = oddNumbers.every(number => calledNumbers.includes(number));
     const allEven = evenNumbers.every(number => calledNumbers.includes(number));
-    return allOdd || allEven;
+    const result = allOdd || allEven;
+    console.log(`Odd-Even check: ${result}`);
+    return result;
 }
 
 function checkDiagonal(ticketNumbers, calledNumbers) {
     const diagonals = [
         [ticketNumbers[0], ticketNumbers[10], ticketNumbers[20]], // Top-left to bottom-right
-        [ticketNumbers[8], ticketNumbers[16], ticketNumbers[24]]  // Top-right to bottom-left
+        [ticketNumbers[8], ticketNumbers[16], ticketNumbers[24]] // Top-right to bottom-left
     ];
-    return diagonals.some(diagonal => diagonal.every(number => calledNumbers.includes(number)));
+    const result = diagonals.some(diagonal => diagonal.every(number => calledNumbers.includes(number)));
+    console.log(`Diagonal check: ${result}`);
+    return result;
 }
 
 
