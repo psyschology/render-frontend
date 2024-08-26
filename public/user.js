@@ -415,6 +415,7 @@ function loadAwards() {
     });
 }
 
+// Function to update winner details on the user page
 function updateWinnerDetails(winnerDetailsElement, awardData) {
     if (awardData.winner) {
         winnerDetailsElement.innerHTML = `
@@ -426,9 +427,10 @@ function updateWinnerDetails(winnerDetailsElement, awardData) {
     }
 }
 
-updateAwardDisplay(); // Call this function to initialize display
+// Initialize the award display
+updateAwardDisplay();
 
-// Check for winning tickets and update awardBox
+// Function to check for winning tickets and update the awardBox
 function checkAwards() {
     onValue(ref(database, 'calledNumbers'), (snapshot) => {
         const calledNumbers = snapshot.val() || [];
@@ -475,27 +477,37 @@ function checkAwardsForTicket(ticketNumber, ticketNumbers, calledNumbers) {
         }
 
         if (winners.length > 0) {
-            announceWinners(winners, ticketNumber);
+            announceWinners(winners, ticketNumber, awards);
         }
     });
 }
 
 // Function to announce winners and update Firebase
-function announceWinners(winners, ticketNumber) {
+function announceWinners(winners, ticketNumber, awards) {
     const awardBox = document.getElementById('awardBox');
     awardBox.innerHTML += `<br>Ticket ${ticketNumber} won: ${winners.join(', ')}`;
-    
+
     const updates = {};
     winners.forEach((award) => {
-        updates[`gameInfo/awards/${award}/winner`] = {
-            ticketNumber: ticketNumber,
-            owner: 'Unknown' // Replace with actual owner if available
-        };
+        if (!awards[award].winner) {  // Ensure no duplicate winners for the same award
+            updates[`gameInfo/awards/${award}/winner`] = {
+                ticketNumber: ticketNumber,
+                owner: 'Unknown' // Replace with actual owner if available
+            };
+        }
     });
-    update(ref(database), updates);
+
+    // Update Firebase with the new winner details
+    update(ref(database), updates)
+        .then(() => {
+            console.log('Winners updated successfully!');
+        })
+        .catch((error) => {
+            console.error('Error updating winners:', error);
+        });
 }
 
-// Helper functions
+// Helper functions to check different award conditions
 function checkFullHouse(ticketNumbers, calledNumbers) {
     return ticketNumbers.every(number => calledNumbers.includes(number));
 }
@@ -511,10 +523,10 @@ function checkLine(ticketNumbers, calledNumbers, lineType) {
 
 function checkFourCorners(ticketNumbers, calledNumbers) {
     const corners = [
-        ticketNumbers[0], // Top-left
-        ticketNumbers[8], // Top-right
+        ticketNumbers[0],  // Top-left
+        ticketNumbers[8],  // Top-right
         ticketNumbers[18], // Bottom-left
-        ticketNumbers[26] // Bottom-right
+        ticketNumbers[26]  // Bottom-right
     ];
     return corners.every(number => calledNumbers.includes(number));
 }
@@ -535,7 +547,7 @@ function checkOddEven(ticketNumbers, calledNumbers) {
 function checkDiagonal(ticketNumbers, calledNumbers) {
     const diagonals = [
         [ticketNumbers[0], ticketNumbers[10], ticketNumbers[20]], // Top-left to bottom-right
-        [ticketNumbers[8], ticketNumbers[16], ticketNumbers[24]] // Top-right to bottom-left
+        [ticketNumbers[8], ticketNumbers[16], ticketNumbers[24]]  // Top-right to bottom-left
     ];
     return diagonals.some(diagonal => diagonal.every(number => calledNumbers.includes(number)));
 }
