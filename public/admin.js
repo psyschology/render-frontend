@@ -214,3 +214,41 @@ document.getElementById('setAwardsButton').addEventListener('click', () => {
         .then(() => alert('Awards set successfully!'))
         .catch(error => console.error('Error setting awards:', error));
 });
+
+// Function to update award display based on game status
+function updateAwardDisplay() {
+    const awardBox = document.getElementById('awardBox');
+    const gameStatusRef = ref(database, 'gameInfo/status'); // Check game status
+
+    onValue(gameStatusRef, (snapshot) => {
+        const gameStatus = snapshot.val();
+        if (gameStatus === 'started') {
+            awardBox.style.display = 'block'; // Show awards if game is running
+            loadAwards(); // Load and display awards if the game is running
+        } else {
+            awardBox.style.display = 'none';  // Hide awards otherwise
+        }
+    });
+}
+
+// Function to load and display awards
+function loadAwards() {
+    const awardBox = document.getElementById('awardBox');
+    const awardsRef = ref(database, 'gameInfo/awards'); // Correct path to awards data in Firebase
+
+    onValue(awardsRef, (snapshot) => {
+        const awards = snapshot.val();
+        awardBox.innerHTML = ''; // Clear previous awards
+        
+        for (const [awardName, awardData] of Object.entries(awards)) {
+            const awardContainer = document.createElement('div');
+            awardContainer.classList.add('award-item');
+            awardContainer.innerHTML = `
+                <h3>${awardName}</h3>
+                <p>Amount: ${awardData.amount}</p>
+                <p>Winner: ${awardData.winner ? awardData.winner : 'Not yet determined'}</p>
+            `;
+            awardBox.appendChild(awardContainer);
+        }
+    });
+}
