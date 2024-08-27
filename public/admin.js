@@ -299,12 +299,13 @@ function checkAwards() {
                     const ticketNumbers = ticket.numbers;
                     const winningAwards = checkTicketAwards(ticketNumbers, calledNumbers);
                     winningAwards.forEach((award) => {
-                        if (!awards[award].winner) {
+                        if (awards[award] && !awards[award].winner) {
                             awards[award].winner = {
                                 ticketNumber: ticketNumber,
                                 owner: ticket.owner || 'Unknown',
                                 ticketGrid: ticket.numbers
                             };
+                            console.log(`Award '${award}' won by Ticket Number: ${ticketNumber}`); // Debugging line
                             set(ref(database, `gameInfo/awards/${award}`), awards[award]);
                         }
                     });
@@ -314,6 +315,18 @@ function checkAwards() {
             });
         });
     });
+}
+// Function to update winner details
+function updateWinnerDetails(winnerDetails, awardData) {
+    if (awardData.winner) {
+        winnerDetails.innerHTML = `
+            <p>Ticket Number: ${awardData.winner.ticketNumber}</p>
+            <p>Owner: ${awardData.winner.owner}</p>
+            <p>Numbers: ${awardData.winner.ticketGrid.join(', ')}</p>
+        `;
+    } else {
+        winnerDetails.innerHTML = '<p class="no-winner-message">No winners yet</p>';
+    }
 }
 
 // Function to update awards in the display
