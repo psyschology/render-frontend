@@ -368,12 +368,14 @@ function updateAwardDisplay() {
         if (gameStatus === 'started') {
             awardBox.style.display = 'block'; // Show awards if game is running
             loadAwards(); // Load and display awards if the game is running
+            checkAwards(); // Start checking awards in real-time
         } else {
             awardBox.style.display = 'none'; // Hide awards otherwise
         }
     });
 }
 
+// Load awards and display their details
 function loadAwards() {
     const awardBox = document.getElementById('awardBox');
     const awardsRef = ref(database, 'gameInfo/awards'); // Correct path to awards data in Firebase
@@ -390,109 +392,89 @@ function loadAwards() {
             awardTitle.className = 'award-name';
             awardTitle.textContent = awardName;
 
-            const viewWinnerButton = document.createElement('button');
-            viewWinnerButton.className = 'view-winner-button';
-            viewWinnerButton.textContent = 'View Winner';
-            viewWinnerButton.addEventListener('click', () => {
-                const winnerDetails = awardContainer.querySelector('.winner-details');
-                if (winnerDetails.style.display === 'none') {
-                    winnerDetails.style.display = 'block';
-                    updateWinnerDetails(winnerDetails, awardData);
-                } else {
-                    winnerDetails.style.display = 'none';
-                }
-            });
-
             const winnerDetails = document.createElement('div');
             winnerDetails.className = 'winner-details';
-            winnerDetails.style.display = 'none'; // Hide by default
 
             awardContainer.appendChild(awardTitle);
-            awardContainer.appendChild(viewWinnerButton);
             awardContainer.appendChild(winnerDetails);
             awardBox.appendChild(awardContainer);
         }
     });
 }
 
-// Function to update winner details on the user page
-function updateWinnerDetails(winnerDetailsElement, awardData) {
-    if (awardData.winner) {
-        winnerDetailsElement.innerHTML = `
-            <p>Ticket Number: ${awardData.winner.ticketNumber}</p>
-            <p>Owner: ${awardData.winner.owner}</p>
-        `;
-    } else {
-        winnerDetailsElement.innerHTML = '<p class="no-winner-message">No winners yet</p>';
-    }
-}
-
-// Function to check awards and update Firebase
+// Check awards for each ticket in real-time
 function checkAwards() {
-    onValue(ref(database, 'calledNumbers'), (snapshot) => {
+    const awardsRef = ref(database, 'gameInfo/awards');
+    const calledNumbersRef = ref(database, 'calledNumbers');
+    const ticketsRef = ref(database, 'tickets');
+
+    onValue(calledNumbersRef, (snapshot) => {
         const calledNumbers = snapshot.val() || [];
-        onValue(ref(database, 'tickets'), (snapshot) => {
+
+        onValue(ticketsRef, (snapshot) => {
             const tickets = snapshot.val();
-            for (const [ticketNumber, ticket] of Object.entries(tickets)) {
-                const ticketNumbers = ticket.numbers;
-                checkAwardsForTicket(ticketNumber, ticketNumbers, calledNumbers);
-            }
+            const awards = {};
+            onValue(awardsRef, (snapshot) => {
+                const awardsData = snapshot.val();
+                for (const [awardName, awardData] of Object.entries(awardsData)) {
+                    awards[awardName] = {
+                        ...awardData,
+                        winner: null
+                    };
+                }
+
+                for (const [ticketNumber, ticket] of Object.entries(tickets)) {
+                    const ticketNumbers = ticket.numbers;
+                    const winningAwards = checkTicketAwards(ticketNumbers, calledNumbers);
+                    winningAwards.forEach((award) => {
+                        if (!awards[award].winner) {
+                            awards[award].winner = {
+                                ticketNumber: ticketNumber,
+                                owner: ticket.owner || 'Unknown',
+                                ticketGrid: ticket.numbers
+                            };
+                        }
+                    });
+                }
+
+                updateAwardsInDisplay(awards);
+            });
         });
     });
 }
 
-// Function to check awards for a specific ticket
-function checkAwardsForTicket(ticketNumber, ticketNumbers, calledNumbers) {
-    const awardsRef = ref(database, 'gameInfo/awards');
-    get(awardsRef).then((snapshot) => {
-        const awards = snapshot.val();
-        const winners = [];
-
-        if (checkFullHouse(ticketNumbers, calledNumbers)) {
-            winners.push('Full House');
-        }
-        if (checkLine(ticketNumbers, calledNumbers, 'top')) {
-            winners.push('Top Line');
-        }
-        if (checkLine(ticketNumbers, calledNumbers, 'middle')) {
-            winners.push('Middle Line');
-        }
-        if (checkLine(ticketNumbers, calledNumbers, 'bottom')) {
-            winners.push('Bottom Line');
-        }
-        if (checkFourCorners(ticketNumbers, calledNumbers)) {
-            winners.push('Four Corners');
-        }
-        if (checkEarlyFive(ticketNumbers, calledNumbers)) {
-            winners.push('Early Five');
-        }
-        if (checkOddEven(ticketNumbers, calledNumbers)) {
-            winners.push('Odd-Even');
-        }
-        if (checkDiagonal(ticketNumbers, calledNumbers)) {
-            winners.push('Diagonal');
-        }
-
-        if (winners.length > 0) {
-            announceWinners(winners, ticketNumber);
-        }
-    }).catch((error) => {
-        console.error('Error retrieving awards:', error);
-    });
+// Check if a ticket meets the criteria for any awards
+function checkTicketAwards(ticketNumbers, calledNumbers) {
+    const awards = [];
+    if (checkFullHouse(ticketNumbers, calledNumbers)) awards.push('Full House');
+    if (checkLine(ticketNumbers, calledNumbers, 'top')) awards.push('Top Line');
+    if (checkLine(ticketNumbers, calledNumbers, 'middle')) awards.push('Middle Line');
+    if (checkLine(ticketNumbers, calledNumbers, 'bottom')) awards.push('Bottom Line');
+    if (checkFourCorners(ticketNumbers, calledNumbers)) awards.push('Four Corners');
+    if (checkEarlyFive(ticketNumbers, calledNumbers)) awards.push('Early Five');
+    if (checkOddEven(ticketNumbers, calledNumbers)) awards.push('Odd-Even');
+    if (checkDiagonal(ticketNumbers, calledNumbers)) awards.push('Diagonal');
+    return awards;
 }
 
-// Function to announce winners and update Firebase
-function announceWinners(winners, ticketNumber) {
-    const updates = {};
-    winners.forEach((award) => {
-        updates[`gameInfo/awards/${award}/winner`] = {
-            ticketNumber: ticketNumber,
-            owner: 'Unknown' // Replace with actual owner if available
-        };
+// Update awards display with ticket information
+function updateAwardsInDisplay(awards) {
+    const awardBox = document.getElementById('awardBox');
+    awardBox.querySelectorAll('.award-container').forEach(container => {
+        const awardTitle = container.querySelector('.award-name').textContent;
+        const winnerDetails = container.querySelector('.winner-details');
+        const awardData = awards[awardTitle];
+
+        if (awardData && awardData.winner) {
+            winnerDetails.innerHTML = `
+                <p>Ticket Number: ${awardData.winner.ticketNumber}</p>
+                <p>Owner: ${awardData.winner.owner}</p>
+                <p>Numbers: ${awardData.winner.ticketGrid.join(', ')}</p>
+            `;
+        } else {
+            winnerDetails.innerHTML = '<p class="no-winner-message">No winners yet</p>';
+        }
     });
-    update(ref(database), updates)
-        .then(() => console.log(`Winners updated for Ticket ${ticketNumber}: ${winners.join(', ')}`))
-        .catch((error) => console.error('Error updating winners:', error));
 }
 
 // Helper functions
@@ -541,6 +523,7 @@ function checkDiagonal(ticketNumbers, calledNumbers) {
 }
 
 updateAwardDisplay(); // Initialize display
+
 
 
 
