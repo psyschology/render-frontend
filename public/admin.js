@@ -225,6 +225,7 @@ function updateAwardDisplay() {
         if (gameStatus === 'started') {
             awardBox.style.display = 'block'; // Show awards if game is running
             loadAwards(); // Load and display awards if the game is running
+            checkAwards(); // Start checking awards in real-time
         } else {
             awardBox.style.display = 'none'; // Hide awards otherwise
         }
@@ -273,16 +274,111 @@ function loadAwards() {
     });
 }
 
-// Function to update winner details
-function updateWinnerDetails(winnerDetailsElement, awardData) {
-    if (awardData.winner) {
-        winnerDetailsElement.innerHTML = `
-            <p>Ticket Number: ${awardData.winner.ticketNumber}</p>
-            <p>Owner: ${awardData.winner.owner}</p>
-        `;
-    } else {
-        winnerDetailsElement.innerHTML = '<p class="no-winner-message">No winners yet</p>';
-    }
+// Function to check awards and update Firebase
+function checkAwards() {
+    const awardsRef = ref(database, 'gameInfo/awards');
+    const calledNumbersRef = ref(database, 'calledNumbers');
+    const ticketsRef = ref(database, 'tickets');
+
+    onValue(calledNumbersRef, (snapshot) => {
+        const calledNumbers = snapshot.val() || [];
+
+        onValue(ticketsRef, (snapshot) => {
+            const tickets = snapshot.val();
+            const awards = {};
+            onValue(awardsRef, (snapshot) => {
+                const awardsData = snapshot.val();
+                for (const [awardName, awardData] of Object.entries(awardsData)) {
+                    awards[awardName] = {
+                        ...awardData,
+                        winner: null
+                    };
+                }
+
+                for (const [ticketNumber, ticket] of Object.entries(tickets)) {
+                    const ticketNumbers = ticket.numbers;
+                    const winningAwards = checkTicketAwards(ticketNumbers, calledNumbers);
+                    winningAwards.forEach((award) => {
+                        if (!awards[award].winner) {
+                            awards[award].winner = {
+                                ticketNumber: ticketNumber,
+                                owner: ticket.owner || 'Unknown',
+                                ticketGrid: ticket.numbers
+                            };
+                            set(ref(database, `gameInfo/awards/${award}`), awards[award]);
+                        }
+                    });
+                }
+
+                updateAwardsInDisplay(awards);
+            });
+        });
+    });
+}
+
+// Function to update awards in the display
+function updateAwardsInDisplay(awards) {
+    const awardBox = document.getElementById('awardBox');
+    awardBox.querySelectorAll('.award-container').forEach(container => {
+        const awardTitle = container.querySelector('.award-name').textContent;
+        const winnerDetails = container.querySelector('.winner-details');
+        const awardData = awards[awardTitle];
+
+        if (awardData && awardData.winner) {
+            winnerDetails.innerHTML = `
+                <p>Ticket Number: ${awardData.winner.ticketNumber}</p>
+                <p>Owner: ${awardData.winner.owner}</p>
+                <p>Numbers: ${awardData.winner.ticketGrid.join(', ')}</p>
+            `;
+        } else {
+            winnerDetails.innerHTML = '<p class="no-winner-message">No winners yet</p>';
+        }
+    });
+}
+
+// Helper functions (same as in user.js)
+function checkFullHouse(ticketNumbers, calledNumbers) {
+    return ticketNumbers.every(number => calledNumbers.includes(number));
+}
+
+function checkLine(ticketNumbers, calledNumbers, lineType) {
+    const lines = {
+        top: ticketNumbers.slice(0, 9),
+        middle: ticketNumbers.slice(9, 18),
+        bottom: ticketNumbers.slice(18, 27)
+    };
+    return lines[lineType].every(number => calledNumbers.includes(number));
+}
+
+function checkFourCorners(ticketNumbers, calledNumbers) {
+    const corners = [
+        ticketNumbers[0], // Top-left
+        ticketNumbers[8], // Top-right
+        ticketNumbers[18], // Bottom-left
+        ticketNumbers[26] // Bottom-right
+    ];
+    return corners.every(number => calledNumbers.includes(number));
+}
+
+function checkEarlyFive(ticketNumbers, calledNumbers) {
+    const markedNumbers = ticketNumbers.filter(number => calledNumbers.includes(number));
+    return markedNumbers.length >= 5;
+}
+
+function checkOddEven(ticketNumbers, calledNumbers) {
+    const oddNumbers = ticketNumbers.filter(number => number % 2 !== 0);
+    const evenNumbers = ticketNumbers.filter(number => number % 2 === 0);
+    const allOdd = oddNumbers.every(number => calledNumbers.includes(number));
+    const allEven = evenNumbers.every(number => calledNumbers.includes(number));
+    return allOdd || allEven;
+}
+
+function checkDiagonal(ticketNumbers, calledNumbers) {
+    const diagonals = [
+        [ticketNumbers[0], ticketNumbers[10], ticketNumbers[20]], // Top-left to bottom-right
+        [ticketNumbers[8], ticketNumbers[16], ticketNumbers[24]] // Top-right to bottom-left
+    ];
+    return diagonals.some(diagonal => diagonal.every(number => calledNumbers.includes(number)));
 }
 
 updateAwardDisplay(); // Initialize display
