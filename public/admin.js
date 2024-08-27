@@ -27,6 +27,20 @@ const setGameTimeButton = document.getElementById('setGameTime');
 const setTicketLimitButton = document.getElementById('setTicketLimit');
 const bookTicketButton = document.getElementById('bookTicket');
 
+// Reference to the ticket status message element
+const ticketStatusMessage = document.getElementById('ticketStatusMessage');
+
+// Function to update the ticket status message
+function updateTicketStatusMessage(status) {
+    if (status === 'started') {
+        ticketStatusMessage.textContent = 'Game is live';
+    } else if (status === 'ended') {
+        ticketStatusMessage.textContent = 'Game has ended';
+    } else {
+        ticketStatusMessage.textContent = 'Check Available Ticket';
+    }
+}
+
 // Prompt for email and password on page load
 document.addEventListener('DOMContentLoaded', () => {
     const email = prompt('Enter your email:');
@@ -52,12 +66,21 @@ document.addEventListener('DOMContentLoaded', () => {
 startGameButton.addEventListener('click', () => {
     set(ref(database, 'gameInfo/status'), 'started');
     set(ref(database, 'gameInfo/board'), generateBoardNumbers());
+      updateTicketStatusMessage('started'); // Update message when game starts
 });
 
 endGameButton.addEventListener('click', () => {
     set(ref(database, 'gameInfo/status'), 'ended');
     set(ref(database, 'gameInfo/board'), null); // Clear the board
     set(ref(database, 'calledNumbers'), []);
+      updateTicketStatusMessage('ended'); // Update message when game ends
+});
+
+// Function to monitor game status and update message in real-time
+const gameStatusRef = ref(database, 'gameInfo/status');
+onValue(gameStatusRef, (snapshot) => {
+    const status = snapshot.val();
+    updateTicketStatusMessage(status); // Update message based on current status
 });
 
 setGameTimeButton.addEventListener('click', () => {
