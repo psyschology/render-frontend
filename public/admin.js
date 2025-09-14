@@ -4,16 +4,7 @@ import { getDatabase, ref, set, update } from 'https://www.gstatic.com/firebasej
 import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 
 // Your web app's Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyBZ9VKH0SVMOYdvYOO_XY_ycjB0C1ty_BU",
-    authDomain: "play-2b9e2.firebaseapp.com",
-    databaseURL: "https://play-2b9e2-default-rtdb.firebaseio.com",
-    projectId: "play-2b9e2",
-    storageBucket: "play-2b9e2.appspot.com",
-    messagingSenderId: "717502298791",
-    appId: "1:717502298791:web:a170ed9239e5df21987982",
-    measurementId: "G-97HGFBY9QJ"
-};
+
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
