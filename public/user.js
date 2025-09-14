@@ -4,16 +4,15 @@ import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebase
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyB9hgV5BCLAXQC4-MhcEfadzJCRVcwp8CQ",
-    authDomain: "render-27de6.firebaseapp.com",
-    databaseURL: "https://render-27de6-default-rtdb.firebaseio.com",
-    projectId: "render-27de6",
-    storageBucket: "render-27de6.appspot.com",
-    messagingSenderId: "401163347854",
-    appId: "1:401163347854:web:d95d1a655d256c731766df",
-    measurementId: "G-M87PVBCQJN"
+    apiKey: "AIzaSyBZ9VKH0SVMOYdvYOO_XY_ycjB0C1ty_BU",
+    authDomain: "play-2b9e2.firebaseapp.com",
+    databaseURL: "https://play-2b9e2-default-rtdb.firebaseio.com",
+    projectId: "play-2b9e2",
+    storageBucket: "play-2b9e2.appspot.com",
+    messagingSenderId: "717502298791",
+    appId: "1:717502298791:web:a170ed9239e5df21987982",
+    measurementId: "G-97HGFBY9QJ"
 };
-
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
